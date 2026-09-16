@@ -103,7 +103,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="ch10_1_Hands_On_Decision_Trees_files/libs/revealjs/dist/theme/quarto-f3fe414c1ceab255ed42592989c4965b.css">
+  <link rel="stylesheet" href="ch10_1_Hands_On_Decision_Trees_files/libs/revealjs/dist/theme/quarto-067abc2d7b318770d5daa04674464e14.css">
   <link href="ch10_1_Hands_On_Decision_Trees_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="ch10_1_Hands_On_Decision_Trees_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="ch10_1_Hands_On_Decision_Trees_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -199,6 +199,43 @@
   <link href="ch10_1_Hands_On_Decision_Trees_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
+<!-- Disables Reveal 5's automatic "scroll view" switch on narrow screens
+     (default scrollActivationWidth: 435px) before Reveal.initialize() ever
+     runs -- see the long comment in widgets.html for why. Two things were
+     tried and failed first (2026-09-16):
+       - `scroll-activation-width: 0` in the revealjs format YAML: this
+         Quarto version never forwards the key into Reveal.initialize()
+         (checked the rendered init call directly).
+       - `Reveal.configure({ scrollActivationWidth: null })` from
+         include-after-body (widgets.html): runs too late -- scroll view has
+         already activated by then, synchronously inside Reveal.initialize()
+         itself, and Reveal's own `deactivate()` path throws (a "Cannot read
+         properties of undefined (reading 'classList')" internal error) when
+         called after the fact, so nothing can undo it once active.
+     This intercepts the `window.Reveal` assignment the instant reveal.js's
+     UMD wrapper makes it (`(globalThis).Reveal = t()`), which happens later
+     in body -- include-before-body runs first, guaranteed -- and wraps
+     `.initialize` so scrollActivationWidth is forced null in the very
+     config object Reveal first sees, before its own init logic ever reads
+     the default. -->
+<script>
+(function () {
+  var realReveal;
+  Object.defineProperty(window, "Reveal", {
+    configurable: true,
+    get: function () { return realReveal; },
+    set: function (r) {
+      realReveal = r;
+      var origInitialize = r.initialize.bind(r);
+      r.initialize = function (config) {
+        config = config || {};
+        config.scrollActivationWidth = null;
+        return origInitialize(config);
+      };
+    }
+  });
+})();
+</script>
   <div class="reveal">
     <div class="slides">
 
