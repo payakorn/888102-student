@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="ch10_3_Hands_On_Regression_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ch10_3_Hands_On_Regression_files/libs/quarto-html/tabby.min.js"></script>
+<script src="ch10_3_Hands_On_Regression_files/libs/quarto-html/popper.min.js"></script>
+<script src="ch10_3_Hands_On_Regression_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="ch10_3_Hands_On_Regression_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ch10_3_Hands_On_Regression_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="ch10_3_Hands_On_Regression_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ch10_3_Hands_On_Regression_files/libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="ch10_3_Hands_On_Regression_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Piyachat Udomwong, Ph.D.&nbsp;· Payakorn Saksuriya, Ph.D.">
+  <title>888102 · Chapter 10.3 — Hands-on: Fitting a Regression in Python</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="ch10_3_Hands_On_Regression_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="ch10_3_Hands_On_Regression_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="ch10_3_Hands_On_Regression_files/libs/revealjs/dist/theme/quarto-f3fe414c1ceab255ed42592989c4965b.css">
+  <link href="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="ch10_3_Hands_On_Regression_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="ch10_3_Hands_On_Regression_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="fitting-a-regression-in-python" class="slide level2 cover" data-background-image="images/house-for-sale-real-estate-1.jpg" data-background-size="cover" data-background-position="72% 45%" data-background-color="#0B1730">
+<h2>Fitting a Regression in Python</h2>
+<!-- ===================================================================== -->
+<!-- THE DATA FOR EVERY CHART ON EVERY SLIDE OF THE THREE DECKS.                              -->
+<!--                                                                       -->
+<!-- Change a number here, re-render, and every figure that uses it        -->
+<!-- redraws, along with every value it reports. Nothing is drawn from a   -->
+<!-- stored picture and nothing is typed in twice: the charts recompute    -->
+<!-- the line, the residuals, R-squared, the tree and its held-out score   -->
+<!-- from these rows in the browser. Most charts also carry a control, so  -->
+<!-- a value can be changed during the lecture without re-rendering.       -->
+<!-- ===================================================================== -->
+<script type="application/json" id="ch10-data">
+{
+  "houses10": {
+    "area":  [1400, 1600, 1700, 1875, 1100, 1550, 2350, 2450, 1425, 1700],
+    "price": [245, 312, 279, 308, 199, 219, 405, 324, 319, 255],
+    "predict_at": 2000
+  },
+
+  "houses4": {
+    "size":  [100, 150, 200, 250],
+    "price": [3, 4, 6, 7]
+  },
+
+  "golf": {
+    "attributes": ["outlook", "temp", "humidity", "windy"],
+    "label": "play",
+    "rows": [
+      {"outlook": "Rainy",    "temp": "Hot",  "humidity": "High",   "windy": "No",  "play": "No"},
+      {"outlook": "Rainy",    "temp": "Hot",  "humidity": "High",   "windy": "Yes", "play": "No"},
+      {"outlook": "Overcast", "temp": "Hot",  "humidity": "High",   "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "High",   "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Cool", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Cool", "humidity": "Normal", "windy": "Yes", "play": "No"},
+      {"outlook": "Overcast", "temp": "Cool", "humidity": "Normal", "windy": "Yes", "play": "Yes"},
+      {"outlook": "Rainy",    "temp": "Mild", "humidity": "High",   "windy": "No",  "play": "No"},
+      {"outlook": "Rainy",    "temp": "Cool", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Rainy",    "temp": "Mild", "humidity": "Normal", "windy": "Yes", "play": "Yes"},
+      {"outlook": "Overcast", "temp": "Mild", "humidity": "High",   "windy": "Yes", "play": "Yes"},
+      {"outlook": "Overcast", "temp": "Hot",  "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "High",   "windy": "Yes", "play": "No"}
+    ]
+  },
+
+  "iris15": {
+    "length":  [5.3, 5.1, 7.2, 5.4, 5.1, 5.4, 7.4, 6.1, 7.3, 6.0, 5.8, 6.3, 5.1, 6.3, 5.5],
+    "width":   [3.7, 3.8, 3.0, 3.4, 3.3, 3.9, 2.8, 2.8, 2.9, 2.7, 2.8, 2.3, 2.5, 2.5, 2.4],
+    "species": ["Setosa", "Setosa", "Virginica", "Setosa", "Setosa", "Setosa", "Virginica",
+                "Versicolor", "Virginica", "Versicolor", "Virginica", "Versicolor",
+                "Versicolor", "Versicolor", "Versicolor"],
+    "new_flower": [5.2, 3.1]
+  },
+
+  "logistic": { "b0": -7, "b1": 0.0833333333, "mark_weights": [60, 120] },
+
+  "svm": {
+    "class_a": [[2.0, 2.0], [1.4, 3.1], [2.6, 1.6], [1.3, 2.9], [3.0, 1.4], [2.2, 3.0]],
+    "class_b": [[1.0, 1.0], [0.4, 1.3], [1.3, 0.5], [0.2, 0.6], [0.8, 0.3], [1.6, 0.2]],
+    "w": [1, 1],
+    "b": -3
+  },
+
+  "kernel1d": {
+    "inner": [-0.9, -0.5, -0.2, 0.3, 0.6, 0.95],
+    "outer": [-2.4, -1.9, -1.5, 1.6, 2.0, 2.5],
+    "kernel_example": {"x": [1, 2], "z": [3, 1], "degree": 2, "gamma": 0.5}
+  },
+
+  "patients10": {
+    "ill":     [0.9, 0.8, 0.6, 0.4],
+    "healthy": [0.7, 0.5, 0.3, 0.2, 0.15, 0.1]
+  },
+
+  "screening": { "tp": 40, "fp": 10, "fn": 20, "tn": 930 },
+
+  "overfit": {
+    "points": [[0.0, 0.0507], [0.0769, 0.3037], [0.1538, 0.4754], [0.2308, 0.7768],
+               [0.3077, 0.8288], [0.3846, 0.9432], [0.4615, 1.0006], [0.5385, 1.0958],
+               [0.6154, 1.0773], [0.6923, 1.206], [0.7692, 1.1325], [0.8462, 1.1425],
+               [0.9231, 1.0257], [1.0, 0.9981]]
+  },
+
+  "forest": { "p": 0.6, "compare_p": [0.6, 0.55, 0.45], "max_trees": 101 }
+}
+</script>
+<div class="scrim cover-scrim">
+
+</div>
+<div class="kicker">
+Chapter 10.3 · hands-on session · 888102 Big Data Analytics
+</div>
+<div class="lede">
+<p>The line of Part 10.3, fitted by a library in one command — on the ten house sales first, then on 442 real patients. Every code box on these slides runs in the browser.</p>
+</div>
+<div class="byline">
+Piyachat Udomwong, Ph.D.<br>Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+</div>
+<p><span class="cover-credit">Photo: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)</span></p>
+<aside class="notes">
+<p>This deck follows the lecture deck of Part 10.3. The Python engine loads once, at the start; ask the class to open the deck now so the download is finished by the time the first code slide is reached. The same steps, with the homework, are in the Chapter 10.3 notebook for Colab.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="how-this-session-works" class="slide level2">
+<h2>How this session works</h2>
+<div class="kicker">
+Hands-on 10.3 · before the first line of code
+</div>
+<div class="cards" style="--cols:4">
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The code runs in the browser</span> Every code box is live. Press <strong>Run Code</strong> (or <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> inside the box) and the result appears below it. Nothing is installed on the computer.</p>
+</div>
+<div class="card" style="--accent:#0891B2">
+<p><span class="t">The boxes share one workspace</span> A variable made in one box can be used in the next. Run the boxes <strong>in order</strong>: a later box that names a variable no earlier box has made stops with a <code>NameError</code>.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Everything can be edited</span> Change a value, a column, an area, and run again. <strong>Start Over</strong> restores the original code of that box.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">The engine loads once</span> The first time the page opens, Python and its packages are downloaded — about ten seconds, shown at the bottom of the page. The <strong>Run Code</strong> button turns blue when it is ready.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="watch">
+<p><span class="lbl">Two limits</span> The page needs internet, because the Python engine comes from the web when it opens. And the page <strong>forgets</strong> everything when it is reloaded: variables, edits, results. For work to keep, use the Chapter 10.3 notebook in Colab, which carries the same steps.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">The exercises</span> The last part of the session has four exercises. Each has a blank <code>______</code> to fill, a <strong>Show Hint</strong> button, a <strong>Show Solution</strong> button, and a check that marks the answer right or wrong when it is run.</p>
+</div>
+</div></div>
+</section>
+<section id="the-session-in-four-parts" class="slide level2">
+<h2>The session in four parts</h2>
+<div class="kicker">
+Hands-on 10.3 · roadmap
+</div>
+<div class="lede wide">
+<p>Part 10.3 found the least-squares line by nudging a slope and an intercept until no nudge helped. This session hands the same job to a library: <strong>scikit-learn</strong> fits the line in one command, and the rest of the time goes to reading what it found.</p>
+</div>
+<div class="flow">
+<div class="step" style="--accent:#0E9F8E">
+<b>A · Ten houses, with the tool</b>Correlation first; <code>LinearRegression().fit</code> finds the line in one command; the slope and R² are read, a prediction is made, and the residual plot is drawn.
+</div>
+<div class="step" style="--accent:#7C3AED">
+<b>B · A real dataset</b>442 diabetes patients bundled with scikit-learn: which measurement correlates most with disease progression, the BMI line fitted and judged, then a second predictor added.
+</div>
+<div class="step" style="--accent:#F59E0B">
+<b>C · Exercises</b>Four graded exercises on the two datasets, each with a hint and a solution.
+</div>
+<div class="step" style="--accent:#F43F5E">
+<b>D · Where this leaves us</b>A line predicts a number, judged by R² and bounded by the data it was fitted on.
+</div>
+</div>
+<div class="note">
+<p><span class="lbl">Three commands</span> <code>LinearRegression().fit(X, y)</code> fits the line from the predictor <code>X</code> and the response <code>y</code>. <code>.intercept_</code> and <code>.coef_</code> hold a and b. <code>.predict(new_rows)</code> substitutes a new x; <code>.score(X, y)</code> is R². Everything else on these slides is preparing the data and reading the result.</p>
+</div>
+</section>
+<section id="the-ten-house-sales" class="slide level2">
+<h2>The ten house sales</h2>
+<div class="kicker">
+Hands-on 10.3 · A · the training data
+</div>
+<div class="columns">
+<div class="column" style="width:38%;">
+<div class="note">
+<p><span class="lbl">The two variables</span> <strong>area_sqft</strong> is the predictor, x. <strong>price_1000s</strong> is the response, y, in thousands of dollars. Each row is one sale — one point on the scatter two slides from now.</p>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> Ten rows, two columns. Every row already carries its price — that is what lets a line be fitted from it, the same way every golf day carried its answer in Part 10.1.</p>
+</div>
+</div><div class="column" style="width:60%;">
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImF1dG9ydW4iOnRydWUsImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHBhbmRhcyBhcyBwZFxuXG5ob3VzZXMgPSBwZC5EYXRhRnJhbWUoe1xuICAgIFwiYXJlYV9zcWZ0XCI6ICAgWzE0MDAsIDE2MDAsIDE3MDAsIDE4NzUsIDExMDAsIDE1NTAsIDIzNTAsIDI0NTAsIDE0MjUsIDE3MDBdLFxuICAgIFwicHJpY2VfMTAwMHNcIjogWzI0NSwgIDMxMiwgIDI3OSwgIDMwOCwgIDE5OSwgIDIxOSwgIDQwNSwgIDMyNCwgIDMxOSwgIDI1NV0sXG59KVxuaG91c2VzIn0=
+</script>
+</div>
+</div></div>
+</section>
+<section id="do-the-two-variables-move-together" class="slide level2">
+<h2>Do the two variables move together?</h2>
+<div class="kicker">
+Hands-on 10.3 · A · correlation, before fitting anything
+</div>
+<div class="lede wide">
+<p><code>np.corrcoef(x, y)</code> returns a 2×2 table; the off-diagonal entry is r. Checking it first asks whether there is a straight-line relationship worth fitting.</p>
+</div>
+<div>
+<div id="pyodide-2" class="exercise-cell">
+
+</div>
+<script type="pyodide-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG51bXB5IGFzIG5wXG5cbnIgPSBucC5jb3JyY29lZihob3VzZXNbXCJhcmVhX3NxZnRcIl0sIGhvdXNlc1tcInByaWNlXzEwMDBzXCJdKVswLCAxXVxucHJpbnQoZlwiciA9IHtyOi40Zn1cIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> r = 0.7621 — positive and fairly strong: bigger houses tend to sell for more, though the relationship is far from perfect. A line is worth fitting.</p>
+</div>
+</section>
+<section id="fitting-the-line-in-one-command" class="slide level2">
+<h2>Fitting the line in one command</h2>
+<div class="kicker">
+Hands-on 10.3 · A · LinearRegression
+</div>
+<div class="lede wide">
+<p><code>LinearRegression().fit(X, y)</code> finds a and b by least squares — the same search Part 10.3 ran by nudging, done exactly. <code>X</code> must be a table, so the one predictor is passed as a one-column table, not a plain column.</p>
+</div>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLmxpbmVhcl9tb2RlbCBpbXBvcnQgTGluZWFyUmVncmVzc2lvblxuXG5YID0gaG91c2VzW1tcImFyZWFfc3FmdFwiXV0gICAgICAgICMgYSBvbmUtY29sdW1uIHRhYmxlLCBub3QgYSBzaW5nbGUgY29sdW1uXG55ID0gaG91c2VzW1wicHJpY2VfMTAwMHNcIl1cbmxpbmUgPSBMaW5lYXJSZWdyZXNzaW9uKCkuZml0KFgsIHkpXG5hLCBiID0gZmxvYXQobGluZS5pbnRlcmNlcHRfKSwgZmxvYXQobGluZS5jb2VmX1swXSlcbnByaW50KGZcInByZWRpY3RlZCBwcmljZSA9IHthOi41Zn0gKyB7YjouNWZ9IMOXIGFyZWFcIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>a = 98.25</strong> — the intercept. No house has 0 sq ft, so it has no meaning of its own; it positions the line.</li>
+<li><strong>b = 0.1098</strong> — the slope. Each extra square foot adds about <strong>$110</strong> to the predicted price.</li>
+<li><strong>The whole of Part 10.3’s search</strong> — try a line, measure the total squared miss, nudge, repeat — runs inside this one <code>.fit()</code> call.</li>
+</ul>
+</div>
+</section>
+<section id="the-line-drawn-over-the-points" class="slide level2">
+<h2>The line, drawn over the points</h2>
+<div class="kicker">
+Hands-on 10.3 · A · the same command as for the golf tree’s drawing
+</div>
+<div class="lede wide">
+<p><code>matplotlib</code> draws the ten points and the fitted line together; in the browser the drawing is saved as a picture file and the picture is shown, exactly as Part 10.1’s hands-on session drew a tree.</p>
+</div>
+<div>
+<div id="pyodide-4" class="exercise-cell">
+
+</div>
+<script type="pyodide-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG1hdHBsb3RsaWJcbm1hdHBsb3RsaWIudXNlKFwiQWdnXCIpXG5pbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0XG5mcm9tIElQeXRob24uZGlzcGxheSBpbXBvcnQgSW1hZ2VcblxueHMgPSBucC5saW5zcGFjZShob3VzZXNbXCJhcmVhX3NxZnRcIl0ubWluKCkgLSAxMDAsIGhvdXNlc1tcImFyZWFfc3FmdFwiXS5tYXgoKSArIDEwMCwgNTApXG5wbHQuZmlndXJlKGZpZ3NpemU9KDYuNSwgNC4yKSlcbnBsdC5zY2F0dGVyKGhvdXNlc1tcImFyZWFfc3FmdFwiXSwgaG91c2VzW1wicHJpY2VfMTAwMHNcIl0sIGNvbG9yPVwiIzBCMTczMFwiLCB6b3JkZXI9MylcbnBsdC5wbG90KHhzLCBhICsgYiAqIHhzLCBjb2xvcj1cIiNGNDNGNUVcIiwgbGluZXdpZHRoPTIpXG5wbHQueGxhYmVsKFwiQXJlYSAoc3EgZnQpXCIpXG5wbHQueWxhYmVsKFwiUHJpY2UgKCQxLDAwMHMpXCIpXG5wbHQudGl0bGUoXCJUaGUgZml0dGVkIGxpbmUgb3ZlciB0aGUgdGVuIHNhbGVzXCIpXG5wbHQudGlnaHRfbGF5b3V0KClcbnBsdC5zYXZlZmlnKFwiaG91c2VzX2xpbmUucG5nXCIsIGRwaT0xMTApXG5JbWFnZShcImhvdXNlc19saW5lLnBuZ1wiKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The line rises left to right, at the slope just read: 0.1098 thousand dollars per square foot. The points sit close to it but not on it — the vertical gaps are the residuals the next slides measure.</p>
+</div>
+</section>
+<section id="predicting-a-2000-sq-ft-house" class="slide level2">
+<h2>Predicting a 2,000 sq ft house</h2>
+<div class="kicker">
+Hands-on 10.3 · A · substitution
+</div>
+<div class="lede wide">
+<p><code>.predict()</code> substitutes a new area into the fitted line. The new house is written as a one-row, one-column table with the same column name as the training data.</p>
+</div>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibmV3X2hvdXNlID0gcGQuRGF0YUZyYW1lKHtcImFyZWFfc3FmdFwiOiBbMjAwMF19KVxucHJlZGljdGVkX3ByaWNlID0gZmxvYXQobGluZS5wcmVkaWN0KG5ld19ob3VzZSlbMF0pXG5wcmludChmXCIyLDAwMCBzcSBmdCAtPiBwcmVkaWN0ZWQgcHJpY2Uge3ByZWRpY3RlZF9wcmljZTouMmZ9IHRob3VzYW5kIGRvbGxhcnMgKCR7cHJlZGljdGVkX3ByaWNlICogMTAwMDosLjBmfSlcIikifQ==
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span> $317,784 — the same figure Part 10.3 reached by substituting into <span class="math inline">\(98.25 + 0.1098 \times 2000\)</span> by hand. <code>.predict()</code> does the substitution; the equation is the one already read.</p>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">Try it</span> Change <code>2000</code> to <code>500</code> and to <code>12000</code> and run again. Both return a number — nothing stops them — but neither is inside the 1,100–2,450 range the line was fitted on.</p>
+</div>
+</div></div>
+</section>
+<section id="judging-the-fit-r²-mae-rmse" class="slide level2">
+<h2>Judging the fit — R², MAE, RMSE</h2>
+<div class="kicker">
+Hands-on 10.3 · A · how good is this line?
+</div>
+<div class="lede wide">
+<p><code>.score(X, y)</code> is R², the share of the variation in price the line explains. The residuals — actual minus predicted — give two more numbers: the typical size of a miss.</p>
+</div>
+<div>
+<div id="pyodide-6" class="exercise-cell">
+
+</div>
+<script type="pyodide-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicjIgPSBsaW5lLnNjb3JlKFgsIHkpXG5yZXNpZHVhbHMgPSB5IC0gbGluZS5wcmVkaWN0KFgpXG5tYWUgPSByZXNpZHVhbHMuYWJzKCkubWVhbigpXG5ybXNlID0gKHJlc2lkdWFscyAqKiAyKS5tZWFuKCkgKiogMC41XG5wcmludChmXCJSwrIgICA9IHtyMjouNGZ9XCIpXG5wcmludChmXCJNQUUgID0ge21hZTouMmZ9IHRob3VzYW5kIGRvbGxhcnNcIilcbnByaW50KGZcIlJNU0UgPSB7cm1zZTouMmZ9IHRob3VzYW5kIGRvbGxhcnNcIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>R² = 0.5808</strong>, matching <span class="math inline">\(r^2 = 0.7621^2\)</span>: area explains about 58% of the variation in price among these ten houses.</li>
+<li><strong>MAE 31.04, RMSE 36.97</strong> thousand dollars — the line is typically about $31,000 out, with a couple of larger misses pulling the RMSE above the MAE.</li>
+</ul>
+</div>
+</section>
+<section id="the-residual-plot" class="slide level2">
+<h2>The residual plot</h2>
+<div class="kicker">
+Hands-on 10.3 · A · is a straight line the right shape?
+</div>
+<div class="lede wide">
+<p>Residuals plotted against predicted price. For an adequate model this should look like noise scattered around zero, with no curve and no widening spread.</p>
+</div>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicGx0LmZpZ3VyZShmaWdzaXplPSg2LjUsIDQuMCkpXG5wbHQuc2NhdHRlcihsaW5lLnByZWRpY3QoWCksIHJlc2lkdWFscywgY29sb3I9XCIjMEIxNzMwXCIpXG5wbHQuYXhobGluZSgwLCBjb2xvcj1cIiNGNDNGNUVcIiwgbGluZXN0eWxlPVwiLS1cIilcbnBsdC54bGFiZWwoXCJQcmVkaWN0ZWQgcHJpY2UgKCQxLDAwMHMpXCIpXG5wbHQueWxhYmVsKFwiUmVzaWR1YWwgKGFjdHVhbCDiiJIgcHJlZGljdGVkKVwiKVxucGx0LnRpdGxlKFwiUmVzaWR1YWxzIG9mIHRoZSB0ZW4taG91c2UgbGluZVwiKVxucGx0LnRpZ2h0X2xheW91dCgpXG5wbHQuc2F2ZWZpZyhcImhvdXNlc19yZXNpZC5wbmdcIiwgZHBpPTExMClcbkltYWdlKFwiaG91c2VzX3Jlc2lkLnBuZ1wiKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The ten points scatter above and below zero with no rising curve and no widening funnel — noise, not a pattern. A straight line was a reasonable shape to fit here, even though it leaves 42% of the variation unexplained.</p>
+</div>
+</section>
+<section id="a-real-dataset-442-patients" class="slide level2">
+<h2>A real dataset — 442 patients</h2>
+<div class="kicker">
+Hands-on 10.3 · B · the same commands on real data
+</div>
+<div class="lede wide">
+<p>Ten houses can be checked by hand. A real dataset cannot, and here the library earns its place. The dataset comes with it — no file to download.</p>
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">The data</span> 442 diabetes patients, each with ten measurements at the start of a study — age, sex, body mass index (BMI), blood pressure, six blood-serum values — and a progression score measured a year later.</p>
+</div>
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The question</span> Does BMI predict how far the disease progresses, and how much of the variation does it explain? The predictor is BMI; the response is the progression score.</p>
+</div>
+<div class="card" style="--accent:#0E9F8E">
+<p><span class="t">What changes</span> Ten predictors are available, not one. Correlation ranks them before any line is fitted, and a second predictor is added later in the session.</p>
+</div>
+</div>
+<div class="note">
+<p><span class="lbl">Where the dataset comes from</span> <code>sklearn.datasets</code> bundles several small real datasets: <code>load_diabetes</code> (these patients), <code>load_breast_cancer</code> (569 tumors, used in Part 10.2), <code>load_iris</code> (150 flowers, used in Part 10.1). Each loads in one line and works offline once the library is present.</p>
+</div>
+</section>
+<section id="loading-the-patients" class="slide level2">
+<h2>Loading the patients</h2>
+<div class="kicker">
+Hands-on 10.3 · B · the data as a table
+</div>
+<div class="lede wide">
+<p><code>load_diabetes(as_frame=True, scaled=False)</code> returns the ten measurements in their original units and the progression score as the target, kept in one table.</p>
+</div>
+<div>
+<div id="pyodide-8" class="exercise-cell">
+
+</div>
+<script type="pyodide-8-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLmRhdGFzZXRzIGltcG9ydCBsb2FkX2RpYWJldGVzXG5cbmRpYWJldGVzID0gbG9hZF9kaWFiZXRlcyhhc19mcmFtZT1UcnVlLCBzY2FsZWQ9RmFsc2UpXG5wYXRpZW50cyA9IGRpYWJldGVzLmRhdGEuY29weSgpXG5wYXRpZW50c1tcInByb2dyZXNzaW9uXCJdID0gZGlhYmV0ZXMudGFyZ2V0XG5wcmludChcInNoYXBlOlwiLCBwYXRpZW50cy5zaGFwZSlcbnBhdGllbnRzLmhlYWQoKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> 442 rows, 11 columns: ten measurements and the progression score a year later. <code>s1</code> to <code>s6</code> are blood-serum values; <code>bmi</code> and <code>bp</code> are body mass index and blood pressure.</p>
+</div>
+</section>
+<section id="ranking-the-predictors-by-correlation" class="slide level2">
+<h2>Ranking the predictors by correlation</h2>
+<div class="kicker">
+Hands-on 10.3 · B · which measurement moves with progression?
+</div>
+<div class="lede wide">
+<p><code>.corr()</code> computes the correlation of every pair of columns; taking the progression column and sorting it ranks the ten measurements.</p>
+</div>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicGF0aWVudHMuY29ycigpW1wicHJvZ3Jlc3Npb25cIl0uZHJvcChcInByb2dyZXNzaW9uXCIpLnNvcnRfdmFsdWVzKGFzY2VuZGluZz1GYWxzZSkucm91bmQoMykifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> BMI has the strongest correlation, 0.586, with the serum value <code>s5</code> close behind at 0.566 and blood pressure at 0.441. None is as strong as the 0.762 of the ten houses — real data rarely lines up as tightly as ten hand-picked sales.</p>
+</div>
+</section>
+<section id="fitting-the-bmi-line" class="slide level2">
+<h2>Fitting the BMI line</h2>
+<div class="kicker">
+Hands-on 10.3 · B · the same command, a new predictor
+</div>
+<div class="lede wide">
+<p><code>LinearRegression().fit(X, y)</code> again — only the columns change. BMI goes in as a one-column table, progression as the target.</p>
+</div>
+<div>
+<div id="pyodide-10" class="exercise-cell">
+
+</div>
+<script type="pyodide-10-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiWF9ibWkgPSBwYXRpZW50c1tbXCJibWlcIl1dXG55X3Byb2cgPSBwYXRpZW50c1tcInByb2dyZXNzaW9uXCJdXG5ibWlfbGluZSA9IExpbmVhclJlZ3Jlc3Npb24oKS5maXQoWF9ibWksIHlfcHJvZylcbmFfYm1pLCBiX2JtaSA9IGZsb2F0KGJtaV9saW5lLmludGVyY2VwdF8pLCBmbG9hdChibWlfbGluZS5jb2VmX1swXSlcbnByaW50KGZcInByZWRpY3RlZCBwcm9ncmVzc2lvbiA9IHthX2JtaTouMmZ9ICsge2JfYm1pOi4yZn0gw5cgQk1JXCIpXG5wcmludChmXCJSwrIgPSB7Ym1pX2xpbmUuc2NvcmUoWF9ibWksIHlfcHJvZyk6LjRmfVwiKSJ9
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span> b = 10.23: each extra unit of BMI goes with about 10 more points of progression. R² = 0.344 — BMI explains about a third of the variation in progression; the other two thirds is everything the line cannot see.</p>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">Try it</span> Compare <code>0.344</code> with <code>0.586 ** 2</code>. They match — for one predictor, R² is exactly the square of the correlation, as Part 10.3 stated.</p>
+</div>
+</div></div>
+</section>
+<section id="a-second-predictor" class="slide level2">
+<h2>A second predictor</h2>
+<div class="kicker">
+Hands-on 10.3 · B · does blood pressure do better or worse?
+</div>
+<div class="lede wide">
+<p>The same three lines, with <code>bp</code> in place of <code>bmi</code>, then both together — the same call handles one predictor or several.</p>
+</div>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiYnBfbGluZSA9IExpbmVhclJlZ3Jlc3Npb24oKS5maXQocGF0aWVudHNbW1wiYnBcIl1dLCB5X3Byb2cpXG5wcmludChmXCJCTUkgYWxvbmU6ICAgICAgICBSwrIgPSB7Ym1pX2xpbmUuc2NvcmUoWF9ibWksIHlfcHJvZyk6LjRmfVwiKVxucHJpbnQoZlwiQlAgYWxvbmU6ICAgICAgICAgUsKyID0ge2JwX2xpbmUuc2NvcmUocGF0aWVudHNbWydicCddXSwgeV9wcm9nKTouNGZ9XCIpXG5cbmJvdGhfbGluZSA9IExpbmVhclJlZ3Jlc3Npb24oKS5maXQocGF0aWVudHNbW1wiYm1pXCIsIFwiYnBcIl1dLCB5X3Byb2cpXG5wcmludChmXCJCTUkgYW5kIEJQIHRvZ2V0aGVyOiBSwrIgPSB7Ym90aF9saW5lLnNjb3JlKHBhdGllbnRzW1snYm1pJywgJ2JwJ11dLCB5X3Byb2cpOi40Zn1cIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>BP alone explains less</strong> (R² 0.1949) than BMI alone (0.344) — exactly the order the correlation table already predicted (0.441 &lt; 0.586).</li>
+<li><strong>Together they explain more</strong> (R² 0.3960) than either alone, but less than the two R²’s added — the two measurements overlap in what they tell the model about a patient.</li>
+</ul>
+</div>
+</section>
+<section id="exercise-1-a-1750-sq-ft-house" class="slide level2">
+<h2>Exercise 1 — a 1,750 sq ft house</h2>
+<div class="kicker">
+Hands-on 10.3 · C · predicting inside the data
+</div>
+<div class="lede wide">
+<p>Fill the blank with an area of 1,750 sq ft — inside the ten houses’ range — and let the fitted line predict its price, rounded to four decimals.</p>
+</div>
+<script type="exercise-setup-ex_house_predict-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2hvdXNlX3ByZWRpY3QiLCJleF9ibWlfcHJlZGljdCJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmZyb20gc2tsZWFybi5saW5lYXJfbW9kZWwgaW1wb3J0IExpbmVhclJlZ3Jlc3Npb25cbmZyb20gc2tsZWFybi5kYXRhc2V0cyBpbXBvcnQgbG9hZF9kaWFiZXRlc1xuXG5ob3VzZXMgPSBwZC5EYXRhRnJhbWUoe1xuICAgIFwiYXJlYV9zcWZ0XCI6ICAgWzE0MDAsIDE2MDAsIDE3MDAsIDE4NzUsIDExMDAsIDE1NTAsIDIzNTAsIDI0NTAsIDE0MjUsIDE3MDBdLFxuICAgIFwicHJpY2VfMTAwMHNcIjogWzI0NSwgIDMxMiwgIDI3OSwgIDMwOCwgIDE5OSwgIDIxOSwgIDQwNSwgIDMyNCwgIDMxOSwgIDI1NV0sXG59KVxuWCA9IGhvdXNlc1tbXCJhcmVhX3NxZnRcIl1dXG55ID0gaG91c2VzW1wicHJpY2VfMTAwMHNcIl1cbmxpbmUgPSBMaW5lYXJSZWdyZXNzaW9uKCkuZml0KFgsIHkpXG5cbmRpYWJldGVzID0gbG9hZF9kaWFiZXRlcyhhc19mcmFtZT1UcnVlLCBzY2FsZWQ9RmFsc2UpXG5wYXRpZW50cyA9IGRpYWJldGVzLmRhdGEuY29weSgpXG5wYXRpZW50c1tcInByb2dyZXNzaW9uXCJdID0gZGlhYmV0ZXMudGFyZ2V0XG5YX2JtaSA9IHBhdGllbnRzW1tcImJtaVwiXV1cbnlfcHJvZyA9IHBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl1cbmJtaV9saW5lID0gTGluZWFyUmVncmVzc2lvbigpLmZpdChYX2JtaSwgeV9wcm9nKSJ9
+</script>
+<script type="exercise-setup-ex_bmi_predict-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2hvdXNlX3ByZWRpY3QiLCJleF9ibWlfcHJlZGljdCJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmZyb20gc2tsZWFybi5saW5lYXJfbW9kZWwgaW1wb3J0IExpbmVhclJlZ3Jlc3Npb25cbmZyb20gc2tsZWFybi5kYXRhc2V0cyBpbXBvcnQgbG9hZF9kaWFiZXRlc1xuXG5ob3VzZXMgPSBwZC5EYXRhRnJhbWUoe1xuICAgIFwiYXJlYV9zcWZ0XCI6ICAgWzE0MDAsIDE2MDAsIDE3MDAsIDE4NzUsIDExMDAsIDE1NTAsIDIzNTAsIDI0NTAsIDE0MjUsIDE3MDBdLFxuICAgIFwicHJpY2VfMTAwMHNcIjogWzI0NSwgIDMxMiwgIDI3OSwgIDMwOCwgIDE5OSwgIDIxOSwgIDQwNSwgIDMyNCwgIDMxOSwgIDI1NV0sXG59KVxuWCA9IGhvdXNlc1tbXCJhcmVhX3NxZnRcIl1dXG55ID0gaG91c2VzW1wicHJpY2VfMTAwMHNcIl1cbmxpbmUgPSBMaW5lYXJSZWdyZXNzaW9uKCkuZml0KFgsIHkpXG5cbmRpYWJldGVzID0gbG9hZF9kaWFiZXRlcyhhc19mcmFtZT1UcnVlLCBzY2FsZWQ9RmFsc2UpXG5wYXRpZW50cyA9IGRpYWJldGVzLmRhdGEuY29weSgpXG5wYXRpZW50c1tcInByb2dyZXNzaW9uXCJdID0gZGlhYmV0ZXMudGFyZ2V0XG5YX2JtaSA9IHBhdGllbnRzW1tcImJtaVwiXV1cbnlfcHJvZyA9IHBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl1cbmJtaV9saW5lID0gTGluZWFyUmVncmVzc2lvbigpLmZpdChYX2JtaSwgeV9wcm9nKSJ9
+</script>
+<div>
+<div id="pyodide-13" class="exercise-cell">
+
+</div>
+<script type="pyodide-13-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAxIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9ob3VzZV9wcmVkaWN0In0sImNvZGUiOiJuZXdfaG91c2UgPSBwZC5EYXRhRnJhbWUoe1wiYXJlYV9zcWZ0XCI6IFtfX19fX19dfSlcbnJvdW5kKGZsb2F0KGxpbmUucHJlZGljdChuZXdfaG91c2UpWzBdKSwgNCkifQ==
+</script>
+</div>
+<script type="exercise-check-ex_house_predict-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2hvdXNlX3ByZWRpY3QifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgYWJzKGZsb2F0KHJlc3VsdCkgLSAyOTAuMzQxOSkgPCAxZS0yXG5leGNlcHQgKFR5cGVFcnJvciwgVmFsdWVFcnJvcik6XG4gICAgb2sgPSBGYWxzZVxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3QuIDI5MC4zNDE5IHRob3VzYW5kIGRvbGxhcnM6IDk4LjI1ICsgMC4xMDk4IMOXIDE3NTAg4omIIDI5MC4zNCwgdGhlIHNhbWUgc3Vic3RpdHV0aW9uIGFzIHRoZSAyLDAwMCBzcSBmdCBleGFtcGxlIHdpdGggYSBkaWZmZXJlbnQgeC5cIn1cbmVsaWYgcmVzdWx0IGlzIE5vbmU6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogXCJUaGUgYm94IHJldHVybmVkIG5vdGhpbmcuIEVuZCB3aXRoIHRoZSBleHByZXNzaW9uIGl0c2VsZiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgYmxhbmsgaXMgdGhlIGFyZWEgaW4gc3F1YXJlIGZlZXQ6IDE3NTAuXCJ9XG5mZWVkYmFjayJ9
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_house_predict">
+<p>The column name inside the <code>DataFrame</code> must stay <code>"area_sqft"</code>, exactly as in the training table. Only the number in the list changes.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_house_predict">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="" aria-label="1"></a>new_house <span class="op">=</span> pd.DataFrame({<span class="st">"area_sqft"</span>: [<span class="dv">1750</span>]})</span>
+<span id="cb1-2"><a href="" aria-label="2"></a><span class="bu">round</span>(<span class="bu">float</span>(line.predict(new_house)[<span class="dv">0</span>]), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>290.3419</code>: inside the 1,100–2,450 sq ft range the line was fitted on, so this prediction is supported by the data.</p>
+</div>
+</section>
+<section id="exercise-2-a-patient-with-bmi-30" class="slide level2">
+<h2>Exercise 2 — a patient with BMI 30</h2>
+<div class="kicker">
+Hands-on 10.3 · C · predicting with the BMI line
+</div>
+<div class="lede wide">
+<p>Fill the blank with a BMI of 30 and let the fitted line predict the progression score, rounded to four decimals.</p>
+</div>
+<div>
+<div id="pyodide-15" class="exercise-cell">
+
+</div>
+<script type="pyodide-15-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAyIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9ibWlfcHJlZGljdCJ9LCJjb2RlIjoibmV3X3BhdGllbnQgPSBwZC5EYXRhRnJhbWUoe1wiYm1pXCI6IFtfX19fX19dfSlcbnJvdW5kKGZsb2F0KGJtaV9saW5lLnByZWRpY3QobmV3X3BhdGllbnQpWzBdKSwgNCkifQ==
+</script>
+</div>
+<script type="exercise-check-ex_bmi_predict-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2JtaV9wcmVkaWN0In0sImNvZGUiOiJ0cnk6XG4gICAgb2sgPSByZXN1bHQgaXMgbm90IE5vbmUgYW5kIGFicyhmbG9hdChyZXN1bHQpIC0gMTg5LjIyMDUpIDwgMWUtMlxuZXhjZXB0IChUeXBlRXJyb3IsIFZhbHVlRXJyb3IpOlxuICAgIG9rID0gRmFsc2VcbmlmIG9rOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBUcnVlLCBcIm1lc3NhZ2VcIjogXCJDb3JyZWN0LiAxODkuMjIwNTogLTExNy43NyArIDEwLjIzIMOXIDMwIOKJiCAxODkuMjIsIHRoZSBzYW1lIHN1YnN0aXR1dGlvbiB1c2VkIGZvciB0aGUgaG91c2VzLCB3aXRoIEJNSSBpbiBwbGFjZSBvZiBhcmVhLlwifVxuZWxpZiByZXN1bHQgaXMgTm9uZTpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogRmFsc2UsIFwibWVzc2FnZVwiOiBcIlRoZSBib3ggcmV0dXJuZWQgbm90aGluZy4gRW5kIHdpdGggdGhlIGV4cHJlc3Npb24gaXRzZWxmLCBub3QgYSBwcmludCgpLlwifVxuZWxzZTpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogRmFsc2UsIFwibWVzc2FnZVwiOiBmXCJUaGUgYm94IHJldHVybmVkIHtyZXN1bHQhcn0uIFRoZSBibGFuayBpcyB0aGUgQk1JIHZhbHVlOiAzMC5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_bmi_predict">
+<p>The column name inside the <code>DataFrame</code> must stay <code>"bmi"</code>, exactly as in <code>X_bmi</code>. Only the number changes.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_bmi_predict">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="" aria-label="1"></a>new_patient <span class="op">=</span> pd.DataFrame({<span class="st">"bmi"</span>: [<span class="dv">30</span>]})</span>
+<span id="cb2-2"><a href="" aria-label="2"></a><span class="bu">round</span>(<span class="bu">float</span>(bmi_line.predict(new_patient)[<span class="dv">0</span>]), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>189.2205</code>. The patients’ BMI runs from 18 to 42, so 30 sits inside the fitted range.</p>
+</div>
+</section>
+<section id="exercise-3-a-line-on-blood-pressure-alone" class="slide level2">
+<h2>Exercise 3 — a line on blood pressure alone</h2>
+<div class="kicker">
+Hands-on 10.3 · C · reading R² for a different predictor
+</div>
+<div class="lede wide">
+<p>Fill the blank with the column name for blood pressure and report R² for that line alone, rounded to four decimals.</p>
+</div>
+<script type="exercise-setup-ex_bp_r2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2JwX3IyIiwiZXhfYm90aF9yMiJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4ubGluZWFyX21vZGVsIGltcG9ydCBMaW5lYXJSZWdyZXNzaW9uXG5mcm9tIHNrbGVhcm4uZGF0YXNldHMgaW1wb3J0IGxvYWRfZGlhYmV0ZXNcblxuZGlhYmV0ZXMgPSBsb2FkX2RpYWJldGVzKGFzX2ZyYW1lPVRydWUsIHNjYWxlZD1GYWxzZSlcbnBhdGllbnRzID0gZGlhYmV0ZXMuZGF0YS5jb3B5KClcbnBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl0gPSBkaWFiZXRlcy50YXJnZXRcbnlfcHJvZyA9IHBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl0ifQ==
+</script>
+<script type="exercise-setup-ex_both_r2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2JwX3IyIiwiZXhfYm90aF9yMiJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4ubGluZWFyX21vZGVsIGltcG9ydCBMaW5lYXJSZWdyZXNzaW9uXG5mcm9tIHNrbGVhcm4uZGF0YXNldHMgaW1wb3J0IGxvYWRfZGlhYmV0ZXNcblxuZGlhYmV0ZXMgPSBsb2FkX2RpYWJldGVzKGFzX2ZyYW1lPVRydWUsIHNjYWxlZD1GYWxzZSlcbnBhdGllbnRzID0gZGlhYmV0ZXMuZGF0YS5jb3B5KClcbnBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl0gPSBkaWFiZXRlcy50YXJnZXRcbnlfcHJvZyA9IHBhdGllbnRzW1wicHJvZ3Jlc3Npb25cIl0ifQ==
+</script>
+<div>
+<div id="pyodide-18" class="exercise-cell">
+
+</div>
+<script type="pyodide-18-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAzIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9icF9yMiJ9LCJjb2RlIjoiWF9vbmUgPSBwYXRpZW50c1tbXCJfX19fX19cIl1dXG5vbmVfbGluZSA9IExpbmVhclJlZ3Jlc3Npb24oKS5maXQoWF9vbmUsIHlfcHJvZylcbnJvdW5kKG9uZV9saW5lLnNjb3JlKFhfb25lLCB5X3Byb2cpLCA0KSJ9
+</script>
+</div>
+<script type="exercise-check-ex_bp_r2-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2JwX3IyIn0sImNvZGUiOiJ0cnk6XG4gICAgb2sgPSByZXN1bHQgaXMgbm90IE5vbmUgYW5kIGFicyhmbG9hdChyZXN1bHQpIC0gMC4xOTQ5KSA8IDFlLTNcbmV4Y2VwdCAoVHlwZUVycm9yLCBWYWx1ZUVycm9yKTpcbiAgICBvayA9IEZhbHNlXG5pZiBvazpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogVHJ1ZSwgXCJtZXNzYWdlXCI6IFwiQ29ycmVjdC4gMC4xOTQ5IOKAlCBiZWxvdyBCTUkncyAwLjM0NCwgbWF0Y2hpbmcgdGhlIGNvcnJlbGF0aW9uIHRhYmxlOiBibG9vZCBwcmVzc3VyZSdzIDAuNDQxIHNpdHMgYmVsb3cgQk1JJ3MgMC41ODYuXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgYmxhbmsgaXMgdGhlIGNvbHVtbiBuYW1lIGZvciBibG9vZCBwcmVzc3VyZTogJ2JwJy5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_bp_r2">
+<p>The correlation table two slides back listed the column names exactly. Blood pressure’s column is <code>bp</code>.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_bp_r2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="" aria-label="1"></a>X_one <span class="op">=</span> patients[[<span class="st">"bp"</span>]]</span>
+<span id="cb3-2"><a href="" aria-label="2"></a>one_line <span class="op">=</span> LinearRegression().fit(X_one, y_prog)</span>
+<span id="cb3-3"><a href="" aria-label="3"></a><span class="bu">round</span>(one_line.score(X_one, y_prog), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.1949</code>. <code>0.441 ** 2</code> gives the same number: for one predictor, R² is the square of its correlation with the response.</p>
+</div>
+</section>
+<section id="exercise-4-two-predictors-together" class="slide level2">
+<h2>Exercise 4 — two predictors together</h2>
+<div class="kicker">
+Hands-on 10.3 · C · multiple linear regression
+</div>
+<div class="lede wide">
+<p>Fill the blank so both BMI and blood pressure enter the model, and report R², rounded to four decimals.</p>
+</div>
+<div>
+<div id="pyodide-20" class="exercise-cell">
+
+</div>
+<script type="pyodide-20-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSA0IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9ib3RoX3IyIn0sImNvZGUiOiJYX3R3byA9IHBhdGllbnRzW1tcImJtaVwiLCBcIl9fX19fX1wiXV1cbnR3b19saW5lID0gTGluZWFyUmVncmVzc2lvbigpLmZpdChYX3R3bywgeV9wcm9nKVxucm91bmQodHdvX2xpbmUuc2NvcmUoWF90d28sIHlfcHJvZyksIDQpIn0=
+</script>
+</div>
+<script type="exercise-check-ex_both_r2-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2JvdGhfcjIifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgYWJzKGZsb2F0KHJlc3VsdCkgLSAwLjM5NjApIDwgMWUtM1xuZXhjZXB0IChUeXBlRXJyb3IsIFZhbHVlRXJyb3IpOlxuICAgIG9rID0gRmFsc2VcbmlmIG9rOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBUcnVlLCBcIm1lc3NhZ2VcIjogXCJDb3JyZWN0LiAwLjM5NjAg4oCUIG1vcmUgdGhhbiBlaXRoZXIgcHJlZGljdG9yIGFsb25lICgwLjM0NCBhbmQgMC4xOTQ5KSwgYnV0IGxlc3MgdGhhbiB0aGVpciBzdW06IHRoZSB0d28gbWVhc3VyZW1lbnRzIG92ZXJsYXAgaW4gd2hhdCB0aGV5IGV4cGxhaW4uXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgYmxhbmsgaXMgdGhlIHNlY29uZCBjb2x1bW4gbmFtZTogJ2JwJy5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_both_r2">
+<p><code>patients[["bmi", "______"]]</code> needs a second real column name, in quotes, exactly like <code>"bmi"</code> beside it.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_both_r2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="" aria-label="1"></a>X_two <span class="op">=</span> patients[[<span class="st">"bmi"</span>, <span class="st">"bp"</span>]]</span>
+<span id="cb4-2"><a href="" aria-label="2"></a>two_line <span class="op">=</span> LinearRegression().fit(X_two, y_prog)</span>
+<span id="cb4-3"><a href="" aria-label="3"></a><span class="bu">round</span>(two_line.score(X_two, y_prog), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.396</code>. Add <code>print(two_line.coef_)</code> above the last line: BMI’s own coefficient changes once blood pressure is also in the equation, because part of what BMI predicted was already explained by blood pressure.</p>
+</div>
+</section>
+<section id="what-to-keep-from-the-session" class="slide level2">
+<h2>What to keep from the session</h2>
+<div class="kicker">
+Hands-on 10.3 · D · takeaways
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#0E9F8E">
+<p><span class="t">Three commands</span> <code>LinearRegression().fit(X, y)</code> fits the line; <code>.intercept_</code> and <code>.coef_</code> read it; <code>.predict()</code> substitutes a new x and <code>.score()</code> is R². The least-squares search of Part 10.3 runs inside the first one.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">R² is the square of r, for one predictor</span> BMI’s R² of 0.344 is exactly <span class="math inline">\(0.586^2\)</span>. With more than one predictor this stops holding, but R² still means the same thing: the share of the variation explained.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">A number always comes back — inside the data or not</span> <code>.predict()</code> answered for 500 sq ft and for 12,000 sq ft exactly as readily as for 2,000. Only the range the line was fitted on says which answer is evidence.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Take-home</span> The Chapter 10.3 notebook for Colab carries the exact least-squares derivation — the formulas for a and b, worked by hand — as well as the library, with the graded homework on the diabetes patients. Work there keeps; this page forgets when it is reloaded.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">Where this leaves us</span> Chapter 10 has now built, read and judged a model of each kind in this session’s own commands: a tree that predicts a category and a line that predicts a number. Chapter 11 turns to data with no answer column at all.</p>
+</div>
+</div></div>
+</section>
+<section id="questions" class="slide level2 divider" data-background-gradient="linear-gradient(103deg,#0B1730 0%,#16294B 55%,#1D3A6C 100%)">
+<h2>Questions</h2>
+<div class="kicker">
+Chapter 10.3 · hands-on · thank you
+</div>
+<div class="lede">
+<p>Next: Chapter 11 — Unsupervised Learning, where the data arrives with no labels at all.</p>
+</div>
+<p style="color:#8A9ABE;font-size:.42em;margin-top:2em">
+888102 Big Data Analytics · International College of Digital Innovation, Chiang Mai University<br> Photograph: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)
+</p>
+<p><span class="watermark">?</span></p>
+
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lraXQtbGVhcm4iLCJtYXRwbG90bGliIl19fQ==
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJweW9kaWRlLTIwIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMjAgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTIwLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMjAtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8yMCA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMjAsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzIwID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8yMC5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzE4ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xOC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTE4LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTggPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzE4LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xOCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTguZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMTUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8xNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMTUtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0xNS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzE1ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xNSwge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMTUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzE1LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTEzIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEzLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTMtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xMyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTMsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzEzID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xMy5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzExID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTExLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMTEgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzExLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzEwID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xMC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEwLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMTAgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzEwLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS05IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTktY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV85ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl85LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTgtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV84ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl84LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS03IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTctY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV83ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl83LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS02IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTYtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV82ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl82LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS01IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTUtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV81ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl81LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTQtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV80ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl80LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0zIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTMtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8zID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8zLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0yIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTItY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8yID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8yLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoicHlvZGlkZU9qcyA9IHtcbiAgY29uc3Qge1xuICAgIFB5b2RpZGVFdmFsdWF0b3IsXG4gICAgUHlvZGlkZUVudmlyb25tZW50TWFuYWdlcixcbiAgICBzZXR1cFB5dGhvbixcbiAgICBzdGFydFB5b2RpZGVXb3JrZXIsXG4gICAgYjY0RGVjb2RlLFxuICAgIGNvbGxhcHNlUGF0aCxcbiAgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc3RhdHVzQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLXN0YXR1c1wiKTtcbiAgY29uc3QgaW5kaWNhdG9yQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaW5kaWNhdG9yQ29udGFpbmVyLmNsYXNzTGlzdC5yZW1vdmUoXCJkLW5vbmVcIik7XG5cbiAgbGV0IHN0YXR1c1RleHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHN0YXR1c1RleHQuY2xhc3NMaXN0ID0gXCJleGVyY2lzZS1sb2FkaW5nLWRldGFpbHNcIjtcbiAgc3RhdHVzVGV4dCA9IHN0YXR1c0NvbnRhaW5lci5hcHBlbmRDaGlsZChzdGF0dXNUZXh0KTtcbiAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbml0aWFsaXNlYDtcblxuICAvLyBIb2lzdCBpbmRpY2F0b3Igb3V0IGZyb20gZmluYWwgc2xpZGUgd2hlbiBydW5uaW5nIHVuZGVyIHJldmVhbFxuICBjb25zdCByZXZlYWxTdGF0dXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCAuZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGlmIChyZXZlYWxTdGF0dXMpIHtcbiAgICByZXZlYWxTdGF0dXMucmVtb3ZlKCk7XG4gICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgPiAuc2xpZGVzXCIpLmFwcGVuZENoaWxkKHJldmVhbFN0YXR1cyk7XG4gIH1cblxuICAvLyBNYWtlIGFueSByZXZlYWwgc2xpZGVzIHdpdGggbGl2ZSBjZWxscyBzY3JvbGxhYmxlXG4gIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoXCIucmV2ZWFsIC5leGVyY2lzZS1jZWxsXCIpLmZvckVhY2goKGVsKSA9PiB7XG4gICAgZWwuY2xvc2VzdCgnc2VjdGlvbi5zbGlkZScpLmNsYXNzTGlzdC5hZGQoXCJzY3JvbGxhYmxlXCIpO1xuICB9KVxuXG4gIC8vIFB5b2RpZGUgc3VwcGxlbWVudGFsIGRhdGEgYW5kIG9wdGlvbnNcbiAgY29uc3QgZGF0YUNvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS1kYXRhXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZGF0YSA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGRhdGFDb250ZW50KSk7XG5cbiAgLy8gR3JhYiBsaXN0IG9mIHJlc291cmNlcyB0byBiZSBkb3dubG9hZGVkXG4gIGNvbnN0IGZpbGVzQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ2ZnMtZmlsZVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGZpbGVzID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZmlsZXNDb250ZW50KSk7XG5cbiAgbGV0IHB5b2RpZGVQcm9taXNlID0gKGFzeW5jICgpID0+IHtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIFB5b2RpZGVgO1xuICAgIGNvbnN0IHB5b2RpZGUgPSBhd2FpdCBzdGFydFB5b2RpZGVXb3JrZXIoZGF0YS5vcHRpb25zKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogbWljcm9waXBgO1xuICAgIGF3YWl0IHB5b2RpZGUubG9hZFBhY2thZ2UoXCJtaWNyb3BpcFwiKTtcbiAgICBjb25zdCBtaWNyb3BpcCA9IGF3YWl0IHB5b2RpZGUucHlpbXBvcnQoXCJtaWNyb3BpcFwiKTtcbiAgICBhd2FpdCBkYXRhLnBhY2thZ2VzLnBrZ3MubWFwKChwa2cpID0+ICgpID0+IHtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogJHtwa2d9YDtcbiAgICAgIHJldHVybiBtaWNyb3BpcC5pbnN0YWxsKHBrZyk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG4gICAgYXdhaXQgbWljcm9waXAuZGVzdHJveSgpO1xuXG4gICAgLy8gRG93bmxvYWQgYW5kIGluc3RhbGwgcmVzb3VyY2VzXG4gICAgYXdhaXQgZmlsZXMubWFwKChmaWxlKSA9PiBhc3luYyAoKSA9PiB7XG4gICAgICBjb25zdCBuYW1lID0gZmlsZS5zdWJzdHJpbmcoZmlsZS5sYXN0SW5kZXhPZignLycpICsgMSk7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHJlc291cmNlOiAke25hbWV9YDtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goZmlsZSk7XG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgQ2FuJ3QgZG93bmxvYWQgXFxgJHtmaWxlfVxcYC4gRXJyb3IgJHtyZXNwb25zZS5zdGF0dXN9OiBcIiR7cmVzcG9uc2Uuc3RhdHVzVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5hcnJheUJ1ZmZlcigpO1xuXG4gICAgICAvLyBTdG9yZSBVUkxzIGluIHRoZSBjd2Qgd2l0aG91dCBhbnkgc3ViZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgaWYgKGZpbGUuaW5jbHVkZXMoXCI6Ly9cIikpIHtcbiAgICAgICAgZmlsZSA9IG5hbWU7XG4gICAgICB9XG5cbiAgICAgIC8vIENvbGxhcHNlIGhpZ2hlciBkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBmaWxlID0gY29sbGFwc2VQYXRoKGZpbGUpO1xuXG4gICAgICAvLyBDcmVhdGUgZGlyZWN0b3J5IHRyZWUsIGlnbm9yaW5nIFwiZGlyZWN0b3J5IGV4aXN0c1wiIFZGUyBlcnJvcnNcbiAgICAgIGNvbnN0IHBhcnRzID0gZmlsZS5zcGxpdCgnLycpLnNsaWNlKDAsIC0xKTtcbiAgICAgIGxldCBwYXRoID0gJyc7XG4gICAgICB3aGlsZSAocGFydHMubGVuZ3RoID4gMCkge1xuICAgICAgICBwYXRoICs9IHBhcnRzLnNoaWZ0KCkgKyAnLyc7XG4gICAgICAgIHRyeSB7XG4gICAgICAgICAgYXdhaXQgcHlvZGlkZS5GUy5ta2RpcihwYXRoKTtcbiAgICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICAgIGlmIChlLmVycm5vICE9PSAyMCkge1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgICAgIGNvbnN0IGVycm9yVGV4dCA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5VVEY4VG9TdHJpbmcoZXJyb3JUZXh0UHRyKTtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8vIFdyaXRlIHRoaXMgZmlsZSB0byB0aGUgVkZTXG4gICAgICB0cnkge1xuICAgICAgICByZXR1cm4gYXdhaXQgcHlvZGlkZS5GUy53cml0ZUZpbGUoZmlsZSwgbmV3IFVpbnQ4QXJyYXkoZGF0YSkpO1xuICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICBpZiAoZS5uYW1lICE9PSBcIkVycm5vRXJyb3JcIikgdGhyb3cgZTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3IgJHtlLmVycm5vfSBcIiR7ZXJyb3JUZXh0fVwiLmApO1xuICAgICAgfVxuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBQeW9kaWRlIGVudmlyb25tZW50IHNldHVwYDtcbiAgICBhd2FpdCBzZXR1cFB5dGhvbihweW9kaWRlKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiBweW9kaWRlO1xuICB9KSgpLmNhdGNoKChlcnIpID0+IHtcbiAgICBzdGF0dXNUZXh0LnN0eWxlLmNvbG9yID0gXCJ2YXIoLS1leGVyY2lzZS1lZGl0b3ItaGwtZXIsICNBRDAwMDApXCI7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGVyci5tZXNzYWdlO1xuICAgIC8vaW5kaWNhdG9yQ29udGFpbmVyLnF1ZXJ5U2VsZWN0b3IoXCIuc3Bpbm5lci1ncm93XCIpLmNsYXNzTGlzdC5hZGQoXCJkLW5vbmVcIik7XG4gICAgdGhyb3cgZXJyO1xuICB9KTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHB5b2RpZGVQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBQeW9kaWRlRXZhbHVhdG9yKHB5b2RpZGUsIGNvbnRleHQpO1xuICAgIGF3YWl0IGV2YWx1YXRvci5wcm9jZXNzKGlucHV0cyk7XG4gICAgcmV0dXJuIGV2YWx1YXRvci5jb250YWluZXI7XG4gIH1cblxuICByZXR1cm4ge1xuICAgIHB5b2RpZGVQcm9taXNlLFxuICAgIHJlbmRlcmVkT2pzLFxuICAgIHByb2Nlc3MsXG4gIH07XG59XG4ifV19
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJ3aWRnZXRzL2NvcmUuanMiLCJ3aWRnZXRzL2ZpZ3VyZXMuanMiLCJpbWFnZXMvQ1JFRElUUy50eHQiLCJpbWFnZXMvaG91c2UtZm9yLXNhbGUtcmVhbC1lc3RhdGUtMS5qcGciXQ==
+</script>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>888102 Big Data Analytics · Chapter 10.3 hands-on — Fitting a Regression in Python · ICDI, Chiang Mai University</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="ch10_3_Hands_On_Regression_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true,"titleSelector":"h2"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 5.5e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <!-- The live figures. Two plain .js files, inlined into the deck at render
+         time by embed-resources, so the published HTML needs nothing external. -->
+    <script src="widgets/core.js"></script>
+    <script src="widgets/figures.js"></script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W119
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../../..";
+    window._ojs.paths.runtimeToRoot = "../../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

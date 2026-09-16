@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/tabby.min.js"></script>
+<script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/popper.min.js"></script>
+<script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Piyachat Udomwong, Ph.D.&nbsp;· Payakorn Saksuriya, Ph.D.">
+  <title>888102 · Chapter 10.2 — Hands-on: Evaluating a Classifier in Python</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/dist/theme/quarto-f3fe414c1ceab255ed42592989c4965b.css">
+  <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="evaluating-a-classifier-in-python" class="slide level2 cover" data-background-image="images/house-for-sale-real-estate-1.jpg" data-background-size="cover" data-background-position="72% 45%" data-background-color="#0B1730">
+<h2>Evaluating a Classifier in Python</h2>
+<!-- ===================================================================== -->
+<!-- THE DATA FOR EVERY CHART ON EVERY SLIDE OF THE THREE DECKS.                              -->
+<!--                                                                       -->
+<!-- Change a number here, re-render, and every figure that uses it        -->
+<!-- redraws, along with every value it reports. Nothing is drawn from a   -->
+<!-- stored picture and nothing is typed in twice: the charts recompute    -->
+<!-- the line, the residuals, R-squared, the tree and its held-out score   -->
+<!-- from these rows in the browser. Most charts also carry a control, so  -->
+<!-- a value can be changed during the lecture without re-rendering.       -->
+<!-- ===================================================================== -->
+<script type="application/json" id="ch10-data">
+{
+  "houses10": {
+    "area":  [1400, 1600, 1700, 1875, 1100, 1550, 2350, 2450, 1425, 1700],
+    "price": [245, 312, 279, 308, 199, 219, 405, 324, 319, 255],
+    "predict_at": 2000
+  },
+
+  "houses4": {
+    "size":  [100, 150, 200, 250],
+    "price": [3, 4, 6, 7]
+  },
+
+  "golf": {
+    "attributes": ["outlook", "temp", "humidity", "windy"],
+    "label": "play",
+    "rows": [
+      {"outlook": "Rainy",    "temp": "Hot",  "humidity": "High",   "windy": "No",  "play": "No"},
+      {"outlook": "Rainy",    "temp": "Hot",  "humidity": "High",   "windy": "Yes", "play": "No"},
+      {"outlook": "Overcast", "temp": "Hot",  "humidity": "High",   "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "High",   "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Cool", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Cool", "humidity": "Normal", "windy": "Yes", "play": "No"},
+      {"outlook": "Overcast", "temp": "Cool", "humidity": "Normal", "windy": "Yes", "play": "Yes"},
+      {"outlook": "Rainy",    "temp": "Mild", "humidity": "High",   "windy": "No",  "play": "No"},
+      {"outlook": "Rainy",    "temp": "Cool", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Rainy",    "temp": "Mild", "humidity": "Normal", "windy": "Yes", "play": "Yes"},
+      {"outlook": "Overcast", "temp": "Mild", "humidity": "High",   "windy": "Yes", "play": "Yes"},
+      {"outlook": "Overcast", "temp": "Hot",  "humidity": "Normal", "windy": "No",  "play": "Yes"},
+      {"outlook": "Sunny",    "temp": "Mild", "humidity": "High",   "windy": "Yes", "play": "No"}
+    ]
+  },
+
+  "iris15": {
+    "length":  [5.3, 5.1, 7.2, 5.4, 5.1, 5.4, 7.4, 6.1, 7.3, 6.0, 5.8, 6.3, 5.1, 6.3, 5.5],
+    "width":   [3.7, 3.8, 3.0, 3.4, 3.3, 3.9, 2.8, 2.8, 2.9, 2.7, 2.8, 2.3, 2.5, 2.5, 2.4],
+    "species": ["Setosa", "Setosa", "Virginica", "Setosa", "Setosa", "Setosa", "Virginica",
+                "Versicolor", "Virginica", "Versicolor", "Virginica", "Versicolor",
+                "Versicolor", "Versicolor", "Versicolor"],
+    "new_flower": [5.2, 3.1]
+  },
+
+  "logistic": { "b0": -7, "b1": 0.0833333333, "mark_weights": [60, 120] },
+
+  "svm": {
+    "class_a": [[2.0, 2.0], [1.4, 3.1], [2.6, 1.6], [1.3, 2.9], [3.0, 1.4], [2.2, 3.0]],
+    "class_b": [[1.0, 1.0], [0.4, 1.3], [1.3, 0.5], [0.2, 0.6], [0.8, 0.3], [1.6, 0.2]],
+    "w": [1, 1],
+    "b": -3
+  },
+
+  "kernel1d": {
+    "inner": [-0.9, -0.5, -0.2, 0.3, 0.6, 0.95],
+    "outer": [-2.4, -1.9, -1.5, 1.6, 2.0, 2.5],
+    "kernel_example": {"x": [1, 2], "z": [3, 1], "degree": 2, "gamma": 0.5}
+  },
+
+  "patients10": {
+    "ill":     [0.9, 0.8, 0.6, 0.4],
+    "healthy": [0.7, 0.5, 0.3, 0.2, 0.15, 0.1]
+  },
+
+  "screening": { "tp": 40, "fp": 10, "fn": 20, "tn": 930 },
+
+  "overfit": {
+    "points": [[0.0, 0.0507], [0.0769, 0.3037], [0.1538, 0.4754], [0.2308, 0.7768],
+               [0.3077, 0.8288], [0.3846, 0.9432], [0.4615, 1.0006], [0.5385, 1.0958],
+               [0.6154, 1.0773], [0.6923, 1.206], [0.7692, 1.1325], [0.8462, 1.1425],
+               [0.9231, 1.0257], [1.0, 0.9981]]
+  },
+
+  "forest": { "p": 0.6, "compare_p": [0.6, 0.55, 0.45], "max_trees": 101 }
+}
+</script>
+<div class="scrim cover-scrim">
+
+</div>
+<div class="kicker">
+Chapter 10.2 · hands-on session · 888102 Big Data Analytics
+</div>
+<div class="lede">
+<p><code>sklearn.metrics</code> applied to the tree grown in the hands-on session of Part 10.1 — the confusion matrix, precision, recall and F₁, and a score measured on days and tumors the tree has not seen. Every code box on these slides runs in the browser.</p>
+</div>
+<div class="byline">
+Piyachat Udomwong, Ph.D.<br>Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+</div>
+<p><span class="cover-credit">Photo: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)</span></p>
+<aside class="notes">
+<p>This deck follows the lecture deck of Part 10.2 and the hands-on session of Part 10.1 — open that one first if this is a new class. The Python engine loads once, at the start; ask the class to open the deck now so the download is finished by the time the first code slide is reached.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="how-this-session-works" class="slide level2">
+<h2>How this session works</h2>
+<div class="kicker">
+Hands-on 10.2 · before the first line of code
+</div>
+<div class="cards" style="--cols:4">
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The code runs in the browser</span> Every code box is live. Press <strong>Run Code</strong> (or <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> inside the box) and the result appears below it. Nothing is installed on the computer.</p>
+</div>
+<div class="card" style="--accent:#0891B2">
+<p><span class="t">The boxes share one workspace</span> A variable made in one box can be used in the next. Run the boxes <strong>in order</strong>: a later box that names a variable no earlier box has made stops with a <code>NameError</code>.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Everything can be edited</span> Change a value, a depth, a <code>pos_label</code>, and run again. <strong>Start Over</strong> restores the original code of that box.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">The engine loads once</span> The first time the page opens, Python and its packages are downloaded — about ten seconds, shown at the bottom of the page. The <strong>Run Code</strong> button turns blue when it is ready.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="watch">
+<p><span class="lbl">Two limits</span> The page needs internet, because the Python engine comes from the web when it opens. And the page <strong>forgets</strong> everything when it is reloaded: variables, edits, results. For work to keep, use the Chapter 10.2 notebook in Colab, which carries the same steps.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">The exercises</span> The last part of the session has four exercises. Each has a blank <code>______</code> to fill, a <strong>Show Hint</strong> button, a <strong>Show Solution</strong> button, and a check that marks the answer right or wrong when it is run.</p>
+</div>
+</div></div>
+</section>
+<section id="the-session-in-four-parts" class="slide level2">
+<h2>The session in four parts</h2>
+<div class="kicker">
+Hands-on 10.2 · roadmap
+</div>
+<div class="lede wide">
+<p>Part 10.2 judged the golf tree by counting boxes by hand. This session hands the same job to <code>sklearn.metrics</code>: one function returns the confusion matrix, one returns every metric at once, and one repeats the held-out test many times.</p>
+</div>
+<div class="flow">
+<div class="step" style="--accent:#0E9F8E">
+<b>A · The golf tree, scored by the library</b>The tree of Part 10.1 rebuilt; its own days scored first, then days it has not seen, with <code>confusion_matrix</code>, <code>classification_report</code> and cross-validation.
+</div>
+<div class="step" style="--accent:#7C3AED">
+<b>B · A real classifier</b>569 breast-tumor measurements bundled with scikit-learn: a proper 70/30 split, a tree grown on the training tumors, and its test-tumor score read the same way.
+</div>
+<div class="step" style="--accent:#F59E0B">
+<b>C · Exercises</b>Four graded exercises on the two classifiers, each with a hint and a solution.
+</div>
+<div class="step" style="--accent:#F43F5E">
+<b>D · Where this leaves us</b>Two classifiers, evaluated the same way. Part 10.3 predicts a number instead of a category.
+</div>
+</div>
+<div class="note">
+<p><span class="lbl">Three tools</span> <code>confusion_matrix(actual, predicted)</code> counts the four boxes. <code>classification_report(actual, predicted)</code> prints accuracy, precision, recall and F₁ together. <code>cross_val_score(model, X, y, cv=...)</code> repeats the held-out test and returns every score. Everything else on these slides is preparing the data and reading the result.</p>
+</div>
+</section>
+<section id="the-golf-tree-rebuilt" class="slide level2">
+<h2>The golf tree, rebuilt</h2>
+<div class="kicker">
+Hands-on 10.2 · A · picking up from Part 10.1
+</div>
+<div class="lede wide">
+<p>The fourteen golf days and the tree grown from them, exactly as in the hands-on session of Part 10.1 — one cell, so this session does not depend on the other one still being open.</p>
+</div>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImF1dG9ydW4iOnRydWUsImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHBhbmRhcyBhcyBwZFxuZnJvbSBza2xlYXJuLnRyZWUgaW1wb3J0IERlY2lzaW9uVHJlZUNsYXNzaWZpZXJcblxuZ29sZiA9IHBkLkRhdGFGcmFtZShbXG4gICAgW1wiUmFpbnlcIiwgICAgXCJIb3RcIiwgIFwiSGlnaFwiLCAgIFwiTm9cIiwgIFwiTm9cIiBdLFxuICAgIFtcIlJhaW55XCIsICAgIFwiSG90XCIsICBcIkhpZ2hcIiwgICBcIlllc1wiLCBcIk5vXCIgXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIkhvdFwiLCAgXCJIaWdoXCIsICAgXCJOb1wiLCAgXCJZZXNcIl0sXG4gICAgW1wiU3VubnlcIiwgICAgXCJNaWxkXCIsIFwiSGlnaFwiLCAgIFwiTm9cIiwgIFwiWWVzXCJdLFxuICAgIFtcIlN1bm55XCIsICAgIFwiQ29vbFwiLCBcIk5vcm1hbFwiLCBcIk5vXCIsICBcIlllc1wiXSxcbiAgICBbXCJTdW5ueVwiLCAgICBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJOb1wiIF0sXG4gICAgW1wiT3ZlcmNhc3RcIiwgXCJDb29sXCIsIFwiTm9ybWFsXCIsIFwiWWVzXCIsIFwiWWVzXCJdLFxuICAgIFtcIlJhaW55XCIsICAgIFwiTWlsZFwiLCBcIkhpZ2hcIiwgICBcIk5vXCIsICBcIk5vXCIgXSxcbiAgICBbXCJSYWlueVwiLCAgICBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJOb1wiLCAgXCJZZXNcIl0sXG4gICAgW1wiU3VubnlcIiwgICAgXCJNaWxkXCIsIFwiTm9ybWFsXCIsIFwiTm9cIiwgIFwiWWVzXCJdLFxuICAgIFtcIlJhaW55XCIsICAgIFwiTWlsZFwiLCBcIk5vcm1hbFwiLCBcIlllc1wiLCBcIlllc1wiXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIk1pbGRcIiwgXCJIaWdoXCIsICAgXCJZZXNcIiwgXCJZZXNcIl0sXG4gICAgW1wiT3ZlcmNhc3RcIiwgXCJIb3RcIiwgIFwiTm9ybWFsXCIsIFwiTm9cIiwgIFwiWWVzXCJdLFxuICAgIFtcIlN1bm55XCIsICAgIFwiTWlsZFwiLCBcIkhpZ2hcIiwgICBcIlllc1wiLCBcIk5vXCIgXSxcbl0sIGNvbHVtbnM9W1wib3V0bG9va1wiLCBcInRlbXBcIiwgXCJodW1pZGl0eVwiLCBcIndpbmR5XCIsIFwicGxheVwiXSlcbmdvbGYuaW5kZXggPSByYW5nZSgxLCAxNSlcbkZFQVRVUkVTID0gW1wib3V0bG9va1wiLCBcInRlbXBcIiwgXCJodW1pZGl0eVwiLCBcIndpbmR5XCJdXG5YX2dvbGYgPSBwZC5nZXRfZHVtbWllcyhnb2xmW0ZFQVRVUkVTXSkuYXN0eXBlKGludClcbnlfZ29sZiA9IGdvbGZbXCJwbGF5XCJdXG5cbmdvbGZfdHJlZSA9IERlY2lzaW9uVHJlZUNsYXNzaWZpZXIocmFuZG9tX3N0YXRlPTApLmZpdChYX2dvbGYsIHlfZ29sZilcbnByaW50KFwiZ29sZiB0cmVlIGdyb3duOlwiLCBnb2xmX3RyZWUuZ2V0X2RlcHRoKCksIFwicXVlc3Rpb25zIGRlZXAsXCIsIGdvbGZfdHJlZS5nZXRfbl9sZWF2ZXMoKSwgXCJsZWF2ZXNcIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The same tree Part 10.1 grew and drew: four questions deep, seven leaves, one command. The rest of Part A asks how good it is — first on its own days, then on days it has not seen.</p>
+</div>
+</section>
+<section id="the-trees-own-days-scored-by-the-library" class="slide level2">
+<h2>The tree’s own days, scored by the library</h2>
+<div class="kicker">
+Hands-on 10.2 · A · confusion_matrix and classification_report
+</div>
+<div class="lede wide">
+<p><code>confusion_matrix(actual, predicted, labels=...)</code> counts the four boxes; <code>classification_report</code> prints accuracy, precision, recall and F₁ for every class at once. Both are run first on the tree’s own fourteen days.</p>
+</div>
+<div>
+<div id="pyodide-2" class="exercise-cell">
+
+</div>
+<script type="pyodide-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLm1ldHJpY3MgaW1wb3J0IGNvbmZ1c2lvbl9tYXRyaXgsIGNsYXNzaWZpY2F0aW9uX3JlcG9ydFxuXG50cmFpbl9wcmVkID0gZ29sZl90cmVlLnByZWRpY3QoWF9nb2xmKVxuY21fdHJhaW4gPSBwZC5EYXRhRnJhbWUoY29uZnVzaW9uX21hdHJpeCh5X2dvbGYsIHRyYWluX3ByZWQsIGxhYmVscz1bXCJOb1wiLCBcIlllc1wiXSksXG4gICAgICAgICAgICAgICAgICAgICAgICBpbmRleD1bXCJhY3R1YWwgTm9cIiwgXCJhY3R1YWwgWWVzXCJdLCBjb2x1bW5zPVtcInByZWRpY3RlZCBOb1wiLCBcInByZWRpY3RlZCBZZXNcIl0pXG5wcmludChjbV90cmFpbilcbnByaW50KClcbnByaW50KGNsYXNzaWZpY2F0aW9uX3JlcG9ydCh5X2dvbGYsIHRyYWluX3ByZWQsIGxhYmVscz1bXCJOb1wiLCBcIlllc1wiXSkpIn0=
+</script>
+</div>
+<div class="watch">
+<p><span class="lbl">Interpretation</span> Every day on its own diagonal, every metric 1.00. This is the training score from Part 10.1, read by the library instead of <code>.score()</code> — it says the tree fits every day it was grown from, and nothing about a day it has not seen.</p>
+</div>
+</section>
+<section id="watch-the-convention" class="slide level2">
+<h2>Watch the convention</h2>
+<div class="kicker">
+Hands-on 10.2 · A · rows and columns
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="watch">
+<p><span class="lbl">scikit-learn’s rows are actual</span> <code>confusion_matrix(actual, predicted)</code> puts the <strong>true</strong> class in the rows and the <strong>predicted</strong> class in the columns — the opposite of the diagram in Part 10.2, which draws predicted in the rows. Both tables hold the same four numbers; only the layout differs.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Why it is written this way here</span> The cell above builds a labeled <code>pandas</code> table from the raw array so the rows and columns say what they are, rather than trusting the position by memory. Reading any confusion matrix starts with checking which axis is which.</p>
+</div>
+</div></div>
+</section>
+<section id="testing-on-a-day-it-has-not-seen" class="slide level2">
+<h2>Testing on a day it has not seen</h2>
+<div class="kicker">
+Hands-on 10.2 · A · leave-one-out cross-validation
+</div>
+<div class="lede wide">
+<p><code>LeaveOneOut()</code> holds back one day at a time; <code>cross_val_predict</code> grows a tree on the other thirteen and predicts the one held back, for every day in turn — fourteen small trees, one prediction each.</p>
+</div>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLm1vZGVsX3NlbGVjdGlvbiBpbXBvcnQgY3Jvc3NfdmFsX3ByZWRpY3QsIGNyb3NzX3ZhbF9zY29yZSwgTGVhdmVPbmVPdXRcblxubG9vX3ByZWQgPSBjcm9zc192YWxfcHJlZGljdChEZWNpc2lvblRyZWVDbGFzc2lmaWVyKHJhbmRvbV9zdGF0ZT0wKSwgWF9nb2xmLCB5X2dvbGYsIGN2PUxlYXZlT25lT3V0KCkpXG5nb2xmLmFzc2lnbihwcmVkaWN0ZWQ9bG9vX3ByZWQpIn0=
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>Every row is now a held-out prediction</strong>, not a fitted one: day 4’s tree, for instance, never saw day 4 while it was grown.</li>
+<li><strong>Some rows disagree</strong> with the <code>play</code> column — those are the days the library’s tree gets wrong once it is tested honestly.</li>
+</ul>
+</div>
+</section>
+<section id="the-librarys-held-out-confusion-matrix" class="slide level2">
+<h2>The library’s held-out confusion matrix</h2>
+<div class="kicker">
+Hands-on 10.2 · A · the honest score
+</div>
+<div class="lede wide">
+<p>The same two tools as before, now on the held-out predictions instead of the training ones.</p>
+</div>
+<div>
+<div id="pyodide-4" class="exercise-cell">
+
+</div>
+<script type="pyodide-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiY21fbG9vID0gcGQuRGF0YUZyYW1lKGNvbmZ1c2lvbl9tYXRyaXgoeV9nb2xmLCBsb29fcHJlZCwgbGFiZWxzPVtcIk5vXCIsIFwiWWVzXCJdKSxcbiAgICAgICAgICAgICAgICAgICAgICBpbmRleD1bXCJhY3R1YWwgTm9cIiwgXCJhY3R1YWwgWWVzXCJdLCBjb2x1bW5zPVtcInByZWRpY3RlZCBOb1wiLCBcInByZWRpY3RlZCBZZXNcIl0pXG5wcmludChjbV9sb28pXG5wcmludCgpXG5wcmludChjbGFzc2lmaWNhdGlvbl9yZXBvcnQoeV9nb2xmLCBsb29fcHJlZCwgbGFiZWxzPVtcIk5vXCIsIFwiWWVzXCJdKSkifQ==
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="watch">
+<p><span class="lbl">Interpretation</span> 64%, not 100%. Tested honestly, the library’s tree is right on 9 of the 14 days — worse than the 79% of the counting tree in the lecture deck. The two trees ask different questions (Part 10.1’s hands-on session showed the library needs four questions where the counting tree used two), and different questions can generalize differently even when both fit their training days perfectly.</p>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">The lesson survives the disagreement</span> Whichever tree is grown, its training score says nothing about its held-out score. That is the one fact both numbers agree on.</p>
+</div>
+</div></div>
+</section>
+<section id="precision-recall-and-f₁-by-name" class="slide level2">
+<h2>Precision, recall and F₁ by name</h2>
+<div class="kicker">
+Hands-on 10.2 · A · one function per metric
+</div>
+<div class="lede wide">
+<p><code>classification_report</code> prints every metric at once; <code>precision_score</code>, <code>recall_score</code> and <code>f1_score</code> compute one at a time and need a <code>pos_label</code> — the class counted as positive.</p>
+</div>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLm1ldHJpY3MgaW1wb3J0IHByZWNpc2lvbl9zY29yZSwgcmVjYWxsX3Njb3JlLCBmMV9zY29yZVxuXG5wcmludChmXCJwcmVjaXNpb24gKFllcyk6IHtwcmVjaXNpb25fc2NvcmUoeV9nb2xmLCBsb29fcHJlZCwgcG9zX2xhYmVsPSdZZXMnKTouNGZ9XCIpXG5wcmludChmXCJyZWNhbGwgICAgKFllcyk6IHtyZWNhbGxfc2NvcmUoeV9nb2xmLCBsb29fcHJlZCwgcG9zX2xhYmVsPSdZZXMnKTouNGZ9XCIpXG5wcmludChmXCJmMSAgICAgICAgKFllcyk6IHtmMV9zY29yZSh5X2dvbGYsIGxvb19wcmVkLCBwb3NfbGFiZWw9J1llcycpOi40Zn1cIikifQ==
+</script>
+</div>
+<div class="note">
+<p><span class="lbl">Try it</span> Change <code>pos_label='Yes'</code> to <code>pos_label='No'</code> in all three lines and run again. The numbers change — precision, recall and F₁ are always metrics <strong>of one class</strong>, and “No” is a harder class to catch here, with only five days.</p>
+</div>
+</section>
+<section id="a-real-dataset-569-tumors" class="slide level2">
+<h2>A real dataset — 569 tumors</h2>
+<div class="kicker">
+Hands-on 10.2 · B · the same tools on real data
+</div>
+<div class="lede wide">
+<p>Fourteen held-out predictions can be checked by hand. A real dataset needs a proper split and cannot — and here the library’s tools earn their place.</p>
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">The data</span> 569 breast-tumor images, each with 30 measurements of the cell nuclei — radius, texture, how concave the outline is — given as a mean, a standard error and a worst value.</p>
+</div>
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The question</span> From the measurements, is a tumor <strong>malignant</strong> or <strong>benign</strong>? The positive class is malignant — the one a hospital is looking for.</p>
+</div>
+<div class="card" style="--accent:#0E9F8E">
+<p><span class="t">What changes</span> 569 rows are enough for a genuine train/test split: 70% trains the tree, 30% is held back and never touched until the tree predicts it.</p>
+</div>
+</div>
+</section>
+<section id="loading-and-splitting-the-tumors" class="slide level2">
+<h2>Loading and splitting the tumors</h2>
+<div class="kicker">
+Hands-on 10.2 · B · a proper train/test split
+</div>
+<div class="lede wide">
+<p><code>load_breast_cancer</code> loads the data; <code>train_test_split(..., stratify=y)</code> shuffles the 569 rows and cuts them 70/30 while keeping the malignant share the same in both parts.</p>
+</div>
+<div>
+<div id="pyodide-6" class="exercise-cell">
+
+</div>
+<script type="pyodide-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLmRhdGFzZXRzIGltcG9ydCBsb2FkX2JyZWFzdF9jYW5jZXJcbmZyb20gc2tsZWFybi5tb2RlbF9zZWxlY3Rpb24gaW1wb3J0IHRyYWluX3Rlc3Rfc3BsaXRcbmltcG9ydCBudW1weSBhcyBucFxuXG5jYW5jZXIgPSBsb2FkX2JyZWFzdF9jYW5jZXIoYXNfZnJhbWU9VHJ1ZSlcbnR1bW9ycyA9IGNhbmNlci5kYXRhLmNvcHkoKVxudHVtb3JzW1wiZGlhZ25vc2lzXCJdID0gbnAud2hlcmUoY2FuY2VyLnRhcmdldCA9PSAwLCBcIm1hbGlnbmFudFwiLCBcImJlbmlnblwiKSAgICMgMCA9IG1hbGlnbmFudCBpbiB0aGUgZmlsZVxuWCA9IHR1bW9ycy5kcm9wKGNvbHVtbnM9XCJkaWFnbm9zaXNcIilcbnkgPSB0dW1vcnNbXCJkaWFnbm9zaXNcIl1cblhfdHJhaW4sIFhfdGVzdCwgeV90cmFpbiwgeV90ZXN0ID0gdHJhaW5fdGVzdF9zcGxpdChYLCB5LCB0ZXN0X3NpemU9MC4zMCwgcmFuZG9tX3N0YXRlPTg4ODEwMiwgc3RyYXRpZnk9eSlcbnByaW50KFwidHJhaW5pbmcgdHVtb3JzOlwiLCBsZW4oWF90cmFpbiksIFwiIG9mIHdoaWNoIG1hbGlnbmFudDpcIiwgKHlfdHJhaW4gPT0gXCJtYWxpZ25hbnRcIikuc3VtKCkpXG5wcmludChcInRlc3QgdHVtb3JzOiAgICBcIiwgbGVuKFhfdGVzdCksIFwiIG9mIHdoaWNoIG1hbGlnbmFudDpcIiwgKHlfdGVzdCA9PSBcIm1hbGlnbmFudFwiKS5zdW0oKSkifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> 398 tumors to learn from, 148 of them malignant; 171 held back, 64 of them malignant — the same 37% share in both parts. The 171 test tumors’ diagnoses stay hidden from the tree until it predicts them.</p>
+</div>
+</section>
+<section id="growing-and-testing-the-tree" class="slide level2">
+<h2>Growing and testing the tree</h2>
+<div class="kicker">
+Hands-on 10.2 · B · training accuracy vs.&nbsp;test accuracy
+</div>
+<div class="lede wide">
+<p>A tree three questions deep is grown on the training tumors only. <code>.score()</code> on the training rows is how well it fits; <code>.score()</code> on the test rows — untouched until now — is how well it predicts.</p>
+</div>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibW9kZWwgPSBEZWNpc2lvblRyZWVDbGFzc2lmaWVyKG1heF9kZXB0aD0zLCByYW5kb21fc3RhdGU9MCkuZml0KFhfdHJhaW4sIHlfdHJhaW4pXG5wcmludChmXCJ0cmFpbmluZyBhY2N1cmFjeToge21vZGVsLnNjb3JlKFhfdHJhaW4sIHlfdHJhaW4pOi4xJX1cIilcbnByaW50KGZcInRlc3QgYWNjdXJhY3k6ICAgICB7bW9kZWwuc2NvcmUoWF90ZXN0LCB5X3Rlc3QpOi4xJX1cIikifQ==
+</script>
+</div>
+<div class="watch">
+<p><span class="lbl">Interpretation</span> 98.5% on the rows it learned from, 91.2% on the rows it did not — the same gap the golf tree showed, on a dataset too large to check the fourteen-day way.</p>
+</div>
+</section>
+<section id="the-test-tumors-confusion-matrix-and-report" class="slide level2">
+<h2>The test tumors, confusion matrix and report</h2>
+<div class="kicker">
+Hands-on 10.2 · B · reading the mistakes
+</div>
+<div class="lede wide">
+<p>The two tools from Part A, on the 171 test tumors, with malignant as the positive class read from <code>classification_report</code>’s own row.</p>
+</div>
+<div>
+<div id="pyodide-8" class="exercise-cell">
+
+</div>
+<script type="pyodide-8-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoidGVzdF9wcmVkID0gbW9kZWwucHJlZGljdChYX3Rlc3QpXG5jbV90ZXN0ID0gcGQuRGF0YUZyYW1lKGNvbmZ1c2lvbl9tYXRyaXgoeV90ZXN0LCB0ZXN0X3ByZWQsIGxhYmVscz1bXCJiZW5pZ25cIiwgXCJtYWxpZ25hbnRcIl0pLFxuICAgICAgICAgICAgICAgICAgICAgICBpbmRleD1bXCJhY3R1YWwgYmVuaWduXCIsIFwiYWN0dWFsIG1hbGlnbmFudFwiXSwgY29sdW1ucz1bXCJwcmVkaWN0ZWQgYmVuaWduXCIsIFwicHJlZGljdGVkIG1hbGlnbmFudFwiXSlcbnByaW50KGNtX3Rlc3QpXG5wcmludCgpXG5wcmludChjbGFzc2lmaWNhdGlvbl9yZXBvcnQoeV90ZXN0LCB0ZXN0X3ByZWQsIGxhYmVscz1bXCJiZW5pZ25cIiwgXCJtYWxpZ25hbnRcIl0pKSJ9
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>TP 56, FP 7, FN 8, TN 100</strong> — reading malignant as positive: 56 malignant tumors caught, 8 missed, 7 benign tumors flagged, 100 correctly cleared.</li>
+<li><strong>Precision 0.89, recall 0.88</strong> — of the tumors the tree calls malignant, 89% really are; of the tumors that really are malignant, 88% are caught.</li>
+<li><strong>8 false negatives</strong> is the number a hospital watches hardest: 8 malignant tumors this tree would have called benign.</li>
+</ul>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">Try it</span> Change <code>max_depth=3</code> to <code>max_depth=2</code> and run this cell and the one above again. Training accuracy falls a little; watch whether the test accuracy falls with it.</p>
+</div>
+</div></div>
+</section>
+<section id="five-fold-cross-validation" class="slide level2">
+<h2>Five-fold cross-validation</h2>
+<div class="kicker">
+Hands-on 10.2 · B · is 91.2% a lucky split?
+</div>
+<div class="lede wide">
+<p>One split can be lucky or unlucky. <code>cross_val_score(model, X, y, cv=5)</code> refits the tree five times, each time on a different four-fifths of the tumors, and tests it on the fifth left out.</p>
+</div>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLm1vZGVsX3NlbGVjdGlvbiBpbXBvcnQgY3Jvc3NfdmFsX3Njb3JlXG5cbnNjb3JlcyA9IGNyb3NzX3ZhbF9zY29yZShEZWNpc2lvblRyZWVDbGFzc2lmaWVyKG1heF9kZXB0aD0zLCByYW5kb21fc3RhdGU9MCksIFgsIHksIGN2PTUpXG5wcmludChcImZpdmUgc2NvcmVzOlwiLCBzY29yZXMucm91bmQoNCkpXG5wcmludChmXCJtZWFuOiAgICAgICAge3Njb3Jlcy5tZWFuKCk6LjRmfVwiKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> Five scores from 0.894 to 0.947, averaging 0.917 — close to, and a little above, the single 91.2% of the one split. The scores agree with each other, so that one split was not a lucky or unlucky draw.</p>
+</div>
+</section>
+<section id="exercise-1-recall-with-the-other-class" class="slide level2">
+<h2>Exercise 1 — recall with the other class</h2>
+<div class="kicker">
+Hands-on 10.2 · C · pos_label changes the metric
+</div>
+<div class="lede wide">
+<p>The recall of Yes, held out, was 0.6667. Fill the blank so the same function reports the recall of <strong>No</strong> instead, rounded to four decimals.</p>
+</div>
+<script type="exercise-setup-ex_recall_no-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X3JlY2FsbF9ubyIsImV4X2YxX2RlcHRoMiJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmZyb20gc2tsZWFybi50cmVlIGltcG9ydCBEZWNpc2lvblRyZWVDbGFzc2lmaWVyXG5mcm9tIHNrbGVhcm4ubW9kZWxfc2VsZWN0aW9uIGltcG9ydCBjcm9zc192YWxfcHJlZGljdCwgTGVhdmVPbmVPdXQsIHRyYWluX3Rlc3Rfc3BsaXRcbmZyb20gc2tsZWFybi5tZXRyaWNzIGltcG9ydCByZWNhbGxfc2NvcmUsIGYxX3Njb3JlLCBjb25mdXNpb25fbWF0cml4XG5mcm9tIHNrbGVhcm4uZGF0YXNldHMgaW1wb3J0IGxvYWRfYnJlYXN0X2NhbmNlclxuXG5nb2xmID0gcGQuRGF0YUZyYW1lKFtcbiAgICBbXCJSYWlueVwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIk5vXCJdLCBbXCJSYWlueVwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJZZXNcIiwgXCJOb1wiXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIlllc1wiXSwgW1wiU3VubnlcIiwgXCJNaWxkXCIsIFwiSGlnaFwiLCBcIk5vXCIsIFwiWWVzXCJdLFxuICAgIFtcIlN1bm55XCIsIFwiQ29vbFwiLCBcIk5vcm1hbFwiLCBcIk5vXCIsIFwiWWVzXCJdLCBbXCJTdW5ueVwiLCBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJOb1wiXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJZZXNcIl0sIFtcIlJhaW55XCIsIFwiTWlsZFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIk5vXCJdLFxuICAgIFtcIlJhaW55XCIsIFwiQ29vbFwiLCBcIk5vcm1hbFwiLCBcIk5vXCIsIFwiWWVzXCJdLCBbXCJTdW5ueVwiLCBcIk1pbGRcIiwgXCJOb3JtYWxcIiwgXCJOb1wiLCBcIlllc1wiXSxcbiAgICBbXCJSYWlueVwiLCBcIk1pbGRcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJZZXNcIl0sIFtcIk92ZXJjYXN0XCIsIFwiTWlsZFwiLCBcIkhpZ2hcIiwgXCJZZXNcIiwgXCJZZXNcIl0sXG4gICAgW1wiT3ZlcmNhc3RcIiwgXCJIb3RcIiwgXCJOb3JtYWxcIiwgXCJOb1wiLCBcIlllc1wiXSwgW1wiU3VubnlcIiwgXCJNaWxkXCIsIFwiSGlnaFwiLCBcIlllc1wiLCBcIk5vXCJdLFxuXSwgY29sdW1ucz1bXCJvdXRsb29rXCIsIFwidGVtcFwiLCBcImh1bWlkaXR5XCIsIFwid2luZHlcIiwgXCJwbGF5XCJdKVxuZ29sZi5pbmRleCA9IHJhbmdlKDEsIDE1KVxuRkVBVFVSRVMgPSBbXCJvdXRsb29rXCIsIFwidGVtcFwiLCBcImh1bWlkaXR5XCIsIFwid2luZHlcIl1cblhfZ29sZiA9IHBkLmdldF9kdW1taWVzKGdvbGZbRkVBVFVSRVNdKS5hc3R5cGUoaW50KVxueV9nb2xmID0gZ29sZltcInBsYXlcIl1cbmxvb19wcmVkID0gY3Jvc3NfdmFsX3ByZWRpY3QoRGVjaXNpb25UcmVlQ2xhc3NpZmllcihyYW5kb21fc3RhdGU9MCksIFhfZ29sZiwgeV9nb2xmLCBjdj1MZWF2ZU9uZU91dCgpKVxuXG5jYW5jZXIgPSBsb2FkX2JyZWFzdF9jYW5jZXIoYXNfZnJhbWU9VHJ1ZSlcbnR1bW9ycyA9IGNhbmNlci5kYXRhLmNvcHkoKVxudHVtb3JzW1wiZGlhZ25vc2lzXCJdID0gbnAud2hlcmUoY2FuY2VyLnRhcmdldCA9PSAwLCBcIm1hbGlnbmFudFwiLCBcImJlbmlnblwiKVxuWCA9IHR1bW9ycy5kcm9wKGNvbHVtbnM9XCJkaWFnbm9zaXNcIilcbnkgPSB0dW1vcnNbXCJkaWFnbm9zaXNcIl1cblhfdHJhaW4sIFhfdGVzdCwgeV90cmFpbiwgeV90ZXN0ID0gdHJhaW5fdGVzdF9zcGxpdChYLCB5LCB0ZXN0X3NpemU9MC4zMCwgcmFuZG9tX3N0YXRlPTg4ODEwMiwgc3RyYXRpZnk9eSkifQ==
+</script>
+<script type="exercise-setup-ex_f1_depth2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X3JlY2FsbF9ubyIsImV4X2YxX2RlcHRoMiJdLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJpbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmZyb20gc2tsZWFybi50cmVlIGltcG9ydCBEZWNpc2lvblRyZWVDbGFzc2lmaWVyXG5mcm9tIHNrbGVhcm4ubW9kZWxfc2VsZWN0aW9uIGltcG9ydCBjcm9zc192YWxfcHJlZGljdCwgTGVhdmVPbmVPdXQsIHRyYWluX3Rlc3Rfc3BsaXRcbmZyb20gc2tsZWFybi5tZXRyaWNzIGltcG9ydCByZWNhbGxfc2NvcmUsIGYxX3Njb3JlLCBjb25mdXNpb25fbWF0cml4XG5mcm9tIHNrbGVhcm4uZGF0YXNldHMgaW1wb3J0IGxvYWRfYnJlYXN0X2NhbmNlclxuXG5nb2xmID0gcGQuRGF0YUZyYW1lKFtcbiAgICBbXCJSYWlueVwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIk5vXCJdLCBbXCJSYWlueVwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJZZXNcIiwgXCJOb1wiXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIkhvdFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIlllc1wiXSwgW1wiU3VubnlcIiwgXCJNaWxkXCIsIFwiSGlnaFwiLCBcIk5vXCIsIFwiWWVzXCJdLFxuICAgIFtcIlN1bm55XCIsIFwiQ29vbFwiLCBcIk5vcm1hbFwiLCBcIk5vXCIsIFwiWWVzXCJdLCBbXCJTdW5ueVwiLCBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJOb1wiXSxcbiAgICBbXCJPdmVyY2FzdFwiLCBcIkNvb2xcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJZZXNcIl0sIFtcIlJhaW55XCIsIFwiTWlsZFwiLCBcIkhpZ2hcIiwgXCJOb1wiLCBcIk5vXCJdLFxuICAgIFtcIlJhaW55XCIsIFwiQ29vbFwiLCBcIk5vcm1hbFwiLCBcIk5vXCIsIFwiWWVzXCJdLCBbXCJTdW5ueVwiLCBcIk1pbGRcIiwgXCJOb3JtYWxcIiwgXCJOb1wiLCBcIlllc1wiXSxcbiAgICBbXCJSYWlueVwiLCBcIk1pbGRcIiwgXCJOb3JtYWxcIiwgXCJZZXNcIiwgXCJZZXNcIl0sIFtcIk92ZXJjYXN0XCIsIFwiTWlsZFwiLCBcIkhpZ2hcIiwgXCJZZXNcIiwgXCJZZXNcIl0sXG4gICAgW1wiT3ZlcmNhc3RcIiwgXCJIb3RcIiwgXCJOb3JtYWxcIiwgXCJOb1wiLCBcIlllc1wiXSwgW1wiU3VubnlcIiwgXCJNaWxkXCIsIFwiSGlnaFwiLCBcIlllc1wiLCBcIk5vXCJdLFxuXSwgY29sdW1ucz1bXCJvdXRsb29rXCIsIFwidGVtcFwiLCBcImh1bWlkaXR5XCIsIFwid2luZHlcIiwgXCJwbGF5XCJdKVxuZ29sZi5pbmRleCA9IHJhbmdlKDEsIDE1KVxuRkVBVFVSRVMgPSBbXCJvdXRsb29rXCIsIFwidGVtcFwiLCBcImh1bWlkaXR5XCIsIFwid2luZHlcIl1cblhfZ29sZiA9IHBkLmdldF9kdW1taWVzKGdvbGZbRkVBVFVSRVNdKS5hc3R5cGUoaW50KVxueV9nb2xmID0gZ29sZltcInBsYXlcIl1cbmxvb19wcmVkID0gY3Jvc3NfdmFsX3ByZWRpY3QoRGVjaXNpb25UcmVlQ2xhc3NpZmllcihyYW5kb21fc3RhdGU9MCksIFhfZ29sZiwgeV9nb2xmLCBjdj1MZWF2ZU9uZU91dCgpKVxuXG5jYW5jZXIgPSBsb2FkX2JyZWFzdF9jYW5jZXIoYXNfZnJhbWU9VHJ1ZSlcbnR1bW9ycyA9IGNhbmNlci5kYXRhLmNvcHkoKVxudHVtb3JzW1wiZGlhZ25vc2lzXCJdID0gbnAud2hlcmUoY2FuY2VyLnRhcmdldCA9PSAwLCBcIm1hbGlnbmFudFwiLCBcImJlbmlnblwiKVxuWCA9IHR1bW9ycy5kcm9wKGNvbHVtbnM9XCJkaWFnbm9zaXNcIilcbnkgPSB0dW1vcnNbXCJkaWFnbm9zaXNcIl1cblhfdHJhaW4sIFhfdGVzdCwgeV90cmFpbiwgeV90ZXN0ID0gdHJhaW5fdGVzdF9zcGxpdChYLCB5LCB0ZXN0X3NpemU9MC4zMCwgcmFuZG9tX3N0YXRlPTg4ODEwMiwgc3RyYXRpZnk9eSkifQ==
+</script>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAxIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9yZWNhbGxfbm8ifSwiY29kZSI6InJvdW5kKHJlY2FsbF9zY29yZSh5X2dvbGYsIGxvb19wcmVkLCBwb3NfbGFiZWw9XCJfX19fX19cIiksIDQpIn0=
+</script>
+</div>
+<script type="exercise-check-ex_recall_no-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X3JlY2FsbF9ubyJ9LCJjb2RlIjoidHJ5OlxuICAgIG9rID0gcmVzdWx0IGlzIG5vdCBOb25lIGFuZCBhYnMoZmxvYXQocmVzdWx0KSAtIDAuNikgPCAxZS0zXG5leGNlcHQgKFR5cGVFcnJvciwgVmFsdWVFcnJvcik6XG4gICAgb2sgPSBGYWxzZVxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3QuIDAuNiDigJQgb2YgdGhlIGZpdmUgTm8gZGF5cywgdGhyZWUgYXJlIGNvcnJlY3RseSBjYXVnaHQgYnkgdGhlIGhlbGQtb3V0IHRyZWU6IDMvNSA9IDAuNi5cIn1cbmVsaWYgcmVzdWx0IGlzIE5vbmU6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogXCJUaGUgYm94IHJldHVybmVkIG5vdGhpbmcuIEVuZCB3aXRoIHRoZSBleHByZXNzaW9uIGl0c2VsZiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBwb3NfbGFiZWwgdGFrZXMgdGhlIGNsYXNzIG5hbWUgZXhhY3RseSBhcyBpdCBhcHBlYXJzIGluIHRoZSBwbGF5IGNvbHVtbjogJ05vJy5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_recall_no">
+<p><code>pos_label</code> must match a value in <code>y_golf</code> exactly, including capitalization: <code>"Yes"</code> or <code>"No"</code>.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_recall_no">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="" aria-label="1"></a><span class="bu">round</span>(recall_score(y_golf, loo_pred, pos_label<span class="op">=</span><span class="st">"No"</span>), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.6</code>: of the five days golf was not played, the held-out tree correctly says No for three of them.</p>
+</div>
+</section>
+<section id="exercise-2-a-shallower-tumor-tree" class="slide level2">
+<h2>Exercise 2 — a shallower tumor tree</h2>
+<div class="kicker">
+Hands-on 10.2 · C · depth and F1
+</div>
+<div class="lede wide">
+<p>The depth-3 tumor tree scored F₁ 0.8819 on the test tumors, with malignant positive. Grow one that may ask only <strong>two</strong> questions and report its F₁ on the same test tumors, rounded to four decimals.</p>
+</div>
+<div>
+<div id="pyodide-13" class="exercise-cell">
+
+</div>
+<script type="pyodide-13-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAyIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9mMV9kZXB0aDIifSwiY29kZSI6InNoYWxsb3cgPSBEZWNpc2lvblRyZWVDbGFzc2lmaWVyKG1heF9kZXB0aD1fX19fX18sIHJhbmRvbV9zdGF0ZT0wKS5maXQoWF90cmFpbiwgeV90cmFpbilcbnJvdW5kKGYxX3Njb3JlKHlfdGVzdCwgc2hhbGxvdy5wcmVkaWN0KFhfdGVzdCksIHBvc19sYWJlbD1cIm1hbGlnbmFudFwiKSwgNCkifQ==
+</script>
+</div>
+<script type="exercise-check-ex_f1_depth2-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2YxX2RlcHRoMiJ9LCJjb2RlIjoidHJ5OlxuICAgIG9rID0gcmVzdWx0IGlzIG5vdCBOb25lIGFuZCBhYnMoZmxvYXQocmVzdWx0KSAtIDAuODY0KSA8IDFlLTNcbmV4Y2VwdCAoVHlwZUVycm9yLCBWYWx1ZUVycm9yKTpcbiAgICBvayA9IEZhbHNlXG5pZiBvazpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogVHJ1ZSwgXCJtZXNzYWdlXCI6IFwiQ29ycmVjdC4gMC44NjQg4oCUIGEgbGl0dGxlIGJlbG93IHRoZSBkZXB0aC0zIHRyZWUncyAwLjg4MTkuIE9uZSBmZXdlciBxdWVzdGlvbiBjb3N0cyBhIHNtYWxsIGFtb3VudCBvZiBGMSBvbiB0aGlzIHNwbGl0LlwifVxuZWxpZiByZXN1bHQgaXMgTm9uZTpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogRmFsc2UsIFwibWVzc2FnZVwiOiBcIlRoZSBib3ggcmV0dXJuZWQgbm90aGluZy4gRW5kIHdpdGggdGhlIGV4cHJlc3Npb24sIG5vdCBhIHByaW50KCkuXCJ9XG5lbHNlOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IGZcIlRoZSBib3ggcmV0dXJuZWQge3Jlc3VsdCFyfS4gVGhlIHRyZWUgbWF5IGFzayBhdCBtb3N0IHR3byBxdWVzdGlvbnM6IG1heF9kZXB0aD0yLlwifVxuZmVlZGJhY2sifQ==
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_f1_depth2">
+<p><code>max_depth</code> is the number of questions on the longest path from the root. The tree of the slides used 3; this one uses one fewer.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_f1_depth2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="" aria-label="1"></a>shallow <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">0</span>).fit(X_train, y_train)</span>
+<span id="cb2-2"><a href="" aria-label="2"></a><span class="bu">round</span>(f1_score(y_test, shallow.predict(X_test), pos_label<span class="op">=</span><span class="st">"malignant"</span>), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.864</code>. Add <code>print(confusion_matrix(y_test, shallow.predict(X_test), labels=["benign","malignant"]))</code> above the last line to see which count moved.</p>
+</div>
+</section>
+<section id="exercise-3-cross-validating-a-deeper-tree" class="slide level2">
+<h2>Exercise 3 — cross-validating a deeper tree</h2>
+<div class="kicker">
+Hands-on 10.2 · C · does more depth help under cross-validation?
+</div>
+<div class="lede wide">
+<p>The depth-3 tree’s five-fold mean was 0.9174. Run the same five-fold cross-validation on a tree with <strong>no depth limit</strong> and report the mean, rounded to four decimals.</p>
+</div>
+<script type="exercise-setup-ex_cv_unlimited-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2N2X3VubGltaXRlZCIsImV4X3Rlc3RfdW5saW1pdGVkIl0sInNldHVwIjp0cnVlfSwiY29kZSI6ImltcG9ydCBwYW5kYXMgYXMgcGRcbmltcG9ydCBudW1weSBhcyBucFxuZnJvbSBza2xlYXJuLnRyZWUgaW1wb3J0IERlY2lzaW9uVHJlZUNsYXNzaWZpZXJcbmZyb20gc2tsZWFybi5tb2RlbF9zZWxlY3Rpb24gaW1wb3J0IGNyb3NzX3ZhbF9zY29yZSwgdHJhaW5fdGVzdF9zcGxpdFxuZnJvbSBza2xlYXJuLmRhdGFzZXRzIGltcG9ydCBsb2FkX2JyZWFzdF9jYW5jZXJcblxuY2FuY2VyID0gbG9hZF9icmVhc3RfY2FuY2VyKGFzX2ZyYW1lPVRydWUpXG50dW1vcnMgPSBjYW5jZXIuZGF0YS5jb3B5KClcbnR1bW9yc1tcImRpYWdub3Npc1wiXSA9IG5wLndoZXJlKGNhbmNlci50YXJnZXQgPT0gMCwgXCJtYWxpZ25hbnRcIiwgXCJiZW5pZ25cIilcblggPSB0dW1vcnMuZHJvcChjb2x1bW5zPVwiZGlhZ25vc2lzXCIpXG55ID0gdHVtb3JzW1wiZGlhZ25vc2lzXCJdXG5YX3RyYWluLCBYX3Rlc3QsIHlfdHJhaW4sIHlfdGVzdCA9IHRyYWluX3Rlc3Rfc3BsaXQoWCwgeSwgdGVzdF9zaXplPTAuMzAsIHJhbmRvbV9zdGF0ZT04ODgxMDIsIHN0cmF0aWZ5PXkpIn0=
+</script>
+<script type="exercise-setup-ex_test_unlimited-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2N2X3VubGltaXRlZCIsImV4X3Rlc3RfdW5saW1pdGVkIl0sInNldHVwIjp0cnVlfSwiY29kZSI6ImltcG9ydCBwYW5kYXMgYXMgcGRcbmltcG9ydCBudW1weSBhcyBucFxuZnJvbSBza2xlYXJuLnRyZWUgaW1wb3J0IERlY2lzaW9uVHJlZUNsYXNzaWZpZXJcbmZyb20gc2tsZWFybi5tb2RlbF9zZWxlY3Rpb24gaW1wb3J0IGNyb3NzX3ZhbF9zY29yZSwgdHJhaW5fdGVzdF9zcGxpdFxuZnJvbSBza2xlYXJuLmRhdGFzZXRzIGltcG9ydCBsb2FkX2JyZWFzdF9jYW5jZXJcblxuY2FuY2VyID0gbG9hZF9icmVhc3RfY2FuY2VyKGFzX2ZyYW1lPVRydWUpXG50dW1vcnMgPSBjYW5jZXIuZGF0YS5jb3B5KClcbnR1bW9yc1tcImRpYWdub3Npc1wiXSA9IG5wLndoZXJlKGNhbmNlci50YXJnZXQgPT0gMCwgXCJtYWxpZ25hbnRcIiwgXCJiZW5pZ25cIilcblggPSB0dW1vcnMuZHJvcChjb2x1bW5zPVwiZGlhZ25vc2lzXCIpXG55ID0gdHVtb3JzW1wiZGlhZ25vc2lzXCJdXG5YX3RyYWluLCBYX3Rlc3QsIHlfdHJhaW4sIHlfdGVzdCA9IHRyYWluX3Rlc3Rfc3BsaXQoWCwgeSwgdGVzdF9zaXplPTAuMzAsIHJhbmRvbV9zdGF0ZT04ODgxMDIsIHN0cmF0aWZ5PXkpIn0=
+</script>
+<div>
+<div id="pyodide-16" class="exercise-cell">
+
+</div>
+<script type="pyodide-16-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAzIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9jdl91bmxpbWl0ZWQifSwiY29kZSI6InNjb3JlcyA9IGNyb3NzX3ZhbF9zY29yZShEZWNpc2lvblRyZWVDbGFzc2lmaWVyKF9fX19fXz0wKSwgWCwgeSwgY3Y9NSlcbnJvdW5kKHNjb3Jlcy5tZWFuKCksIDQpIn0=
+</script>
+</div>
+<script type="exercise-check-ex_cv_unlimited-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2N2X3VubGltaXRlZCJ9LCJjb2RlIjoidHJ5OlxuICAgIG9rID0gcmVzdWx0IGlzIG5vdCBOb25lIGFuZCBhYnMoZmxvYXQocmVzdWx0KSAtIDAuOTE3NCkgPCA1ZS0zXG5leGNlcHQgKFR5cGVFcnJvciwgVmFsdWVFcnJvcik6XG4gICAgb2sgPSBGYWxzZVxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3Qg4oCUIGFib3V0IDAuOTE3LCBjbG9zZSB0byB0aGUgZGVwdGgtMyB0cmVlJ3Mgb3duIDAuOTE3NDogZXh0cmEgZGVwdGggZG9lcyBub3QgcmFpc2UgdGhlIGNyb3NzLXZhbGlkYXRlZCBzY29yZSBoZXJlLCBldmVuIHRob3VnaCBpdCByYWlzZXMgdGhlIHRyYWluaW5nIHNjb3JlIHRvIDEwMCUuXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBPbmx5IHJhbmRvbV9zdGF0ZSBuZWVkcyB0byBiZSBzZXQg4oCUIG5vIG1heF9kZXB0aCBhcmd1bWVudCBtZWFucyBubyBkZXB0aCBsaW1pdC5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_cv_unlimited">
+<p>Leaving <code>max_depth</code> out of <code>DecisionTreeClassifier(...)</code> altogether removes the limit. Only <code>random_state=0</code> needs to be passed.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_cv_unlimited">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="" aria-label="1"></a>scores <span class="op">=</span> cross_val_score(DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>), X, y, cv<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb3-2"><a href="" aria-label="2"></a><span class="bu">round</span>(scores.mean(), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>About <code>0.9155</code>–<code>0.917</code> (five-fold splits shuffle, so this varies slightly run to run) — no real gain over the depth-3 tree’s 0.9174, despite a training accuracy of 100%.</p>
+</div>
+</section>
+<section id="exercise-4-fitting-against-predicting" class="slide level2">
+<h2>Exercise 4 — fitting against predicting</h2>
+<div class="kicker">
+Hands-on 10.2 · C · the gap the golf tree already showed
+</div>
+<div class="lede wide">
+<p>Grow a tree with <strong>no depth limit</strong> on the training tumors and report its test accuracy on <code>X_test</code>, rounded to four decimals.</p>
+</div>
+<div>
+<div id="pyodide-18" class="exercise-cell">
+
+</div>
+<script type="pyodide-18-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSA0IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF90ZXN0X3VubGltaXRlZCJ9LCJjb2RlIjoiZnVsbCA9IERlY2lzaW9uVHJlZUNsYXNzaWZpZXIocmFuZG9tX3N0YXRlPV9fX19fXykuZml0KFhfdHJhaW4sIHlfdHJhaW4pXG5yb3VuZChmdWxsLnNjb3JlKFhfdGVzdCwgeV90ZXN0KSwgNCkifQ==
+</script>
+</div>
+<script type="exercise-check-ex_test_unlimited-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X3Rlc3RfdW5saW1pdGVkIn0sImNvZGUiOiJ0cnk6XG4gICAgb2sgPSByZXN1bHQgaXMgbm90IE5vbmUgYW5kIGFicyhmbG9hdChyZXN1bHQpIC0gMC45MTgxKSA8IDFlLTNcbmV4Y2VwdCAoVHlwZUVycm9yLCBWYWx1ZUVycm9yKTpcbiAgICBvayA9IEZhbHNlXG5pZiBvazpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogVHJ1ZSwgXCJtZXNzYWdlXCI6IFwiQ29ycmVjdC4gMC45MTgxIOKAlCBzbGlnaHRseSBhYm92ZSB0aGUgZGVwdGgtMyB0cmVlJ3MgMC45MTIzIHRlc3QgYWNjdXJhY3ksIGV2ZW4gdGhvdWdoIGl0cyB0cmFpbmluZyBhY2N1cmFjeSBpcyBhIGZ1bGwgMTAwJS4gQSBiZXR0ZXIgZml0IG9uIHRoZSB0cmFpbmluZyByb3dzIGRvZXMgbm90IGd1YXJhbnRlZSBhIHdvcnNlIG9yIGEgYmV0dGVyIGhlbGQtb3V0IHNjb3JlOyBpdCBoYXMgdG8gYmUgY2hlY2tlZCwgbm90IGFzc3VtZWQuXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiByYW5kb21fc3RhdGU9MCBpcyB0aGUgdmFsdWUgdXNlZCBldmVyeXdoZXJlIGVsc2Ugb24gdGhlc2Ugc2xpZGVzLCBzbyByZXN1bHRzIGxpbmUgdXAuXCJ9XG5mZWVkYmFjayJ9
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_test_unlimited">
+<p><code>random_state</code> fixes how ties are broken while growing; use <code>0</code>, the value used everywhere else on these slides.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_test_unlimited">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="" aria-label="1"></a>full <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>).fit(X_train, y_train)</span>
+<span id="cb4-2"><a href="" aria-label="2"></a><span class="bu">round</span>(full.score(X_test, y_test), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.9181</code>. Add <code>print(full.score(X_train, y_train))</code> above the last line: it prints <code>1.0</code> — a tree that fits its training rows perfectly can still predict slightly better, or worse, than a shallower one. The training score alone never says which.</p>
+</div>
+</section>
+<section id="what-to-keep-from-the-session" class="slide level2">
+<h2>What to keep from the session</h2>
+<div class="kicker">
+Hands-on 10.2 · D · takeaways
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#0E9F8E">
+<p><span class="t">Three functions</span> <code>confusion_matrix</code> counts the four boxes; <code>classification_report</code> prints every metric at once; <code>cross_val_score</code> repeats the held-out test and returns every score. <code>precision_score</code>, <code>recall_score</code> and <code>f1_score</code> compute one metric with a chosen <code>pos_label</code>.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Rows are actual, columns are predicted</span> scikit-learn’s own convention is the opposite of the diagram’s — check which axis is which before reading any confusion matrix, in this course or elsewhere.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">Training accuracy still proves nothing</span> Both classifiers scored near 100% on their own rows and markedly lower on rows they had not seen. Cross-validation is how that held-out score is trusted rather than guessed at from one split.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Take-home</span> The Chapter 10.2 notebook for Colab carries the same tools on the same tumors, with a graded homework that adds precision/recall trade-offs and a bonus on the iris flowers. Work there keeps; this page forgets when it is reloaded.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">Where this leaves us</span> A classifier has been built and judged twice, on fourteen days and on 569 tumors, by the same three functions. The hands-on of Part 10.3 turns from predicting a category to predicting a number.</p>
+</div>
+</div></div>
+</section>
+<section id="questions" class="slide level2 divider" data-background-gradient="linear-gradient(103deg,#0B1730 0%,#16294B 55%,#1D3A6C 100%)">
+<h2>Questions</h2>
+<div class="kicker">
+Chapter 10.2 · hands-on · thank you
+</div>
+<div class="lede">
+<p>Next: the hands-on of 10.3 — fitting a line with <code>LinearRegression</code>, reading its slope, and judging it with R².</p>
+</div>
+<p style="color:#8A9ABE;font-size:.42em;margin-top:2em">
+888102 Big Data Analytics · International College of Digital Innovation, Chiang Mai University<br> Photograph: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)
+</p>
+<p><span class="watermark">?</span></p>
+
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lraXQtbGVhcm4iXX19
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJweW9kaWRlLTE4IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTggPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE4LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTgtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xOCA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTgsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzE4ID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xOC5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzE2ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTE2LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTYgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzE2LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xNiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTYuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMTMiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8xMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMTMtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0xMy1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzEzID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xMywge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMTMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzEzLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTExIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTExLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTEtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTEsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzExID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xMS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS05IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTktY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV85ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl85LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTgtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV84ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl84LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS03IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTctY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV83ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl83LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS02IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTYtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV82ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl82LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS01IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTUtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV81ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl81LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTQtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV80ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl80LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0zIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTMtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8zID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8zLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0yIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTItY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8yID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8yLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoicHlvZGlkZU9qcyA9IHtcbiAgY29uc3Qge1xuICAgIFB5b2RpZGVFdmFsdWF0b3IsXG4gICAgUHlvZGlkZUVudmlyb25tZW50TWFuYWdlcixcbiAgICBzZXR1cFB5dGhvbixcbiAgICBzdGFydFB5b2RpZGVXb3JrZXIsXG4gICAgYjY0RGVjb2RlLFxuICAgIGNvbGxhcHNlUGF0aCxcbiAgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc3RhdHVzQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLXN0YXR1c1wiKTtcbiAgY29uc3QgaW5kaWNhdG9yQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaW5kaWNhdG9yQ29udGFpbmVyLmNsYXNzTGlzdC5yZW1vdmUoXCJkLW5vbmVcIik7XG5cbiAgbGV0IHN0YXR1c1RleHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHN0YXR1c1RleHQuY2xhc3NMaXN0ID0gXCJleGVyY2lzZS1sb2FkaW5nLWRldGFpbHNcIjtcbiAgc3RhdHVzVGV4dCA9IHN0YXR1c0NvbnRhaW5lci5hcHBlbmRDaGlsZChzdGF0dXNUZXh0KTtcbiAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbml0aWFsaXNlYDtcblxuICAvLyBIb2lzdCBpbmRpY2F0b3Igb3V0IGZyb20gZmluYWwgc2xpZGUgd2hlbiBydW5uaW5nIHVuZGVyIHJldmVhbFxuICBjb25zdCByZXZlYWxTdGF0dXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCAuZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGlmIChyZXZlYWxTdGF0dXMpIHtcbiAgICByZXZlYWxTdGF0dXMucmVtb3ZlKCk7XG4gICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgPiAuc2xpZGVzXCIpLmFwcGVuZENoaWxkKHJldmVhbFN0YXR1cyk7XG4gIH1cblxuICAvLyBNYWtlIGFueSByZXZlYWwgc2xpZGVzIHdpdGggbGl2ZSBjZWxscyBzY3JvbGxhYmxlXG4gIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoXCIucmV2ZWFsIC5leGVyY2lzZS1jZWxsXCIpLmZvckVhY2goKGVsKSA9PiB7XG4gICAgZWwuY2xvc2VzdCgnc2VjdGlvbi5zbGlkZScpLmNsYXNzTGlzdC5hZGQoXCJzY3JvbGxhYmxlXCIpO1xuICB9KVxuXG4gIC8vIFB5b2RpZGUgc3VwcGxlbWVudGFsIGRhdGEgYW5kIG9wdGlvbnNcbiAgY29uc3QgZGF0YUNvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS1kYXRhXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZGF0YSA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGRhdGFDb250ZW50KSk7XG5cbiAgLy8gR3JhYiBsaXN0IG9mIHJlc291cmNlcyB0byBiZSBkb3dubG9hZGVkXG4gIGNvbnN0IGZpbGVzQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ2ZnMtZmlsZVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGZpbGVzID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZmlsZXNDb250ZW50KSk7XG5cbiAgbGV0IHB5b2RpZGVQcm9taXNlID0gKGFzeW5jICgpID0+IHtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIFB5b2RpZGVgO1xuICAgIGNvbnN0IHB5b2RpZGUgPSBhd2FpdCBzdGFydFB5b2RpZGVXb3JrZXIoZGF0YS5vcHRpb25zKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogbWljcm9waXBgO1xuICAgIGF3YWl0IHB5b2RpZGUubG9hZFBhY2thZ2UoXCJtaWNyb3BpcFwiKTtcbiAgICBjb25zdCBtaWNyb3BpcCA9IGF3YWl0IHB5b2RpZGUucHlpbXBvcnQoXCJtaWNyb3BpcFwiKTtcbiAgICBhd2FpdCBkYXRhLnBhY2thZ2VzLnBrZ3MubWFwKChwa2cpID0+ICgpID0+IHtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogJHtwa2d9YDtcbiAgICAgIHJldHVybiBtaWNyb3BpcC5pbnN0YWxsKHBrZyk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG4gICAgYXdhaXQgbWljcm9waXAuZGVzdHJveSgpO1xuXG4gICAgLy8gRG93bmxvYWQgYW5kIGluc3RhbGwgcmVzb3VyY2VzXG4gICAgYXdhaXQgZmlsZXMubWFwKChmaWxlKSA9PiBhc3luYyAoKSA9PiB7XG4gICAgICBjb25zdCBuYW1lID0gZmlsZS5zdWJzdHJpbmcoZmlsZS5sYXN0SW5kZXhPZignLycpICsgMSk7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHJlc291cmNlOiAke25hbWV9YDtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goZmlsZSk7XG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgQ2FuJ3QgZG93bmxvYWQgXFxgJHtmaWxlfVxcYC4gRXJyb3IgJHtyZXNwb25zZS5zdGF0dXN9OiBcIiR7cmVzcG9uc2Uuc3RhdHVzVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5hcnJheUJ1ZmZlcigpO1xuXG4gICAgICAvLyBTdG9yZSBVUkxzIGluIHRoZSBjd2Qgd2l0aG91dCBhbnkgc3ViZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgaWYgKGZpbGUuaW5jbHVkZXMoXCI6Ly9cIikpIHtcbiAgICAgICAgZmlsZSA9IG5hbWU7XG4gICAgICB9XG5cbiAgICAgIC8vIENvbGxhcHNlIGhpZ2hlciBkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBmaWxlID0gY29sbGFwc2VQYXRoKGZpbGUpO1xuXG4gICAgICAvLyBDcmVhdGUgZGlyZWN0b3J5IHRyZWUsIGlnbm9yaW5nIFwiZGlyZWN0b3J5IGV4aXN0c1wiIFZGUyBlcnJvcnNcbiAgICAgIGNvbnN0IHBhcnRzID0gZmlsZS5zcGxpdCgnLycpLnNsaWNlKDAsIC0xKTtcbiAgICAgIGxldCBwYXRoID0gJyc7XG4gICAgICB3aGlsZSAocGFydHMubGVuZ3RoID4gMCkge1xuICAgICAgICBwYXRoICs9IHBhcnRzLnNoaWZ0KCkgKyAnLyc7XG4gICAgICAgIHRyeSB7XG4gICAgICAgICAgYXdhaXQgcHlvZGlkZS5GUy5ta2RpcihwYXRoKTtcbiAgICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICAgIGlmIChlLmVycm5vICE9PSAyMCkge1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgICAgIGNvbnN0IGVycm9yVGV4dCA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5VVEY4VG9TdHJpbmcoZXJyb3JUZXh0UHRyKTtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8vIFdyaXRlIHRoaXMgZmlsZSB0byB0aGUgVkZTXG4gICAgICB0cnkge1xuICAgICAgICByZXR1cm4gYXdhaXQgcHlvZGlkZS5GUy53cml0ZUZpbGUoZmlsZSwgbmV3IFVpbnQ4QXJyYXkoZGF0YSkpO1xuICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICBpZiAoZS5uYW1lICE9PSBcIkVycm5vRXJyb3JcIikgdGhyb3cgZTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3IgJHtlLmVycm5vfSBcIiR7ZXJyb3JUZXh0fVwiLmApO1xuICAgICAgfVxuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBQeW9kaWRlIGVudmlyb25tZW50IHNldHVwYDtcbiAgICBhd2FpdCBzZXR1cFB5dGhvbihweW9kaWRlKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiBweW9kaWRlO1xuICB9KSgpLmNhdGNoKChlcnIpID0+IHtcbiAgICBzdGF0dXNUZXh0LnN0eWxlLmNvbG9yID0gXCJ2YXIoLS1leGVyY2lzZS1lZGl0b3ItaGwtZXIsICNBRDAwMDApXCI7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGVyci5tZXNzYWdlO1xuICAgIC8vaW5kaWNhdG9yQ29udGFpbmVyLnF1ZXJ5U2VsZWN0b3IoXCIuc3Bpbm5lci1ncm93XCIpLmNsYXNzTGlzdC5hZGQoXCJkLW5vbmVcIik7XG4gICAgdGhyb3cgZXJyO1xuICB9KTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHB5b2RpZGVQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBQeW9kaWRlRXZhbHVhdG9yKHB5b2RpZGUsIGNvbnRleHQpO1xuICAgIGF3YWl0IGV2YWx1YXRvci5wcm9jZXNzKGlucHV0cyk7XG4gICAgcmV0dXJuIGV2YWx1YXRvci5jb250YWluZXI7XG4gIH1cblxuICByZXR1cm4ge1xuICAgIHB5b2RpZGVQcm9taXNlLFxuICAgIHJlbmRlcmVkT2pzLFxuICAgIHByb2Nlc3MsXG4gIH07XG59XG4ifV19
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJ3aWRnZXRzL2NvcmUuanMiLCJ3aWRnZXRzL2ZpZ3VyZXMuanMiLCJpbWFnZXMvQ1JFRElUUy50eHQiLCJpbWFnZXMvaG91c2UtZm9yLXNhbGUtcmVhbC1lc3RhdGUtMS5qcGciXQ==
+</script>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>888102 Big Data Analytics · Chapter 10.2 hands-on — Evaluating a Classifier in Python · ICDI, Chiang Mai University</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true,"titleSelector":"h2"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 5.5e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <!-- The live figures. Two plain .js files, inlined into the deck at render
+         time by embed-resources, so the published HTML needs nothing external. -->
+    <script src="widgets/core.js"></script>
+    <script src="widgets/figures.js"></script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W119
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../../..";
+    window._ojs.paths.runtimeToRoot = "../../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
