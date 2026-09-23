@@ -1,10 +1,12 @@
-# 888102 Big Data Analytics -- Chapter 10 Materials
+# 888102 Big Data Analytics -- Chapter 10 and 11 Materials
 
 International College of Digital Innovation, Chiang Mai University.
 
-Chapter 10 is in three parts, one notebook each: the lesson, the worked
-examples in code, a real dataset, and the graded homework. Open a part in
-Colab and run it -- nothing to install.
+Each part of a chapter is one notebook: the lesson, the worked examples in
+code, a real dataset, and the graded homework. Open a part in Colab and run
+it -- nothing to install.
+
+## Chapter 10 -- Supervised Learning
 
 | Part | Hands-on notebook |
 |---|---|
@@ -12,12 +14,23 @@ Colab and run it -- nothing to install.
 | 10.2 Evaluating a Classifier | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch10_2_Evaluating_a_Classifier.ipynb) |
 | 10.3 Regression | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch10_3_Regression.ipynb) |
 
+## Chapter 11 -- Unsupervised Learning
+
+| Part | Hands-on notebook |
+|---|---|
+| 11.1 Unsupervised Learning and Clustering | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch11_1_Clustering.ipynb) |
+| 11.2 Association Rules and Market Basket Analysis | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch11_2_Association_Rules.ipynb) |
+
+The Chapter 11 hands-on session, where the code runs on the slides in the
+browser, is at
+https://payakorn.github.io/888102-student/hands-on/ch11_Hands_On_Unsupervised_Learning.html
+
 ## How to use them
 
 Sign in to Google, open a part from the table above, then
 **File -> Save a copy in Drive** so your work is kept. Run the cells in order:
 a later cell uses variables made by earlier ones. The first code cell imports
-numpy, pandas and matplotlib.
+numpy, pandas and matplotlib (Chapter 11.2 needs only pandas).
 
 Every notebook already carries its outputs, so you can read a part before
 running anything, and check your own results against it afterwards.

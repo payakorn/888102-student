@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="ch11_Hands_On_Unsupervised_Learning_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/tabby.min.js"></script>
+<script src="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/popper.min.js"></script>
+<script src="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Payakorn Saksuriya, Ph.D.">
+  <title>888102 · Chapter 11 — Hands-on: Clustering and Association Rules in Python</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/dist/theme/quarto-f63742cf2bbcf3c17715a36d801d942e.css">
+  <link href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="ch11_Hands_On_Unsupervised_Learning_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+<!-- Disables Reveal 5's automatic "scroll view" switch on narrow screens
+     (default scrollActivationWidth: 435px) before Reveal.initialize() ever
+     runs -- see the long comment in widgets.html for why. Two things were
+     tried and failed first (2026-09-16):
+       - `scroll-activation-width: 0` in the revealjs format YAML: this
+         Quarto version never forwards the key into Reveal.initialize()
+         (checked the rendered init call directly).
+       - `Reveal.configure({ scrollActivationWidth: null })` from
+         include-after-body (widgets.html): runs too late -- scroll view has
+         already activated by then, synchronously inside Reveal.initialize()
+         itself, and Reveal's own `deactivate()` path throws (a "Cannot read
+         properties of undefined (reading 'classList')" internal error) when
+         called after the fact, so nothing can undo it once active.
+     This intercepts the `window.Reveal` assignment the instant reveal.js's
+     UMD wrapper makes it (`(globalThis).Reveal = t()`), which happens later
+     in body -- include-before-body runs first, guaranteed -- and wraps
+     `.initialize` so scrollActivationWidth is forced null in the very
+     config object Reveal first sees, before its own init logic ever reads
+     the default. -->
+<script>
+(function () {
+  var realReveal;
+  Object.defineProperty(window, "Reveal", {
+    configurable: true,
+    get: function () { return realReveal; },
+    set: function (r) {
+      realReveal = r;
+      var origInitialize = r.initialize.bind(r);
+      r.initialize = function (config) {
+        config = config || {};
+        config.scrollActivationWidth = null;
+        return origInitialize(config);
+      };
+    }
+  });
+})();
+</script>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="clustering-and-association-rules-in-python" class="slide level2 cover" data-background-image="images/grocery-store-shelves-organized-1.jpg" data-background-size="cover" data-background-position="50% 45%" data-background-color="#0B1730">
+<h2>Clustering and Association Rules in Python</h2>
+<div class="scrim cover-scrim">
+
+</div>
+<div class="kicker">
+Chapter 11 · hands-on session · 888102 Big Data Analytics
+</div>
+<div class="lede">
+<p>K-means and hierarchical clustering, applied to a real dataset instead of grown by hand, then support, confidence and lift over a set of grocery transactions. Every code box on these slides runs in the browser.</p>
+</div>
+<div class="byline">
+Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+</div>
+<p><span class="cover-credit">Photo: “‘Mexican’ and Authentic Mexican” by sylvar (CC BY)</span></p>
+<aside class="notes">
+<p>This deck follows Chapter 11’s own recap of Chapter 9’s from-scratch K-means, hierarchical clustering and support/confidence/lift. The Python engine loads once, at the start; ask the class to open the deck now so the download is finished by the time the first code slide is reached. The same steps, with the homework, are in the Chapter 11.1 and 11.2 notebooks for Colab.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="how-this-session-works" class="slide level2">
+<h2>How this session works</h2>
+<div class="kicker">
+Hands-on 11 · before the first line of code
+</div>
+<div class="cards" style="--cols:4">
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The code runs in the browser</span> Every code box is live. Press <strong>Run Code</strong> (or <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> inside the box) and the result appears below it. Nothing is installed on the computer.</p>
+</div>
+<div class="card" style="--accent:#0891B2">
+<p><span class="t">The boxes share one workspace</span> A variable made in one box can be used in the next. Run the boxes <strong>in order</strong>: a later box that names a variable no earlier box has made stops with a <code>NameError</code>.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Everything can be edited</span> Change a value, a column name, a number of clusters, and run again. <strong>Start Over</strong> restores the original code of that box.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">The engine loads once</span> The first time the page opens, Python and its packages are downloaded — about ten seconds, shown at the bottom of the page. The <strong>Run Code</strong> button turns blue when it is ready.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="watch">
+<p><span class="lbl">Two limits</span> The page needs internet, because the Python engine comes from the web when it opens. And the page <strong>forgets</strong> everything when it is reloaded: variables, edits, results. For work to keep, use the Chapter 11.1 and 11.2 notebooks in Colab, which carry the same steps.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">The exercises</span> The last part of the session has four exercises. Each has a blank <code>______</code> to fill, a <strong>Show Hint</strong> button, a <strong>Show Solution</strong> button, and a check that marks the answer right or wrong when it is run.</p>
+</div>
+</div></div>
+</section>
+<section id="the-session-in-four-parts" class="slide level2">
+<h2>The session in four parts</h2>
+<div class="kicker">
+Hands-on 11 · roadmap
+</div>
+<div class="lede wide">
+<p>Chapter 9 grew K-means and a hierarchical clustering tree by hand, and computed support, confidence and lift for one rule, all on small toy examples. This session hands the same three jobs to a library, on data too large to work by hand: 150 iris flowers, and twelve grocery transactions.</p>
+</div>
+<div class="flow">
+<div class="step" style="--accent:#0E9F8E">
+<b>A · K-means, with the tool</b>The iris flowers, standardized, clustered with scikit-learn, and checked against the species label they never saw.
+</div>
+<div class="step" style="--accent:#7C3AED">
+<b>B · Hierarchical clustering, with the tool</b>A 15-flower sample, its dendrogram drawn by SciPy, cut into clusters two different numbers of ways.
+</div>
+<div class="step" style="--accent:#F59E0B">
+<b>C · Association rules, with the tool</b>Twelve grocery transactions, every rule between two items, filtered down to the ones worth a business’s attention.
+</div>
+<div class="step" style="--accent:#F43F5E">
+<b>D · Exercises</b>Four graded exercises across the three jobs, each with a hint and a solution.
+</div>
+</div>
+<div class="note">
+<p><span class="lbl">Three tools</span> <code>KMeans(n_clusters=k).fit(X)</code> and <code>linkage(X, method="average")</code> do the jobs Chapter 9 built by hand. Association rules have no single scikit-learn class; a five-line <code>support()</code> function, applied to every pair of items, does the same job a library would.</p>
+</div>
+</section>
+<section id="the-iris-flowers-unlabeled" class="slide level2">
+<h2>The iris flowers, unlabeled</h2>
+<div class="kicker">
+Hands-on 11 · A · a real dataset, no species column
+</div>
+<div class="lede wide">
+<p><code>load_iris</code> bundles 150 flowers with scikit-learn — no download needed. Only the four measurements are kept as <code>flowers</code>; the species is kept separately, as <code>species</code>, and not shown to any clustering method below.</p>
+</div>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImF1dG9ydW4iOnRydWUsImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHBhbmRhcyBhcyBwZFxuZnJvbSBza2xlYXJuLmRhdGFzZXRzIGltcG9ydCBsb2FkX2lyaXNcblxuaXJpcyA9IGxvYWRfaXJpcyhhc19mcmFtZT1UcnVlKVxuZmxvd2VycyA9IGlyaXMuZGF0YS5jb3B5KClcbmZsb3dlcnMuY29sdW1ucyA9IFtcInNlcGFsX2xlbmd0aFwiLCBcInNlcGFsX3dpZHRoXCIsIFwicGV0YWxfbGVuZ3RoXCIsIFwicGV0YWxfd2lkdGhcIl1cbnNwZWNpZXMgPSBpcmlzLnRhcmdldF9uYW1lc1tpcmlzLnRhcmdldF1cbnByaW50KFwiZmxvd2VyczpcIiwgZmxvd2Vycy5zaGFwZSlcbmZsb3dlcnMuaGVhZCgpIn0=
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> 150 rows, four measurements, no target column. Everything K-means and hierarchical clustering find below comes only from these four numbers.</p>
+</div>
+</section>
+<section id="standardizing-before-a-distance" class="slide level2">
+<h2>Standardizing before a distance</h2>
+<div class="kicker">
+Hands-on 11 · A · putting the four measurements on equal footing
+</div>
+<div class="lede wide">
+<p>K-means measures distance between rows, and a distance treats every column as equally important. <code>StandardScaler</code> rescales every column to mean 0 and standard deviation 1, so a column with a wider range in centimeters does not dominate for no reason connected to which flowers are actually similar.</p>
+</div>
+<div>
+<div id="pyodide-2" class="exercise-cell">
+
+</div>
+<script type="pyodide-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLnByZXByb2Nlc3NpbmcgaW1wb3J0IFN0YW5kYXJkU2NhbGVyXG5cbnNjYWxlciA9IFN0YW5kYXJkU2NhbGVyKCkuZml0KGZsb3dlcnMpXG5YX3NjYWxlZCA9IHNjYWxlci50cmFuc2Zvcm0oZmxvd2Vycylcblhfc2NhbGVkWzozXS5yb3VuZCgyKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The first three rows, all setosa, now read as small numbers of both signs instead of centimeters — every column contributes on the same scale to any distance computed from here on.</p>
+</div>
+</section>
+<section id="clustering-with-k-means" class="slide level2">
+<h2>Clustering with K-means</h2>
+<div class="kicker">
+Hands-on 11 · A · one command
+</div>
+<div class="columns">
+<div class="column" style="width:46%;">
+<div class="note">
+<p><span class="lbl">The command</span> <code>KMeans(n_clusters=3).fit(X_scaled)</code> runs the loop Chapter 9 built by hand — assign, recompute, repeat — and stops when nothing moves. Three clusters are asked for, to match the three known species; the method itself has no way to know there are three.</p>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> <code>cluster_centers_</code> gives the position of each of the three centroids, in the standardized units — the average flower of each cluster K-means settled on.</p>
+</div>
+</div><div class="column" style="width:53%;">
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLmNsdXN0ZXIgaW1wb3J0IEtNZWFuc1xuXG5rbWVhbnMgPSBLTWVhbnMobl9jbHVzdGVycz0zLCBuX2luaXQ9MTAsIHJhbmRvbV9zdGF0ZT04ODgxMDIpLmZpdChYX3NjYWxlZClcbmttZWFucy5jbHVzdGVyX2NlbnRlcnNfLnJvdW5kKDIpIn0=
+</script>
+</div>
+</div></div>
+</section>
+<section id="checking-the-clusters-against-the-species" class="slide level2">
+<h2>Checking the clusters against the species</h2>
+<div class="kicker">
+Hands-on 11 · A · a label the method never used
+</div>
+<div class="lede wide">
+<p>K-means never saw the word setosa, versicolor or virginica. <code>pd.crosstab</code> lines the cluster numbers up against the true species, kept aside since the first slide of this part, as a check.</p>
+</div>
+<div>
+<div id="pyodide-4" class="exercise-cell">
+
+</div>
+<script type="pyodide-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicGQuY3Jvc3N0YWIocGQuU2VyaWVzKHNwZWNpZXMsIG5hbWU9XCJzcGVjaWVzXCIpLCBwZC5TZXJpZXMoa21lYW5zLmxhYmVsc18sIG5hbWU9XCJjbHVzdGVyXCIpKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>One cluster is pure setosa</strong> and nothing else — the clearest structure in the data.</li>
+<li><strong>The other two clusters mostly separate versicolor from virginica</strong>, with a real number of flowers landing in the other species’ cluster — the two species overlap in these four measurements.</li>
+<li>The agreement comes entirely from the four numbers; nothing here was told which species is which.</li>
+</ul>
+</div>
+</section>
+<section id="hierarchical-clustering-on-a-small-sample" class="slide level2">
+<h2>Hierarchical clustering, on a small sample</h2>
+<div class="kicker">
+Hands-on 11 · B · a dendrogram needs room to draw
+</div>
+<div class="lede wide">
+<p>Hierarchical clustering compares every pair of clusters at every step, which makes a dendrogram of all 150 flowers too dense to read. <code>groupby("species").head(5)</code> takes the first five rows of each species — 15 flowers, small enough to draw every merge.</p>
+</div>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2FtcGxlID0gZmxvd2Vycy5hc3NpZ24oc3BlY2llcz1zcGVjaWVzKS5ncm91cGJ5KFwic3BlY2llc1wiKS5oZWFkKDUpLnJlc2V0X2luZGV4KGRyb3A9VHJ1ZSlcblhfc2FtcGxlX3NjYWxlZCA9IFN0YW5kYXJkU2NhbGVyKCkuZml0X3RyYW5zZm9ybShzYW1wbGUuZHJvcChjb2x1bW5zPVwic3BlY2llc1wiKSlcbnNhbXBsZSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> Five setosa, five versicolor, five virginica, standardized the same way as the full dataset. The species column stays only to read the tree afterward — SciPy’s clustering never sees it.</p>
+</div>
+</section>
+<section id="the-dendrogram" class="slide level2">
+<h2>The dendrogram</h2>
+<div class="kicker">
+Hands-on 11 · B · SciPy’s linkage() and dendrogram()
+</div>
+<div class="lede wide">
+<p><code>linkage(X, method="average")</code> runs the merge-the-closest-pair loop Chapter 9 built by hand, and <code>dendrogram()</code> draws the resulting tree in one more command.</p>
+</div>
+<div>
+<div id="pyodide-6" class="exercise-cell">
+
+</div>
+<script type="pyodide-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBzY2lweS5jbHVzdGVyLmhpZXJhcmNoeSBpbXBvcnQgbGlua2FnZSwgZGVuZHJvZ3JhbSwgZmNsdXN0ZXJcbmltcG9ydCBtYXRwbG90bGliXG5tYXRwbG90bGliLnVzZShcIkFnZ1wiKVxuaW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdFxuZnJvbSBJUHl0aG9uLmRpc3BsYXkgaW1wb3J0IEltYWdlXG5cbnNhbXBsZV9sb2cgPSBsaW5rYWdlKFhfc2FtcGxlX3NjYWxlZCwgbWV0aG9kPVwiYXZlcmFnZVwiKVxucGx0LmZpZ3VyZShmaWdzaXplPSg5LjUsIDMuOCkpXG5kZW5kcm9ncmFtKHNhbXBsZV9sb2csIGxhYmVscz1saXN0KHNhbXBsZVtcInNwZWNpZXNcIl0pLCBsZWFmX3JvdGF0aW9uPTkwLCBsZWFmX2ZvbnRfc2l6ZT04KVxucGx0LnlsYWJlbChcImRpc3RhbmNlIGF0IHdoaWNoIHRoZSBtZXJnZSBoYXBwZW5lZFwiKVxucGx0LnNhdmVmaWcoXCJkZW5kcm9ncmFtLnBuZ1wiLCBkcGk9MTEwLCBiYm94X2luY2hlcz1cInRpZ2h0XCIpXG5JbWFnZShcImRlbmRyb2dyYW0ucG5nXCIpIn0=
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The five setosa leaves merge into one tight branch, well separated from the rest. Versicolor and virginica leaves interleave on the other branch — the same overlap the K-means crosstab found.</p>
+</div>
+</section>
+<section id="cutting-the-tree-two-ways" class="slide level2">
+<h2>Cutting the tree two ways</h2>
+<div class="kicker">
+Hands-on 11 · B · a distance, or a cluster count
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Two SciPy calls</span> <code>fcluster(log, t=4.0, criterion="distance")</code> cuts at a threshold height. <code>fcluster(log, t=3, criterion="maxclust")</code> instead asks directly for a number of clusters, and SciPy finds the height that gives it.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiY2x1c3RlcnMzID0gZmNsdXN0ZXIoc2FtcGxlX2xvZywgdD0zLCBjcml0ZXJpb249XCJtYXhjbHVzdFwiKVxucGQuY3Jvc3N0YWIoc2FtcGxlW1wic3BlY2llc1wiXSwgcGQuU2VyaWVzKGNsdXN0ZXJzMywgbmFtZT1cImNsdXN0ZXJcIikpIn0=
+</script>
+</div>
+</div></div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> Cutting for 3 clusters recovers setosa cleanly, but does not split versicolor from virginica the way the species label would: the two species land mostly, but not entirely, in one shared cluster on this small sample — a real result, not a rounding error, and a reminder that a clustering method answers a geometric question, not a biological one.</p>
+</div>
+</section>
+<section id="association-rules-the-grocery-transactions" class="slide level2">
+<h2>Association rules — the grocery transactions</h2>
+<div class="kicker">
+Hands-on 11 · C · the same idea, a library-sized job
+</div>
+<div class="lede wide">
+<p>Chapter 9 hand-computed support, confidence and lift for one rule on eight baskets. Twelve baskets over five items — bread, butter, milk, eggs, coffee — are still small enough to read, but large enough that checking every rule by hand would be tedious. That is exactly the job a few lines of code do well.</p>
+</div>
+<div>
+<div id="pyodide-8" class="exercise-cell">
+
+</div>
+<script type="pyodide-8-contents">
+eyJhdHRyIjp7ImF1dG9ydW4iOnRydWUsImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZ3JvY2VyaWVzID0gW1xuICAgIHtcImJyZWFkXCIsIFwiYnV0dGVyXCJ9LCB7XCJicmVhZFwiLCBcImJ1dHRlclwiLCBcIm1pbGtcIn0sIHtcImJyZWFkXCIsIFwibWlsa1wifSwge1wiYnJlYWRcIiwgXCJidXR0ZXJcIiwgXCJlZ2dzXCJ9LFxuICAgIHtcImJ1dHRlclwiLCBcIm1pbGtcIn0sIHtcImJyZWFkXCIsIFwiYnV0dGVyXCIsIFwibWlsa1wiLCBcImVnZ3NcIn0sIHtcImNvZmZlZVwiLCBcIm1pbGtcIn0sIHtcImJyZWFkXCIsIFwiZWdnc1wifSxcbiAgICB7XCJjb2ZmZWVcIiwgXCJicmVhZFwifSwge1wiYnV0dGVyXCIsIFwiZWdnc1wifSwge1wiYnJlYWRcIiwgXCJidXR0ZXJcIiwgXCJtaWxrXCJ9LCB7XCJjb2ZmZWVcIiwgXCJtaWxrXCIsIFwiZWdnc1wifSxcbl1cbmRlZiBzdXBwb3J0KGl0ZW1zZXQsIHR4bnMpOlxuICAgIHJldHVybiBzdW0oMSBmb3IgdCBpbiB0eG5zIGlmIGl0ZW1zZXQuaXNzdWJzZXQodCkpIC8gbGVuKHR4bnMpXG5sZW4oZ3JvY2VyaWVzKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> <code>support()</code> is the one function every rule below is built from: the share of baskets holding a given set of items, whatever its size.</p>
+</div>
+</section>
+<section id="every-rule-between-two-items" class="slide level2">
+<h2>Every rule between two items</h2>
+<div class="kicker">
+Hands-on 11 · C · support, confidence and lift, for every pair
+</div>
+<div class="lede wide">
+<p><code>itertools.permutations</code> lists every ordered pair of the five items — ordered, because confidence(bread → butter) and confidence(butter → bread) are generally different — and support, confidence and lift are computed for each.</p>
+</div>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IGl0ZXJ0b29sc1xuXG5pdGVtcyA9IHNvcnRlZCh7aXRlbSBmb3IgYmFza2V0IGluIGdyb2NlcmllcyBmb3IgaXRlbSBpbiBiYXNrZXR9KVxucm93cyA9IFtdXG5mb3IgeCwgeSBpbiBpdGVydG9vbHMucGVybXV0YXRpb25zKGl0ZW1zLCAyKTpcbiAgICBzdXBwX3gsIHN1cHBfeSA9IHN1cHBvcnQoe3h9LCBncm9jZXJpZXMpLCBzdXBwb3J0KHt5fSwgZ3JvY2VyaWVzKVxuICAgIHN1cHBfeHkgPSBzdXBwb3J0KHt4LCB5fSwgZ3JvY2VyaWVzKVxuICAgIGNvbmZpZGVuY2UgPSBzdXBwX3h5IC8gc3VwcF94XG4gICAgbGlmdCA9IGNvbmZpZGVuY2UgLyBzdXBwX3lcbiAgICByb3dzLmFwcGVuZCh7XCJydWxlXCI6IGZcInt4fSAtPiB7eX1cIiwgXCJzdXBwb3J0XCI6IHJvdW5kKHN1cHBfeHksIDMpLFxuICAgICAgICAgICAgICAgICBcImNvbmZpZGVuY2VcIjogcm91bmQoY29uZmlkZW5jZSwgMyksIFwibGlmdFwiOiByb3VuZChsaWZ0LCAzKX0pXG5ydWxlcyA9IHBkLkRhdGFGcmFtZShyb3dzKVxucnVsZXMuc2hhcGUifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> 20 rules — one for every ordered pair of the 5 items. Most describe a weak or accidental pattern; the next slide keeps only the ones worth reading.</p>
+</div>
+</section>
+<section id="the-rules-worth-reading" class="slide level2">
+<h2>The rules worth reading</h2>
+<div class="kicker">
+Hands-on 11 · C · filtered by support and confidence
+</div>
+<div class="lede wide">
+<p>A minimum support of 0.25 and a minimum confidence of 0.6 keep only the rules that are both common enough to matter and reliable enough to act on, sorted by lift.</p>
+</div>
+<div>
+<div id="pyodide-10" class="exercise-cell">
+
+</div>
+<script type="pyodide-10-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic3Ryb25nX3J1bGVzID0gcnVsZXNbKHJ1bGVzW1wic3VwcG9ydFwiXSA+PSAwLjI1KSAmIChydWxlc1tcImNvbmZpZGVuY2VcIl0gPj0gMC42KV0gXFxcbiAgICAuc29ydF92YWx1ZXMoXCJsaWZ0XCIsIGFzY2VuZGluZz1GYWxzZSlcbnN0cm9uZ19ydWxlcyJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>bread ↔︎ butter</strong> clears the bar in both directions, with lift just above 1 — a real, if modest, association.</li>
+<li><strong>eggs → butter</strong> and <strong>eggs → bread</strong> also clear the confidence bar; eggs → bread has lift just under 1, meaning bread is, if anything, not more likely once eggs are in the basket.</li>
+<li>Rules built from <strong>milk</strong> and <strong>coffee</strong> are missing entirely — every one of them falls short on support, confidence, or both.</li>
+</ul>
+</div>
+</section>
+<section id="exercise-1-a-new-flowers-cluster" class="slide level2">
+<h2>Exercise 1 — a new flower’s cluster</h2>
+<div class="kicker">
+Hands-on 11 · D · K-means predicts, it does not just fit
+</div>
+<div class="lede wide">
+<p>A new flower measures 5.8 cm sepal length, 2.7 cm sepal width, 4.1 cm petal length. Fill the blank with its petal width, 1.0 cm, standardize it with the same scaler, and ask the fitted K-means model which cluster it belongs to.</p>
+</div>
+<script type="exercise-setup-ex_new_flower-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X25ld19mbG93ZXIiLCJleF9jdXQyIl0sInNldHVwIjp0cnVlfSwiY29kZSI6ImltcG9ydCBwYW5kYXMgYXMgcGRcbmZyb20gc2tsZWFybi5kYXRhc2V0cyBpbXBvcnQgbG9hZF9pcmlzXG5mcm9tIHNrbGVhcm4ucHJlcHJvY2Vzc2luZyBpbXBvcnQgU3RhbmRhcmRTY2FsZXJcbmZyb20gc2tsZWFybi5jbHVzdGVyIGltcG9ydCBLTWVhbnNcbmZyb20gc2NpcHkuY2x1c3Rlci5oaWVyYXJjaHkgaW1wb3J0IGxpbmthZ2UsIGZjbHVzdGVyXG5cbmlyaXMgPSBsb2FkX2lyaXMoYXNfZnJhbWU9VHJ1ZSlcbmZsb3dlcnMgPSBpcmlzLmRhdGEuY29weSgpXG5mbG93ZXJzLmNvbHVtbnMgPSBbXCJzZXBhbF9sZW5ndGhcIiwgXCJzZXBhbF93aWR0aFwiLCBcInBldGFsX2xlbmd0aFwiLCBcInBldGFsX3dpZHRoXCJdXG5zcGVjaWVzID0gaXJpcy50YXJnZXRfbmFtZXNbaXJpcy50YXJnZXRdXG5zY2FsZXIgPSBTdGFuZGFyZFNjYWxlcigpLmZpdChmbG93ZXJzKVxuWF9zY2FsZWQgPSBzY2FsZXIudHJhbnNmb3JtKGZsb3dlcnMpXG5rbWVhbnMgPSBLTWVhbnMobl9jbHVzdGVycz0zLCBuX2luaXQ9MTAsIHJhbmRvbV9zdGF0ZT04ODgxMDIpLmZpdChYX3NjYWxlZClcblxuc2FtcGxlID0gZmxvd2Vycy5hc3NpZ24oc3BlY2llcz1zcGVjaWVzKS5ncm91cGJ5KFwic3BlY2llc1wiKS5oZWFkKDUpLnJlc2V0X2luZGV4KGRyb3A9VHJ1ZSlcblhfc2FtcGxlX3NjYWxlZCA9IFN0YW5kYXJkU2NhbGVyKCkuZml0X3RyYW5zZm9ybShzYW1wbGUuZHJvcChjb2x1bW5zPVwic3BlY2llc1wiKSlcbnNhbXBsZV9sb2cgPSBsaW5rYWdlKFhfc2FtcGxlX3NjYWxlZCwgbWV0aG9kPVwiYXZlcmFnZVwiKSJ9
+</script>
+<script type="exercise-setup-ex_cut2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X25ld19mbG93ZXIiLCJleF9jdXQyIl0sInNldHVwIjp0cnVlfSwiY29kZSI6ImltcG9ydCBwYW5kYXMgYXMgcGRcbmZyb20gc2tsZWFybi5kYXRhc2V0cyBpbXBvcnQgbG9hZF9pcmlzXG5mcm9tIHNrbGVhcm4ucHJlcHJvY2Vzc2luZyBpbXBvcnQgU3RhbmRhcmRTY2FsZXJcbmZyb20gc2tsZWFybi5jbHVzdGVyIGltcG9ydCBLTWVhbnNcbmZyb20gc2NpcHkuY2x1c3Rlci5oaWVyYXJjaHkgaW1wb3J0IGxpbmthZ2UsIGZjbHVzdGVyXG5cbmlyaXMgPSBsb2FkX2lyaXMoYXNfZnJhbWU9VHJ1ZSlcbmZsb3dlcnMgPSBpcmlzLmRhdGEuY29weSgpXG5mbG93ZXJzLmNvbHVtbnMgPSBbXCJzZXBhbF9sZW5ndGhcIiwgXCJzZXBhbF93aWR0aFwiLCBcInBldGFsX2xlbmd0aFwiLCBcInBldGFsX3dpZHRoXCJdXG5zcGVjaWVzID0gaXJpcy50YXJnZXRfbmFtZXNbaXJpcy50YXJnZXRdXG5zY2FsZXIgPSBTdGFuZGFyZFNjYWxlcigpLmZpdChmbG93ZXJzKVxuWF9zY2FsZWQgPSBzY2FsZXIudHJhbnNmb3JtKGZsb3dlcnMpXG5rbWVhbnMgPSBLTWVhbnMobl9jbHVzdGVycz0zLCBuX2luaXQ9MTAsIHJhbmRvbV9zdGF0ZT04ODgxMDIpLmZpdChYX3NjYWxlZClcblxuc2FtcGxlID0gZmxvd2Vycy5hc3NpZ24oc3BlY2llcz1zcGVjaWVzKS5ncm91cGJ5KFwic3BlY2llc1wiKS5oZWFkKDUpLnJlc2V0X2luZGV4KGRyb3A9VHJ1ZSlcblhfc2FtcGxlX3NjYWxlZCA9IFN0YW5kYXJkU2NhbGVyKCkuZml0X3RyYW5zZm9ybShzYW1wbGUuZHJvcChjb2x1bW5zPVwic3BlY2llc1wiKSlcbnNhbXBsZV9sb2cgPSBsaW5rYWdlKFhfc2FtcGxlX3NjYWxlZCwgbWV0aG9kPVwiYXZlcmFnZVwiKSJ9
+</script>
+<div>
+<div id="pyodide-12" class="exercise-cell">
+
+</div>
+<script type="pyodide-12-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAxIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9uZXdfZmxvd2VyIn0sImNvZGUiOiJuZXdfZmxvd2VyID0gcGQuRGF0YUZyYW1lKFtbNS44LCAyLjcsIDQuMSwgX19fX19fXV0sIGNvbHVtbnM9Zmxvd2Vycy5jb2x1bW5zKVxua21lYW5zLnByZWRpY3Qoc2NhbGVyLnRyYW5zZm9ybShuZXdfZmxvd2VyKSlbMF0ifQ==
+</script>
+</div>
+<script type="exercise-check-ex_new_flower-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X25ld19mbG93ZXIifSwiY29kZSI6ImV4cGVjdGVkID0gaW50KGttZWFucy5wcmVkaWN0KHNjYWxlci50cmFuc2Zvcm0ocGQuRGF0YUZyYW1lKFtbNS44LCAyLjcsIDQuMSwgMS4wXV0sIGNvbHVtbnM9Zmxvd2Vycy5jb2x1bW5zKSkpWzBdKVxudHJ5OlxuICAgIG9rID0gcmVzdWx0IGlzIG5vdCBOb25lIGFuZCBpbnQocmVzdWx0KSA9PSBleHBlY3RlZFxuZXhjZXB0IChUeXBlRXJyb3IsIFZhbHVlRXJyb3IpOlxuICAgIG9rID0gRmFsc2VcbmlmIG9rOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBUcnVlLCBcIm1lc3NhZ2VcIjogZlwiQ29ycmVjdC4gQ2x1c3RlciB7ZXhwZWN0ZWR9IOKAlCB0aGUgc2FtZSBjbHVzdGVyIHRoZSBjcm9zc3RhYiBzbGlkZSBzaG93ZWQgaG9sZGluZyB0aGUgdmVyc2ljb2xvci92aXJnaW5pY2Egb3ZlcmxhcDsgdGhpcyBmbG93ZXIncyBwZXRhbCBsZW5ndGggKDQuMSkgc2l0cyBpbiB0aGF0IG92ZXJsYXAgdG9vLlwifVxuZWxpZiByZXN1bHQgaXMgTm9uZTpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogRmFsc2UsIFwibWVzc2FnZVwiOiBcIlRoZSBib3ggcmV0dXJuZWQgbm90aGluZy4gRW5kIHdpdGggdGhlIGV4cHJlc3Npb24gaXRzZWxmLCBub3QgYSBwcmludCgpLlwifVxuZWxzZTpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogRmFsc2UsIFwibWVzc2FnZVwiOiBmXCJUaGUgYm94IHJldHVybmVkIHtyZXN1bHQhcn0uIFRoZSBibGFuayBpcyB0aGUgcGV0YWwgd2lkdGgsIGluIGNlbnRpbWV0ZXJzOiAxLjAuXCJ9XG5mZWVkYmFjayJ9
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_new_flower">
+<p>The four columns are, in order, sepal length, sepal width, petal length, petal width. The blank is the fourth value, in centimeters.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_new_flower">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="" aria-label="1"></a>new_flower <span class="op">=</span> pd.DataFrame([[<span class="fl">5.8</span>, <span class="fl">2.7</span>, <span class="fl">4.1</span>, <span class="fl">1.0</span>]], columns<span class="op">=</span>flowers.columns)</span>
+<span id="cb1-2"><a href="" aria-label="2"></a>kmeans.predict(scaler.transform(new_flower))[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The predicted cluster is the same one the crosstab slide showed mixing versicolor and virginica — this new flower’s measurements sit in that overlap, not with the clearly separated setosa cluster.</p>
+</div>
+</section>
+<section id="exercise-2-cutting-for-two-clusters-instead-of-three" class="slide level2">
+<h2>Exercise 2 — cutting for two clusters instead of three</h2>
+<div class="kicker">
+Hands-on 11 · D · a coarser cut of the same tree
+</div>
+<div class="lede wide">
+<p>Fill the blank so the tree is cut for exactly <strong>two</strong> clusters instead of three, and report the two cluster sizes, largest first, as a list of two numbers.</p>
+</div>
+<div>
+<div id="pyodide-14" class="exercise-cell">
+
+</div>
+<script type="pyodide-14-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAyIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9jdXQyIn0sImNvZGUiOiJjbHVzdGVyczIgPSBmY2x1c3RlcihzYW1wbGVfbG9nLCB0PV9fX19fXywgY3JpdGVyaW9uPVwibWF4Y2x1c3RcIilcbnNvcnRlZChwZC5TZXJpZXMoY2x1c3RlcnMyKS52YWx1ZV9jb3VudHMoKS50b2xpc3QoKSwgcmV2ZXJzZT1UcnVlKSJ9
+</script>
+</div>
+<script type="exercise-check-ex_cut2-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2N1dDIifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgbGlzdChyZXN1bHQpID09IFsxMCwgNV1cbmV4Y2VwdCAoVHlwZUVycm9yLCBWYWx1ZUVycm9yKTpcbiAgICBvayA9IEZhbHNlXG5pZiBvazpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogVHJ1ZSwgXCJtZXNzYWdlXCI6IFwiQ29ycmVjdC4gWzEwLCA1XSDigJQgb25lIGNsdXN0ZXIgb2YgMTAgKHZlcnNpY29sb3IgYW5kIHZpcmdpbmljYSB0b2dldGhlcikgYW5kIG9uZSBvZiA1IChzZXRvc2EgYWxvbmUpLiBDdXR0aW5nIGZvciB0d28gY2x1c3RlcnMgcmVjb3ZlcnMgZXhhY3RseSB0aGUgc3BsaXQgdGhlIGRlbmRyb2dyYW0ncyB0YWxsIGZpbmFsIGJyYW5jaCBhbHJlYWR5IHNob3dlZC5cIn1cbmVsaWYgcmVzdWx0IGlzIE5vbmU6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogXCJUaGUgYm94IHJldHVybmVkIG5vdGhpbmcuIEVuZCB3aXRoIHRoZSBleHByZXNzaW9uIGl0c2VsZiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgYmxhbmsgaXMgdGhlIG51bWJlciBvZiBjbHVzdGVycyB3YW50ZWQ6IDIuXCJ9XG5mZWVkYmFjayJ9
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_cut2">
+<p><code>criterion="maxclust"</code> reads the blank as how many clusters are wanted, not a distance. Fill in <code>2</code>.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_cut2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="" aria-label="1"></a>clusters2 <span class="op">=</span> fcluster(sample_log, t<span class="op">=</span><span class="dv">2</span>, criterion<span class="op">=</span><span class="st">"maxclust"</span>)</span>
+<span id="cb2-2"><a href="" aria-label="2"></a><span class="bu">sorted</span>(pd.Series(clusters2).value_counts().tolist(), reverse<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>[10, 5]</code>: at two clusters, setosa (5 flowers) separates from versicolor and virginica together (10 flowers) — the one large gap in the dendrogram’s merge heights.</p>
+</div>
+</section>
+<section id="exercise-3-a-rule-the-filter-did-not-keep" class="slide level2">
+<h2>Exercise 3 — a rule the filter did not keep</h2>
+<div class="kicker">
+Hands-on 11 · D · confidence below the bar
+</div>
+<div class="lede wide">
+<p>Fill in the two blanks to compute the confidence of <strong>milk → butter</strong>: the share of milk-baskets that also hold butter. Round to 3 decimals.</p>
+</div>
+<script type="exercise-setup-ex_confidence-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2NvbmZpZGVuY2UiLCJleF9saWZ0Il0sInNldHVwIjp0cnVlfSwiY29kZSI6Imdyb2NlcmllcyA9IFtcbiAgICB7XCJicmVhZFwiLCBcImJ1dHRlclwifSwge1wiYnJlYWRcIiwgXCJidXR0ZXJcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcIm1pbGtcIn0sIHtcImJyZWFkXCIsIFwiYnV0dGVyXCIsIFwiZWdnc1wifSxcbiAgICB7XCJidXR0ZXJcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcImJ1dHRlclwiLCBcIm1pbGtcIiwgXCJlZ2dzXCJ9LCB7XCJjb2ZmZWVcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcImVnZ3NcIn0sXG4gICAge1wiY29mZmVlXCIsIFwiYnJlYWRcIn0sIHtcImJ1dHRlclwiLCBcImVnZ3NcIn0sIHtcImJyZWFkXCIsIFwiYnV0dGVyXCIsIFwibWlsa1wifSwge1wiY29mZmVlXCIsIFwibWlsa1wiLCBcImVnZ3NcIn0sXG5dXG5kZWYgc3VwcG9ydChpdGVtc2V0LCB0eG5zKTpcbiAgICByZXR1cm4gc3VtKDEgZm9yIHQgaW4gdHhucyBpZiBpdGVtc2V0Lmlzc3Vic2V0KHQpKSAvIGxlbih0eG5zKSJ9
+</script>
+<script type="exercise-setup-ex_lift-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2NvbmZpZGVuY2UiLCJleF9saWZ0Il0sInNldHVwIjp0cnVlfSwiY29kZSI6Imdyb2NlcmllcyA9IFtcbiAgICB7XCJicmVhZFwiLCBcImJ1dHRlclwifSwge1wiYnJlYWRcIiwgXCJidXR0ZXJcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcIm1pbGtcIn0sIHtcImJyZWFkXCIsIFwiYnV0dGVyXCIsIFwiZWdnc1wifSxcbiAgICB7XCJidXR0ZXJcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcImJ1dHRlclwiLCBcIm1pbGtcIiwgXCJlZ2dzXCJ9LCB7XCJjb2ZmZWVcIiwgXCJtaWxrXCJ9LCB7XCJicmVhZFwiLCBcImVnZ3NcIn0sXG4gICAge1wiY29mZmVlXCIsIFwiYnJlYWRcIn0sIHtcImJ1dHRlclwiLCBcImVnZ3NcIn0sIHtcImJyZWFkXCIsIFwiYnV0dGVyXCIsIFwibWlsa1wifSwge1wiY29mZmVlXCIsIFwibWlsa1wiLCBcImVnZ3NcIn0sXG5dXG5kZWYgc3VwcG9ydChpdGVtc2V0LCB0eG5zKTpcbiAgICByZXR1cm4gc3VtKDEgZm9yIHQgaW4gdHhucyBpZiBpdGVtc2V0Lmlzc3Vic2V0KHQpKSAvIGxlbih0eG5zKSJ9
+</script>
+<div>
+<div id="pyodide-17" class="exercise-cell">
+
+</div>
+<script type="pyodide-17-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAzIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9jb25maWRlbmNlIn0sImNvZGUiOiJzdXBwX21pbGtfYnV0dGVyID0gc3VwcG9ydCh7XCJtaWxrXCIsIFwiX19fX19fXCJ9LCBncm9jZXJpZXMpXG5zdXBwX21pbGsgPSBzdXBwb3J0KHtcIl9fX19fX1wifSwgZ3JvY2VyaWVzKVxucm91bmQoc3VwcF9taWxrX2J1dHRlciAvIHN1cHBfbWlsaywgMykifQ==
+</script>
+</div>
+<script type="exercise-check-ex_confidence-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2NvbmZpZGVuY2UifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgYWJzKGZsb2F0KHJlc3VsdCkgLSAwLjU3MSkgPCAxZS0zXG5leGNlcHQgKFR5cGVFcnJvciwgVmFsdWVFcnJvcik6XG4gICAgb2sgPSBGYWxzZVxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3QuIDAuNTcxIOKAlCBqdXN0IHVuZGVyIHRoZSAwLjYgYmFyIHRoZSBmaWx0ZXJlZCB0YWJsZSB1c2VkLCB3aGljaCBpcyBleGFjdGx5IHdoeSBtaWxrIC0+IGJ1dHRlciBkaWQgbm90IGFwcGVhciBpbiBpdCBldmVuIHRob3VnaCBtaWxrIGlzIGEgY29tbW9uIGl0ZW0uXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiBpdHNlbGYsIG5vdCBhIHByaW50KCkuXCJ9XG5lbHNlOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IGZcIlRoZSBib3ggcmV0dXJuZWQge3Jlc3VsdCFyfS4gQm90aCBibGFua3MgYXJlICdidXR0ZXInIGFuZCAnbWlsaycg4oCUIHRoZSBudW1lcmF0b3IgaG9sZHMgYm90aCBpdGVtcywgdGhlIGRlbm9taW5hdG9yIGhvbGRzIG9ubHkgdGhlIGFudGVjZWRlbnQsIG1pbGsuXCJ9XG5mZWVkYmFjayJ9
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_confidence">
+<p>Confidence(X → Y) is support(X and Y) divided by support(X). Here X is milk, Y is butter: both blanks should read <code>"butter"</code> and <code>"milk"</code>.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_confidence">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="" aria-label="1"></a>supp_milk_butter <span class="op">=</span> support({<span class="st">"milk"</span>, <span class="st">"butter"</span>}, groceries)</span>
+<span id="cb3-2"><a href="" aria-label="2"></a>supp_milk <span class="op">=</span> support({<span class="st">"milk"</span>}, groceries)</span>
+<span id="cb3-3"><a href="" aria-label="3"></a><span class="bu">round</span>(supp_milk_butter <span class="op">/</span> supp_milk, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>0.571</code>: below the 0.6 confidence bar the filtered table used — common does not by itself mean reliable.</p>
+</div>
+</section>
+<section id="exercise-4-is-it-worth-acting-on" class="slide level2">
+<h2>Exercise 4 — is it worth acting on?</h2>
+<div class="kicker">
+Hands-on 11 · D · lift makes the call
+</div>
+<div class="lede wide">
+<p>Fill in the blank to compute the lift of <strong>coffee → milk</strong>, then decide: is this rule worth a business acting on?</p>
+</div>
+<div>
+<div id="pyodide-19" class="exercise-cell">
+
+</div>
+<script type="pyodide-19-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSA0IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9saWZ0In0sImNvZGUiOiJzdXBwX2NvZmZlZV9taWxrID0gc3VwcG9ydCh7XCJjb2ZmZWVcIiwgXCJtaWxrXCJ9LCBncm9jZXJpZXMpXG5zdXBwX2NvZmZlZSA9IHN1cHBvcnQoe1wiY29mZmVlXCJ9LCBncm9jZXJpZXMpXG5zdXBwX21pbGsgPSBzdXBwb3J0KHtcIm1pbGtcIn0sIGdyb2NlcmllcylcbmNvbmZpZGVuY2UgPSBzdXBwX2NvZmZlZV9taWxrIC8gc3VwcF9jb2ZmZWVcbmxpZnQgPSBjb25maWRlbmNlIC8gX19fX19fXG5yb3VuZChsaWZ0LCAzKSJ9
+</script>
+</div>
+<script type="exercise-check-ex_lift-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2xpZnQifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgYWJzKGZsb2F0KHJlc3VsdCkgLSAxLjE0MykgPCAxZS0zXG5leGNlcHQgKFR5cGVFcnJvciwgVmFsdWVFcnJvcik6XG4gICAgb2sgPSBGYWxzZVxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3QuIDEuMTQzIC0tIGFib3ZlIDEsIHNvIGNvZmZlZSBkb2VzIHJhaXNlIHRoZSBjaGFuY2Ugb2YgbWlsayBzb21ld2hhdC4gQnV0IHRoaXMgcnVsZSdzIHN1cHBvcnQgaXMgb25seSAyIG9mIDEyIGJhc2tldHMsIHdlbGwgdW5kZXIgdGhlIDAuMjUgYmFyIHRoZSBmaWx0ZXJlZCB0YWJsZSB1c2VkIC0tIGEgcmVhbCBhc3NvY2lhdGlvbiwgc2VlbiB0b28gcmFyZWx5IHRvIGFjdCBvbiB3aXRoIGNvbmZpZGVuY2UuXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiBpdHNlbGYsIG5vdCBhIHByaW50KCkuXCJ9XG5lbHNlOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IGZcIlRoZSBib3ggcmV0dXJuZWQge3Jlc3VsdCFyfS4gTGlmdCBkaXZpZGVzIGNvbmZpZGVuY2UgYnkgc3VwcG9ydChZKSAtLSBoZXJlIFkgaXMgbWlsaywgc28gdGhlIGJsYW5rIGlzIHN1cHBfbWlsay5cIn1cbmZlZWRiYWNrIn0=
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_lift">
+<p>Lift(X → Y) is confidence(X → Y) divided by support(Y). Y here is milk, so the blank is <code>supp_milk</code>.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_lift">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="" aria-label="1"></a>lift <span class="op">=</span> confidence <span class="op">/</span> supp_milk</span>
+<span id="cb4-2"><a href="" aria-label="2"></a><span class="bu">round</span>(lift, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>1.143</code>: lift above 1 says a real association, but support of only 2 of 12 baskets is too thin to act on – Chapter 9’s caution about apple and beer cuts both ways: a strong number on too little data is as unreliable as a weak one.</p>
+</div>
+</section>
+<section id="what-to-keep-from-the-session" class="slide level2">
+<h2>What to keep from the session</h2>
+<div class="kicker">
+Hands-on 11 · D · takeaways
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#0E9F8E">
+<p><span class="t">Three tools, three jobs</span> <code>KMeans(n_clusters=k).fit(X)</code>, <code>linkage(X, method=...)</code> with <code>fcluster</code>, and a five-line <code>support()</code> function reused across every pair of items — the same three ideas Chapter 9 built by hand, run on data too large to check by hand.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Standardize before a distance</span> Every distance-based method here — K-means and hierarchical clustering both — needs its features on the same scale first, or the column with the widest range quietly decides the answer.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">A clustering answers a geometric question</span> Checking K-means and hierarchical clustering against the true species showed real agreement, but not a perfect match — a method that never saw the label cannot be expected to reproduce it exactly.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Take-home</span> The Chapter 11.1 and 11.2 notebooks for Colab carry the same walks, with Chapter 9’s worked examples alongside the library, a market-basket business reading, and the graded homework: 178 wines in 11.1, ten party-snack baskets in 11.2. Work there keeps; this page forgets when it is reloaded.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">Where this leaves us</span> Structure was found in numbers with no answer key at all. Chapter 12 turns to a different kind of data — text — and asks a related question of it: what does this piece of writing say, and how positively or negatively does it say it?</p>
+</div>
+</div></div>
+</section>
+<section id="questions" class="slide level2 divider" data-background-gradient="linear-gradient(103deg,#0B1730 0%,#16294B 55%,#1D3A6C 100%)">
+<h2>Questions</h2>
+<div class="kicker">
+Chapter 11 · hands-on · thank you
+</div>
+<div class="lede">
+<p>Next: Chapter 12 — text as data, and sentiment analysis.</p>
+</div>
+<p style="color:#8A9ABE;font-size:.42em;margin-top:2em">
+888102 Big Data Analytics · International College of Digital Innovation, Chiang Mai University<br> Photograph: “‘Mexican’ and Authentic Mexican” by sylvar (CC BY)
+</p>
+<p><span class="watermark">?</span></p>
+
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwic2Npa2l0LWxlYXJuIiwic2NpcHkiLCJtYXRwbG90bGliIl19fQ==
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJweW9kaWRlLTE5IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTkgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE5LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTktY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xOSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTksIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzE5ID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xOS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzE3ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTE3LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTcgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzE3LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTcuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMTQiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8xNCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0xNC1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzE0ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xNCwge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMTQgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzE0LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTEyIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTIgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEyLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTItY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xMiA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTIsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzEyID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xMi5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzEwID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xMC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEwLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMTAgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzEwLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS05IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTktY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV85ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl85LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTgtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV84ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl84LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS03IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTctY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV83ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl83LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS02IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTYtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV82ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl82LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS01IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTUtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV81ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl81LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNCA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTQtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV80ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl80LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0zIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTMtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8zID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8zLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0yIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMiA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTItY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8yID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8yLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoicHlvZGlkZU9qcyA9IHtcbiAgY29uc3Qge1xuICAgIFB5b2RpZGVFdmFsdWF0b3IsXG4gICAgUHlvZGlkZUVudmlyb25tZW50TWFuYWdlcixcbiAgICBzZXR1cFB5dGhvbixcbiAgICBzdGFydFB5b2RpZGVXb3JrZXIsXG4gICAgYjY0RGVjb2RlLFxuICAgIGNvbGxhcHNlUGF0aCxcbiAgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc3RhdHVzQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLXN0YXR1c1wiKTtcbiAgY29uc3QgaW5kaWNhdG9yQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaW5kaWNhdG9yQ29udGFpbmVyLmNsYXNzTGlzdC5yZW1vdmUoXCJkLW5vbmVcIik7XG5cbiAgbGV0IHN0YXR1c1RleHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHN0YXR1c1RleHQuY2xhc3NMaXN0ID0gXCJleGVyY2lzZS1sb2FkaW5nLWRldGFpbHNcIjtcbiAgc3RhdHVzVGV4dCA9IHN0YXR1c0NvbnRhaW5lci5hcHBlbmRDaGlsZChzdGF0dXNUZXh0KTtcbiAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbml0aWFsaXNlYDtcblxuICAvLyBIb2lzdCBpbmRpY2F0b3Igb3V0IGZyb20gZmluYWwgc2xpZGUgd2hlbiBydW5uaW5nIHVuZGVyIHJldmVhbFxuICBjb25zdCByZXZlYWxTdGF0dXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCAuZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGlmIChyZXZlYWxTdGF0dXMpIHtcbiAgICByZXZlYWxTdGF0dXMucmVtb3ZlKCk7XG4gICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgPiAuc2xpZGVzXCIpLmFwcGVuZENoaWxkKHJldmVhbFN0YXR1cyk7XG4gIH1cblxuICAvLyBNYWtlIGFueSByZXZlYWwgc2xpZGVzIHdpdGggbGl2ZSBjZWxscyBzY3JvbGxhYmxlXG4gIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoXCIucmV2ZWFsIC5leGVyY2lzZS1jZWxsXCIpLmZvckVhY2goKGVsKSA9PiB7XG4gICAgZWwuY2xvc2VzdCgnc2VjdGlvbi5zbGlkZScpLmNsYXNzTGlzdC5hZGQoXCJzY3JvbGxhYmxlXCIpO1xuICB9KVxuXG4gIC8vIFB5b2RpZGUgc3VwcGxlbWVudGFsIGRhdGEgYW5kIG9wdGlvbnNcbiAgY29uc3QgZGF0YUNvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS1kYXRhXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZGF0YSA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGRhdGFDb250ZW50KSk7XG5cbiAgLy8gR3JhYiBsaXN0IG9mIHJlc291cmNlcyB0byBiZSBkb3dubG9hZGVkXG4gIGNvbnN0IGZpbGVzQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ2ZnMtZmlsZVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGZpbGVzID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZmlsZXNDb250ZW50KSk7XG5cbiAgbGV0IHB5b2RpZGVQcm9taXNlID0gKGFzeW5jICgpID0+IHtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIFB5b2RpZGVgO1xuICAgIGNvbnN0IHB5b2RpZGUgPSBhd2FpdCBzdGFydFB5b2RpZGVXb3JrZXIoZGF0YS5vcHRpb25zKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogbWljcm9waXBgO1xuICAgIGF3YWl0IHB5b2RpZGUubG9hZFBhY2thZ2UoXCJtaWNyb3BpcFwiKTtcbiAgICBjb25zdCBtaWNyb3BpcCA9IGF3YWl0IHB5b2RpZGUucHlpbXBvcnQoXCJtaWNyb3BpcFwiKTtcbiAgICBhd2FpdCBkYXRhLnBhY2thZ2VzLnBrZ3MubWFwKChwa2cpID0+ICgpID0+IHtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogJHtwa2d9YDtcbiAgICAgIHJldHVybiBtaWNyb3BpcC5pbnN0YWxsKHBrZyk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG4gICAgYXdhaXQgbWljcm9waXAuZGVzdHJveSgpO1xuXG4gICAgLy8gRG93bmxvYWQgYW5kIGluc3RhbGwgcmVzb3VyY2VzXG4gICAgYXdhaXQgZmlsZXMubWFwKChmaWxlKSA9PiBhc3luYyAoKSA9PiB7XG4gICAgICBjb25zdCBuYW1lID0gZmlsZS5zdWJzdHJpbmcoZmlsZS5sYXN0SW5kZXhPZignLycpICsgMSk7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHJlc291cmNlOiAke25hbWV9YDtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goZmlsZSk7XG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgQ2FuJ3QgZG93bmxvYWQgXFxgJHtmaWxlfVxcYC4gRXJyb3IgJHtyZXNwb25zZS5zdGF0dXN9OiBcIiR7cmVzcG9uc2Uuc3RhdHVzVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5hcnJheUJ1ZmZlcigpO1xuXG4gICAgICAvLyBTdG9yZSBVUkxzIGluIHRoZSBjd2Qgd2l0aG91dCBhbnkgc3ViZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgaWYgKGZpbGUuaW5jbHVkZXMoXCI6Ly9cIikpIHtcbiAgICAgICAgZmlsZSA9IG5hbWU7XG4gICAgICB9XG5cbiAgICAgIC8vIENvbGxhcHNlIGhpZ2hlciBkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBmaWxlID0gY29sbGFwc2VQYXRoKGZpbGUpO1xuXG4gICAgICAvLyBDcmVhdGUgZGlyZWN0b3J5IHRyZWUsIGlnbm9yaW5nIFwiZGlyZWN0b3J5IGV4aXN0c1wiIFZGUyBlcnJvcnNcbiAgICAgIGNvbnN0IHBhcnRzID0gZmlsZS5zcGxpdCgnLycpLnNsaWNlKDAsIC0xKTtcbiAgICAgIGxldCBwYXRoID0gJyc7XG4gICAgICB3aGlsZSAocGFydHMubGVuZ3RoID4gMCkge1xuICAgICAgICBwYXRoICs9IHBhcnRzLnNoaWZ0KCkgKyAnLyc7XG4gICAgICAgIHRyeSB7XG4gICAgICAgICAgYXdhaXQgcHlvZGlkZS5GUy5ta2RpcihwYXRoKTtcbiAgICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICAgIGlmIChlLmVycm5vICE9PSAyMCkge1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgICAgIGNvbnN0IGVycm9yVGV4dCA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5VVEY4VG9TdHJpbmcoZXJyb3JUZXh0UHRyKTtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8vIFdyaXRlIHRoaXMgZmlsZSB0byB0aGUgVkZTXG4gICAgICB0cnkge1xuICAgICAgICByZXR1cm4gYXdhaXQgcHlvZGlkZS5GUy53cml0ZUZpbGUoZmlsZSwgbmV3IFVpbnQ4QXJyYXkoZGF0YSkpO1xuICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICBpZiAoZS5uYW1lICE9PSBcIkVycm5vRXJyb3JcIikgdGhyb3cgZTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3IgJHtlLmVycm5vfSBcIiR7ZXJyb3JUZXh0fVwiLmApO1xuICAgICAgfVxuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBQeW9kaWRlIGVudmlyb25tZW50IHNldHVwYDtcbiAgICBhd2FpdCBzZXR1cFB5dGhvbihweW9kaWRlKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiBweW9kaWRlO1xuICB9KSgpLmNhdGNoKChlcnIpID0+IHtcbiAgICBzdGF0dXNUZXh0LnN0eWxlLmNvbG9yID0gXCJ2YXIoLS1leGVyY2lzZS1lZGl0b3ItaGwtZXIsICNBRDAwMDApXCI7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGVyci5tZXNzYWdlO1xuICAgIC8vaW5kaWNhdG9yQ29udGFpbmVyLnF1ZXJ5U2VsZWN0b3IoXCIuc3Bpbm5lci1ncm93XCIpLmNsYXNzTGlzdC5hZGQoXCJkLW5vbmVcIik7XG4gICAgdGhyb3cgZXJyO1xuICB9KTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHB5b2RpZGVQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBQeW9kaWRlRXZhbHVhdG9yKHB5b2RpZGUsIGNvbnRleHQpO1xuICAgIGF3YWl0IGV2YWx1YXRvci5wcm9jZXNzKGlucHV0cyk7XG4gICAgcmV0dXJuIGV2YWx1YXRvci5jb250YWluZXI7XG4gIH1cblxuICByZXR1cm4ge1xuICAgIHB5b2RpZGVQcm9taXNlLFxuICAgIHJlbmRlcmVkT2pzLFxuICAgIHByb2Nlc3MsXG4gIH07XG59XG4ifV19
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJpbWFnZXMvZ3JvY2VyeS1zdG9yZS1zaGVsdmVzLW9yZ2FuaXplZC0xLmpwZyIsImltYWdlcy9DUkVESVRTLnR4dCIsImltYWdlcy9rbWVhbnNfaXRlcmF0aW9ucy5wbmciLCJpbWFnZXMvY29mZmVlLWN1cC1zdWdhci1jdWJlcy0zLmpwZyIsImltYWdlcy9zaG9wcGluZy1tYWxsLWNyb3dkLWN1c3RvbWVycy0xLmpwZyIsImltYWdlcy9zdXBlcm1hcmtldC1jaGVja291dC1ncm9jZXJpZXMtMi5qcGciLCJpbWFnZXMvZGltX3JlZHVjdGlvbi5wbmciLCJpbWFnZXMvc3VwZXJtYXJrZXQtY3VzdG9tZXJzLXNob3BwaW5nLWNhcnRzLTIuanBnIiwiaW1hZ2VzL3N1cGVybWFya2V0LWN1c3RvbWVycy1zaG9wcGluZy1jYXJ0cy0zLmpwZyIsImltYWdlcy9hbm9tYWx5X2RldGVjdGlvbi5wbmciXQ==
+</script>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>888102 Big Data Analytics · Chapter 11 hands-on — Clustering and Association Rules in Python · ICDI, Chiang Mai University</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="ch11_Hands_On_Unsupervised_Learning_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true,"titleSelector":"h2"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 5.5e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W119
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../../..";
+    window._ojs.paths.runtimeToRoot = "../../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
