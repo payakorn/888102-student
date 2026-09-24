@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/tabby.min.js"></script>
+<script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/popper.min.js"></script>
+<script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Piyachat Udomwong, Ph.D.&nbsp;· Payakorn Saksuriya, Ph.D.">
+  <title>888102 · Chapter 12.2 — Hands-on: Aspects, Emotions and a Learned Classifier in Python</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/dist/theme/quarto-067abc2d7b318770d5daa04674464e14.css">
+  <link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+<!-- Disables Reveal 5's automatic "scroll view" switch on narrow screens
+     (default scrollActivationWidth: 435px) before Reveal.initialize() ever
+     runs -- see the long comment in widgets.html for why. Two things were
+     tried and failed first (2026-09-16):
+       - `scroll-activation-width: 0` in the revealjs format YAML: this
+         Quarto version never forwards the key into Reveal.initialize()
+         (checked the rendered init call directly).
+       - `Reveal.configure({ scrollActivationWidth: null })` from
+         include-after-body (widgets.html): runs too late -- scroll view has
+         already activated by then, synchronously inside Reveal.initialize()
+         itself, and Reveal's own `deactivate()` path throws (a "Cannot read
+         properties of undefined (reading 'classList')" internal error) when
+         called after the fact, so nothing can undo it once active.
+     This intercepts the `window.Reveal` assignment the instant reveal.js's
+     UMD wrapper makes it (`(globalThis).Reveal = t()`), which happens later
+     in body -- include-before-body runs first, guaranteed -- and wraps
+     `.initialize` so scrollActivationWidth is forced null in the very
+     config object Reveal first sees, before its own init logic ever reads
+     the default. -->
+<script>
+(function () {
+  var realReveal;
+  Object.defineProperty(window, "Reveal", {
+    configurable: true,
+    get: function () { return realReveal; },
+    set: function (r) {
+      realReveal = r;
+      var origInitialize = r.initialize.bind(r);
+      r.initialize = function (config) {
+        config = config || {};
+        config.scrollActivationWidth = null;
+        return origInitialize(config);
+      };
+    }
+  });
+})();
+</script>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="aspects-emotions-and-a-learned-classifier-in-python" class="slide level2 cover" data-background-image="images/online-customer-review-stars-2.jpg" data-background-size="cover" data-background-position="50% 40%" data-background-color="#0B1730">
+<h2>Aspects, Emotions and a Learned Classifier in Python</h2>
+<div class="scrim cover-scrim">
+
+</div>
+<div class="kicker">
+Chapter 12.2 · hands-on session · 888102 Big Data Analytics
+</div>
+<div class="lede">
+<p>The thirty reviews of 12.1, each with its compound score and label, read four more ways: in five levels, by emotion, by aspect, and by a classifier that learns from the star ratings. The complaints counted per aspect are the shop’s decision. Every code box on these slides runs in the browser.</p>
+</div>
+<div class="byline">
+Piyachat Udomwong, Ph.D.<br>Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+</div>
+<p><span class="cover-credit">Photo: “Reviews of a Negative Customer Experience” by Zuko.io Images (CC BY)</span></p>
+<aside class="notes">
+<p>This deck follows the 12.2 lecture deck in the same class, and the hands-on of 12.1 in the class before. Its first cell rebuilds everything 12.1 made, so it does not depend on that deck still being open. The Python engine and the VADER lexicon load once, at the start.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="how-this-session-works" class="slide level2">
+<h2>How this session works</h2>
+<div class="kicker">
+Hands-on 12.2 · before the first line of code
+</div>
+<div class="cards" style="--cols:4">
+<div class="card" style="--accent:#2563EB">
+<p><span class="t">The code runs in the browser</span> Every code box is live. Press <strong>Run Code</strong> (or <code>Ctrl</code>/<code>⌘</code> + <code>Enter</code> inside the box) and the result appears below it. Nothing is installed on the computer.</p>
+</div>
+<div class="card" style="--accent:#0891B2">
+<p><span class="t">The boxes share one workspace</span> A variable made in one box can be used in the next. Run the boxes <strong>in order</strong>: a later box that names a variable no earlier box has made stops with a <code>NameError</code>.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Everything can be edited</span> Change a sentence, add a word to a list, and run again. <strong>Start Over</strong> restores the original code of that box.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">The engine loads once</span> The first time the page opens, Python, its packages and the sentiment lexicon are downloaded — about fifteen seconds, shown at the bottom of the page. The <strong>Run Code</strong> button turns blue when it is ready.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="watch">
+<p><span class="lbl">Two limits</span> The page needs internet, because the Python engine comes from the web when it opens. And the page <strong>forgets</strong> everything when it is reloaded: variables, edits, results. For work to keep, use the Chapter 12 notebook in Colab.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">The exercises</span> The last part of the session has four short exercises. Each has a blank <code>______</code> to fill, a <strong>Show Hint</strong> button, a <strong>Show Solution</strong> button, and a check that marks the answer right or wrong when it is run.</p>
+</div>
+</div></div>
+</section>
+<section id="the-session-in-four-parts" class="slide level2">
+<h2>The session in four parts</h2>
+<div class="kicker">
+Hands-on 12.2 · roadmap
+</div>
+<div class="lede wide">
+<p>12.1 ended with one label per review. Each part of this session recovers something the single label threw away — how strong, which emotion, which aspect — and the last part lets a classifier find the words the lexicon lacks.</p>
+</div>
+<div class="flow">
+<div class="step" style="--accent:#0E9F8E">
+<b>A · Finer labels</b>The labels of 12.1 rebuilt in one cell; five fine-grained levels with <code>pd.cut</code>; a hand-written emotion lexicon.
+</div>
+<div class="step" style="--accent:#2563EB">
+<b>B · Aspects and the business insight</b>One review split into clauses and scored per aspect; every clause of every review counted; the complaints per aspect, drawn.
+</div>
+<div class="step" style="--accent:#7C3AED">
+<b>C · A classifier that learns</b>A Naive Bayes pipeline trained on the star labels, predicting new reviews; the words it learned, as a table.
+</div>
+<div class="step" style="--accent:#F59E0B">
+<b>D · Exercises</b>Four short graded exercises, each with a hint and a solution.
+</div>
+</div>
+<div class="note">
+<p><span class="lbl">Two tools, again</span> The same <code>SentimentIntensityAnalyzer</code> scores every clause, and <code>pd.cut</code> turns its compound score into five levels. In Part C, <code>make_pipeline(CountVectorizer(), MultinomialNB())</code> is the bag of words of 12.1 followed by a classifier — Chapter 10’s <code>fit</code> and <code>predict</code>, with text as the input.</p>
+</div>
+</section>
+<section id="the-labels-of-12.1-rebuilt" class="slide level2">
+<h2>The labels of 12.1, rebuilt</h2>
+<div class="kicker">
+Hands-on 12.2 · A · picking up from 12.1
+</div>
+<div class="lede wide">
+<p>The thirty reviews, the lexicon and the <code>sentiment_of</code> function of 12.1, in one cell — so this session does not depend on the other deck still being open. The cell ends where 12.1 ended: 15 positive, 13 negative, 2 neutral.</p>
+</div>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImF1dG9ydW4iOnRydWUsImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHBhbmRhcyBhcyBwZFxuZnJvbSBza2xlYXJuLmZlYXR1cmVfZXh0cmFjdGlvbi50ZXh0IGltcG9ydCBDb3VudFZlY3Rvcml6ZXJcbmZyb20gdmFkZXJTZW50aW1lbnQudmFkZXJTZW50aW1lbnQgaW1wb3J0IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyXG5cbnJldmlld3MgPSBwZC5EYXRhRnJhbWUoW1xuICAgIFtcIlRoZSBub29kbGVzIHdlcmUgZGVsaWNpb3VzIGFuZCB0aGUgYnJvdGggd2FzIHJpY2guXCIsIDVdLFxuICAgIFtcIkdyZWF0IHZhbHVlIGZvciB0aGUgcHJpY2UsIGEgYmlnIHBvcnRpb24gZm9yIDYwIGJhaHQuXCIsIDVdLFxuICAgIFtcIkZyaWVuZGx5IHN0YWZmIGFuZCB2ZXJ5IHF1aWNrIHNlcnZpY2UuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgZmFzdCBhbmQgdGhlIGZvb2QgYXJyaXZlZCBob3QsIHBlcmZlY3QuXCIsIDVdLFxuICAgIFtcIlRoZSBhcHAgaXMgZWFzeSB0byB1c2UgYW5kIG9yZGVyaW5nIHRvb2sgb25lIG1pbnV0ZS5cIiwgNF0sXG4gICAgW1wiVGFzdHkgZm9vZCwgZmFpciBwcmljZSwgd2lsbCBvcmRlciBhZ2Fpbi5cIiwgNV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgZnJpZW5kbHkgYW5kIGFycml2ZWQgZWFybHkuXCIsIDRdLFxuICAgIFtcIkV4Y2VsbGVudCBzb3VwLCB0aGUgYmVzdCBpbiB0b3duLlwiLCA1XSxcbiAgICBbXCJHb29kIHBvcnRpb25zIGFuZCBhIGZhaXIgcHJpY2UuXCIsIDRdLFxuICAgIFtcIlRoZSBzdGFmZiB3ZXJlIGhlbHBmdWwgd2hlbiBJIGNoYW5nZWQgbXkgb3JkZXIuXCIsIDRdLFxuICAgIFtcIkZhc3QgZGVsaXZlcnkgYW5kIHRoZSBwYWNrYWdpbmcga2VwdCBldmVyeXRoaW5nIHdhcm0uXCIsIDVdLFxuICAgIFtcIkxvdmUgdGhlIG5ldyBhcHAsIHRoZSBvcmRlciBidXR0b24gaXMgZWFzeSB0byBmaW5kLlwiLCA1XSxcbiAgICBbXCJGcmVzaCB2ZWdldGFibGVzIGFuZCBhIHdvbmRlcmZ1bCBzcGljeSBicm90aC5cIiwgNV0sXG4gICAgW1wiQSBmYWlyIHByaWNlIGZvciBzdWNoIGEgZ2VuZXJvdXMgYm93bC5cIiwgNF0sXG4gICAgW1wiVGhlIHNlcnZpY2Ugd2FzIHF1aWNrIGFuZCB0aGUgZm9vZCB3YXMgZ3JlYXQuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB0b29rIHR3byBob3VycyBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiLCAxXSxcbiAgICBbXCJUZXJyaWJsZSBzZXJ2aWNlLCB0aGUgc3RhZmYgaWdub3JlZCB1cy5cIiwgMV0sXG4gICAgW1wiT3ZlcnByaWNlZCBhbmQgZGlzYXBwb2ludGluZyBmb3Igc3VjaCBhIHNtYWxsIHBvcnRpb24uXCIsIDJdLFxuICAgIFtcIlRoZSBhcHAgY3Jhc2hlcyBldmVyeSB0aW1lIEkgb3BlbiBpdC5cIiwgMV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgcnVkZSBhbmQgdGhlIG9yZGVyIHdhcyB3cm9uZy5cIiwgMV0sXG4gICAgW1wiVGhlIGJyb3RoIHdhcyBibGFuZCBhbmQgdGhlIG5vb2RsZXMgd2VyZSBhIGRpc2FwcG9pbnRtZW50LlwiLCAyXSxcbiAgICBbXCJTbG93IHNlcnZpY2UgYW5kIGEgZGlydHkgdGFibGUuXCIsIDJdLFxuICAgIFtcIlRoZSBwcmljZSB3ZW50IHVwIGFnYWluLCBub3Qgd29ydGggaXQgYW55bW9yZS5cIiwgMl0sXG4gICAgW1wiTGF0ZSBkZWxpdmVyeSBhbmQgYSB1c2VsZXNzIHBob25lIGxpbmUsIG5vYm9keSBhbnN3ZXJlZC5cIiwgMV0sXG4gICAgW1wiVGhlIGFwcCBpcyBhIG1lc3MsIGl0IGxvZ2dlZCBtZSBvdXQgdHdpY2UgZHVyaW5nIHBheW1lbnQuXCIsIDJdLFxuICAgIFtcIkF3ZnVsIGZvb2QsIHRoZSBtZWF0IHdhcyBub3QgZnJlc2guXCIsIDFdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgbGF0ZSBhZ2FpbiBhbmQgdGhlIGRyaXZlciB3YXMgcnVkZS5cIiwgMV0sXG4gICAgW1wiUG9vciB2YWx1ZSwgdGhlIHBvcnRpb24gd2FzIHRpbnkgZm9yIHRoZSBwcmljZS5cIiwgMl0sXG4gICAgW1wiQmFkIHBhY2thZ2luZywgdGhlIGJhZyB3YXMgbGVha2luZyBhbmQgdGhlIG9yZGVyIGFycml2ZWQgbGF0ZS5cIiwgMV0sXG4gICAgW1wiVGhlIG5vb2RsZXMgd2VyZSBkZWxpY2lvdXMsIGJ1dCB0aGUgZGVsaXZlcnkgd2FzIGEgZGlzYXN0ZXIsIHR3byBob3VycyBsYXRlLlwiLCAyXSxcbl0sIGNvbHVtbnM9W1wicmV2aWV3XCIsIFwic3RhcnNcIl0pXG5yZXZpZXdzLmluZGV4ID0gcmFuZ2UoMSwgMzEpXG5wZC5zZXRfb3B0aW9uKFwiZGlzcGxheS5tYXhfY29sd2lkdGhcIiwgODApXG5cbmFuYWx5emVyID0gU2VudGltZW50SW50ZW5zaXR5QW5hbHl6ZXIoKVxudG9rZW5pemUgPSBDb3VudFZlY3Rvcml6ZXIoKS5idWlsZF9hbmFseXplcigpICAgICAgICAgICMgbG93ZXJjYXNlLCBkcm9wIHB1bmN0dWF0aW9uLCBzcGxpdFxuXG5kZWYgc2VudGltZW50X29mKHRleHQpOlxuICAgIGNvbXBvdW5kID0gYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHRleHQpW1wiY29tcG91bmRcIl1cbiAgICBpZiBjb21wb3VuZCA+PSAwLjA1OlxuICAgICAgICByZXR1cm4gXCJwb3NpdGl2ZVwiXG4gICAgaWYgY29tcG91bmQgPD0gLTAuMDU6XG4gICAgICAgIHJldHVybiBcIm5lZ2F0aXZlXCJcbiAgICByZXR1cm4gXCJuZXV0cmFsXCJcblxucmV2aWV3c1tcImNvbXBvdW5kXCJdID0gW2FuYWx5emVyLnBvbGFyaXR5X3Njb3Jlcyh0KVtcImNvbXBvdW5kXCJdIGZvciB0IGluIHJldmlld3NbXCJyZXZpZXdcIl1dXG5yZXZpZXdzW1wic2VudGltZW50XCJdID0gcmV2aWV3c1tcInJldmlld1wiXS5hcHBseShzZW50aW1lbnRfb2YpXG5wcmludChcIjMwIHJldmlld3MgbGFiZWxlZDpcIiwgXCIsIFwiLmpvaW4oZlwie2xhYmVsfSB7bn1cIiBmb3IgbGFiZWwsIG4gaW4gcmV2aWV3c1tcInNlbnRpbWVudFwiXS52YWx1ZV9jb3VudHMoKS5pdGVtcygpKSkifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span> The same 15 / 13 / 2 as the end of 12.1. <code>reviews</code> now carries a <code>compound</code> and a <code>sentiment</code> column, <code>analyzer</code> holds the lexicon, <code>sentiment_of</code> labels any text, and <code>tokenize</code> cuts a text into lowercase words. Everything below builds on these four.</p>
+</div>
+</section>
+<section id="fine-grained-sentiment-analysis" class="slide level2">
+<h2>Fine-grained sentiment analysis</h2>
+<div class="kicker">
+Hands-on 12.2 · A · five levels from the same score
+</div>
+<div class="lede wide">
+<p><strong>Fine-grained sentiment analysis</strong> uses the same compound score but cuts it into five levels instead of three, with ±0.5 separating <em>very positive</em> and <em>very negative</em> from the rest. <code>pd.cut</code> does the cutting: the <code>bins</code> are the edges, the <code>labels</code> the names between them.</p>
+</div>
+<div>
+<div id="pyodide-2" class="exercise-cell">
+
+</div>
+<script type="pyodide-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicmV2aWV3c1tcImxldmVsXCJdID0gcGQuY3V0KHJldmlld3NbXCJjb21wb3VuZFwiXSwgYmlucz1bLTEsIC0wLjUsIC0wLjA1LCAwLjA1LCAwLjUsIDFdLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBsYWJlbHM9W1widmVyeSBuZWdhdGl2ZVwiLCBcIm5lZ2F0aXZlXCIsIFwibmV1dHJhbFwiLCBcInBvc2l0aXZlXCIsIFwidmVyeSBwb3NpdGl2ZVwiXSlcblxucHJpbnQocmV2aWV3c1tcImxldmVsXCJdLnZhbHVlX2NvdW50cygpLnJlaW5kZXgoW1widmVyeSBuZWdhdGl2ZVwiLCBcIm5lZ2F0aXZlXCIsIFwibmV1dHJhbFwiLCBcInBvc2l0aXZlXCIsIFwidmVyeSBwb3NpdGl2ZVwiXSksIFwiXFxuXCIpXG5yZXZpZXdzLmxvY1tbMSwgMywgMTYsIDIyLCAxN10sIFtcInJldmlld1wiLCBcImNvbXBvdW5kXCIsIFwic2VudGltZW50XCIsIFwibGV2ZWxcIl1dIn0=
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>9 very positive, 6 positive, 2 neutral, 7 negative, 6 very negative</strong> — the lecture’s table, computed. The standard labels said 15 and 13; the fine cut says most of the praise is strong and the complaints are split between mild and furious.</li>
+<li><strong>Review 1</strong> (0.81) is <em>very positive</em> with two scored words; <strong>review 3</strong> (0.49) stays merely <em>positive</em> because <em>quick</em> is not in the lexicon; <strong>review 17</strong> (−0.66) is <em>very negative</em> with <em>terrible</em> and <em>ignored</em>.</li>
+</ul>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">Try it</span> Move the inner edges from ±0.05 to ±0.2 and run again: the two neutrals become several, because mildly worded reviews now fall in the middle band. Where the edges sit is a decision, not a fact.</p>
+</div>
+</div></div>
+</section>
+<section id="emotion-detection" class="slide level2">
+<h2>Emotion detection</h2>
+<div class="kicker">
+Hands-on 12.2 · A · which emotion, not only which sign
+</div>
+<div class="lede wide">
+<p><strong>Emotion detection</strong> asks a finer question than positive or negative: does the text show happiness, anger, frustration? The simplest tool is again a lexicon — but one that maps words to an emotion instead of a score. A small one is written here by hand.</p>
+</div>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZW1vdGlvbl93b3JkcyA9IHtcImhhcHBpbmVzc1wiOiAgIFtcImxvdmVcIiwgXCJkZWxpY2lvdXNcIiwgXCJ3b25kZXJmdWxcIiwgXCJleGNlbGxlbnRcIiwgXCJncmVhdFwiLCBcInBlcmZlY3RcIl0sXG4gICAgICAgICAgICAgICAgIFwiYW5nZXJcIjogICAgICAgW1wicnVkZVwiLCBcInRlcnJpYmxlXCIsIFwiYXdmdWxcIiwgXCJpZ25vcmVkXCIsIFwiZGlzYXN0ZXJcIl0sXG4gICAgICAgICAgICAgICAgIFwiZnJ1c3RyYXRpb25cIjogW1wiY3Jhc2hlc1wiLCBcImxhdGVcIiwgXCJhZ2FpblwiLCBcIndyb25nXCIsIFwidHdpY2VcIiwgXCJtZXNzXCJdfVxuXG5kZWYgZW1vdGlvbl9vZih0ZXh0KTpcbiAgICB0b2tlbnMgPSB0b2tlbml6ZSh0ZXh0KVxuICAgIGZvdW5kID0gW2Vtb3Rpb24gZm9yIGVtb3Rpb24sIHdvcmRzIGluIGVtb3Rpb25fd29yZHMuaXRlbXMoKSBpZiBhbnkodyBpbiB0b2tlbnMgZm9yIHcgaW4gd29yZHMpXVxuICAgIHJldHVybiBcIiwgXCIuam9pbihmb3VuZCkgaWYgZm91bmQgZWxzZSBcIm5vbmUgZGV0ZWN0ZWRcIlxuXG5mb3IgbiBpbiBbMTIsIDE3LCAxOSwgMjddOlxuICAgIHByaW50KGZcInJldmlldyB7bn06IHtyZXZpZXdzLmxvY1tuLCAncmV2aWV3J119XFxuICAgLT4ge2Vtb3Rpb25fb2YocmV2aWV3cy5sb2NbbiwgJ3JldmlldyddKX1cIikifQ==
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>Review 12</strong> (<em>Love the new app</em>) shows happiness; <strong>17</strong> (<em>Terrible service, the staff ignored us</em>) shows anger; <strong>19</strong> (<em>the app crashes every time</em>) shows frustration.</li>
+<li><strong>Review 27</strong> shows both anger and frustration — <em>rude</em> and <em>late again</em>. A review can carry more than one emotion, and a shop reads an angry customer and a frustrated one differently.</li>
+<li><strong>Real emotion lexicons</strong> hold thousands of words per emotion; this one holds six, and it works only because the words were chosen from these reviews.</li>
+</ul>
+</div>
+</section>
+<section id="aspect-based-sentiment-analysis" class="slide level2">
+<h2>Aspect-based sentiment analysis</h2>
+<div class="kicker">
+Hands-on 12.2 · B · one review, several opinions
+</div>
+<div class="lede wide">
+<p>Review 30 is <em>negative</em> as a whole, yet it praises the noodles. <strong>Aspect-based sentiment analysis</strong> splits a review into clauses, names the <strong>aspect</strong> each clause is about — food, price, service, delivery, the app — and scores each clause on its own.</p>
+</div>
+<div>
+<div id="pyodide-4" class="exercise-cell">
+
+</div>
+<script type="pyodide-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5cbmFzcGVjdF93b3JkcyA9IHtcImRlbGl2ZXJ5XCI6IFtcImRlbGl2ZXJ5XCIsIFwiZHJpdmVyXCIsIFwiYXJyaXZlZFwiLCBcInBhY2thZ2luZ1wiLCBcImJhZ1wiLCBcInBob25lXCIsIFwibGF0ZVwiXSxcbiAgICAgICAgICAgICAgICBcImFwcFwiOiAgICAgIFtcImFwcFwiLCBcImJ1dHRvblwiLCBcIm9yZGVyaW5nXCIsIFwicGF5bWVudFwiLCBcImxvZ2dlZFwiXSxcbiAgICAgICAgICAgICAgICBcInNlcnZpY2VcIjogIFtcInN0YWZmXCIsIFwic2VydmljZVwiLCBcInRhYmxlXCJdLFxuICAgICAgICAgICAgICAgIFwicHJpY2VcIjogICAgW1wicHJpY2VcIiwgXCJ2YWx1ZVwiLCBcImJhaHRcIiwgXCJvdmVycHJpY2VkXCIsIFwid29ydGhcIl0sXG4gICAgICAgICAgICAgICAgXCJmb29kXCI6ICAgICBbXCJub29kbGVzXCIsIFwiYnJvdGhcIiwgXCJzb3VwXCIsIFwiZm9vZFwiLCBcIm1lYXRcIiwgXCJ2ZWdldGFibGVzXCIsIFwicG9ydGlvblwiLCBcInBvcnRpb25zXCIsIFwiYm93bFwiXX1cblxuZGVmIGNsYXVzZXNfb2YodGV4dCk6XG4gICAgcmV0dXJuIFtjLnN0cmlwKCkgZm9yIGMgaW4gcmUuc3BsaXQoclwiLHxcXGJidXRcXGJcIiwgdGV4dCkgaWYgYy5zdHJpcCgpXSAgICAjIGN1dCBhdCBjb21tYXMgYW5kIGF0IFwiYnV0XCJcblxuZGVmIGFzcGVjdF9vZihjbGF1c2UpOlxuICAgIHRva2VucyA9IHRva2VuaXplKGNsYXVzZSlcbiAgICBmb3IgYXNwZWN0LCB3b3JkcyBpbiBhc3BlY3Rfd29yZHMuaXRlbXMoKTpcbiAgICAgICAgaWYgYW55KHcgaW4gdG9rZW5zIGZvciB3IGluIHdvcmRzKTpcbiAgICAgICAgICAgIHJldHVybiBhc3BlY3RcbiAgICByZXR1cm4gXCJnZW5lcmFsXCJcblxuZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHJldmlld3MubG9jWzMwLCBcInJldmlld1wiXSk6XG4gICAgcHJpbnQoZlwie2NsYXVzZSFyOjM1fSAtPiB7YXNwZWN0X29mKGNsYXVzZSk6OX0ge3NlbnRpbWVudF9vZihjbGF1c2UpfVwiKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong><em>The noodles were delicious</em></strong> → food, positive. <strong><em>the delivery was a disaster</em></strong> → delivery, negative. The one review now carries two opinions, one per aspect, and the shop knows what to keep and what to fix.</li>
+<li><strong><em>two hours late</em></strong> → delivery, but neutral: <em>late</em> names the aspect, yet it has no score in the lexicon.</li>
+<li><strong>The aspect list is written by hand</strong>, one list of key words per aspect, for this shop. A hotel would list <em>room</em>, <em>pool</em>, <em>breakfast</em>; a software company <em>interface</em>, <em>speed</em>, <em>support</em>.</li>
+</ul>
+</div>
+</section>
+<section id="complaints-by-aspect" class="slide level2">
+<h2>Complaints by aspect</h2>
+<div class="kicker">
+Hands-on 12.2 · B · step 6 · from labels to a business insight
+</div>
+<div class="lede wide">
+<p>Every review is cut into clauses, every clause is given an aspect and a label, and the negative clauses are counted per aspect. That count is the <strong>interpretation</strong> step of the workflow: it says where the shop is losing customers.</p>
+</div>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG1hdHBsb3RsaWJcbm1hdHBsb3RsaWIudXNlKFwiQWdnXCIpICAgICAgICAgICAgICAgICAgICAgICAgIyBkcmF3IGludG8gYSBwaWN0dXJlIGZpbGUsIG5vdCBhIHdpbmRvd1xuaW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdFxuZnJvbSBJUHl0aG9uLmRpc3BsYXkgaW1wb3J0IEltYWdlXG5cbnJvd3MgPSBbKG4sIGNsYXVzZSwgYXNwZWN0X29mKGNsYXVzZSksIHNlbnRpbWVudF9vZihjbGF1c2UpKVxuICAgICAgICBmb3IgbiwgdGV4dCBpbiByZXZpZXdzW1wicmV2aWV3XCJdLml0ZW1zKCkgZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHRleHQpXVxubWVudGlvbnMgPSBwZC5EYXRhRnJhbWUocm93cywgY29sdW1ucz1bXCJyZXZpZXdcIiwgXCJjbGF1c2VcIiwgXCJhc3BlY3RcIiwgXCJzZW50aW1lbnRcIl0pXG5cbmJ5X2FzcGVjdCA9IG1lbnRpb25zLmdyb3VwYnkoXCJhc3BlY3RcIilbXCJzZW50aW1lbnRcIl0udmFsdWVfY291bnRzKCkudW5zdGFjayhmaWxsX3ZhbHVlPTApXG5jb21wbGFpbnRzID0gbWVudGlvbnNbbWVudGlvbnNbXCJzZW50aW1lbnRcIl0gPT0gXCJuZWdhdGl2ZVwiXVtcImFzcGVjdFwiXS52YWx1ZV9jb3VudHMoKVxucHJpbnQoYnlfYXNwZWN0LCBcIlxcblwiKVxucHJpbnQoXCJuZWdhdGl2ZSBjbGF1c2VzIHBlciBhc3BlY3Q6XCIpXG5wcmludChjb21wbGFpbnRzKVxuXG5wbHQuZmlndXJlKGZpZ3NpemU9KDYuNSwgMy4yKSlcbnBsdC5iYXJoKGNvbXBsYWludHMuaW5kZXhbOjotMV0sIGNvbXBsYWludHMudmFsdWVzWzo6LTFdLCBjb2xvcj1cIiNGNDNGNUVcIilcbnBsdC54bGFiZWwoXCJOZWdhdGl2ZSBjbGF1c2VzXCIpXG5wbHQudGl0bGUoXCJXaGF0IGN1c3RvbWVycyBjb21wbGFpbiBhYm91dFwiKVxucGx0LnRpZ2h0X2xheW91dCgpXG5wbHQuc2F2ZWZpZyhcImNvbXBsYWludHMucG5nXCIsIGRwaT0xMTApXG5JbWFnZShcImNvbXBsYWludHMucG5nXCIpIn0=
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>Delivery draws 5 negative clauses</strong>, service, price and food 3 each, the app 1. Delivery was also the most frequent word in 12.1 — customers talk about it most and like it least.</li>
+<li><strong>The insight for the shop</strong>: the food is mostly praised; the delivery is where the complaints concentrate. Fix the delivery — more drivers, better packaging, a phone line that answers — before changing the recipe.</li>
+<li><strong>The table above the chart</strong> keeps the positive clauses too: delivery has 2, food 4. A count of complaints alone would hide that the food is doing well.</li>
+</ul>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="watch">
+<p><span class="lbl">Reading the result</span> Thirty reviews are a small sample, and two complaints about delivery were missed because <em>cold</em> and <em>late</em> are not in the lexicon. The direction of the insight is safe; the exact counts are not. Real reviews arrive by the thousand, and there the counts settle.</p>
+</div>
+</div></div>
+</section>
+<section id="a-classifier-that-learns-sentiment" class="slide level2">
+<h2>A classifier that learns sentiment</h2>
+<div class="kicker">
+Hands-on 12.2 · C · machine-learning-based sentiment analysis
+</div>
+<div class="lede wide">
+<p>The lexicon was written by people, and it has no entry for <em>cold</em>, <em>late</em> or <em>crashes</em>. The other route is Chapter 10’s: <strong>labeled data</strong> — reviews whose sentiment is already known — a <strong>training</strong> step, and a <strong>prediction</strong> on new text. The star ratings supply the labels; the bag of words supplies the features.</p>
+</div>
+<div>
+<div id="pyodide-6" class="exercise-cell">
+
+</div>
+<script type="pyodide-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBza2xlYXJuLm5haXZlX2JheWVzIGltcG9ydCBNdWx0aW5vbWlhbE5CXG5mcm9tIHNrbGVhcm4ucGlwZWxpbmUgaW1wb3J0IG1ha2VfcGlwZWxpbmVcblxucmV2aWV3c1tcImxhYmVsXCJdID0gW1wicG9zaXRpdmVcIiBpZiBzID49IDQgZWxzZSBcIm5lZ2F0aXZlXCIgZm9yIHMgaW4gcmV2aWV3c1tcInN0YXJzXCJdXSAgICAjIHRoZSBsYWJlbHMsIGZyb20gdGhlIHN0YXJzXG5cbm1vZGVsID0gbWFrZV9waXBlbGluZShDb3VudFZlY3Rvcml6ZXIoc3RvcF93b3Jkcz1cImVuZ2xpc2hcIiksIE11bHRpbm9taWFsTkIoKSkgICAgIyBiYWcgb2Ygd29yZHMsIHRoZW4gYSBjbGFzc2lmaWVyXG5tb2RlbC5maXQocmV2aWV3c1tcInJldmlld1wiXSwgcmV2aWV3c1tcImxhYmVsXCJdKVxuXG5uZXdfcmV2aWV3cyA9IFtcIlRoZSBzb3VwIHdhcyB0YXN0eSBhbmQgdGhlIGRyaXZlciB3YXMgZnJpZW5kbHkuXCIsXG4gICAgICAgICAgICAgICBcIlRoZSBhcHAgY3Jhc2hlcyBhbmQgdGhlIG9yZGVyIHdhcyBsYXRlLlwiLFxuICAgICAgICAgICAgICAgXCJDb2xkIG5vb2RsZXMgYW5kIGEgcnVkZSBkcml2ZXIuXCJdXG5mb3IgdGV4dCBpbiBuZXdfcmV2aWV3czpcbiAgICBwcmludChmXCJ7dGV4dDo1MHN9IG1vZGVsOiB7bW9kZWwucHJlZGljdChbdGV4dF0pWzBdOjlzfSBsZXhpY29uOiB7c2VudGltZW50X29mKHRleHQpfVwiKSJ9
+</script>
+</div>
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong>One <code>fit</code>, then <code>predict</code></strong> — the same two commands as the decision tree of Chapter 10.1, with text in place of a table of features. The pipeline turns each text into its bag of words and hands the counts to the classifier.</li>
+<li><strong><em>The app crashes and the order was late</em></strong> is <strong>negative</strong> for the model and <strong>neutral</strong> for the lexicon. The model learned from reviews 19, 24, 27, 29 and 30 that <em>crashes</em> and <em>late</em> go with 1 and 2 stars; the lexicon was never told.</li>
+<li><strong>What it learned is only what the thirty reviews contain.</strong> A complaint written in words that appear in none of them would leave the model guessing.</li>
+</ul>
+</div>
+</section>
+<section id="the-words-the-model-learned" class="slide level2">
+<h2>The words the model learned</h2>
+<div class="kicker">
+Hands-on 12.2 · C · a lexicon nobody wrote
+</div>
+<div class="lede wide">
+<p>Inside the classifier sits a count: how many times each word appeared in negative reviews and how many times in positive ones. That count is what <code>predict</code> weighs. Listed for the words used at least three times, it is a lexicon — built from the labels instead of by hand.</p>
+</div>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoid29yZHMgPSBtb2RlbFswXS5nZXRfZmVhdHVyZV9uYW1lc19vdXQoKVxubGVhcm5lZCA9IHBkLkRhdGFGcmFtZShtb2RlbFsxXS5mZWF0dXJlX2NvdW50Xy5ULCBpbmRleD13b3JkcywgY29sdW1ucz1tb2RlbFsxXS5jbGFzc2VzXykuYXN0eXBlKGludClcbmxlYXJuZWRbXCJsZWFuc1wiXSA9IGxlYXJuZWRbXCJuZWdhdGl2ZVwiXSAtIGxlYXJuZWRbXCJwb3NpdGl2ZVwiXSAgICAgICAgIyA+IDA6IHNlZW4gbW9yZSBpbiBuZWdhdGl2ZSByZXZpZXdzXG5cbmZyZXF1ZW50ID0gbGVhcm5lZFtsZWFybmVkW1tcIm5lZ2F0aXZlXCIsIFwicG9zaXRpdmVcIl1dLnN1bShheGlzPTEpID49IDNdICAgICAjIHdvcmRzIHVzZWQgdGhyZWUgdGltZXMgb3IgbW9yZVxuZnJlcXVlbnQuc29ydF92YWx1ZXMoXCJsZWFuc1wiLCBhc2NlbmRpbmc9RmFsc2UpIn0=
+</script>
+</div>
+<div class="columns">
+<div class="column" style="width:58%;">
+<div class="example">
+<p><span class="lbl">Interpretation</span></p>
+<ul>
+<li><strong><em>Late</em>: 4 negative, 0 positive</strong> — the strongest negative word the model has, and one the human lexicon does not know. <strong><em>Fair</em>: 0 negative, 3 positive</strong> is its clearest positive word.</li>
+<li><strong><em>Delivery</em> leans negative (4 to 2) and <em>price</em> leans positive (2 to 4)</strong> although neither word is an opinion. The model has learned this shop’s pattern — complaints are about delivery, praise is about price — not the meaning of the words. A different shop would teach it the opposite.</li>
+<li><strong>How good is the model?</strong> Chapter 10.2’s answer applies unchanged: hold back reviews it has not seen and compare its predictions with their stars. Thirty reviews are too few for that score to mean much, which is why this session reports none.</li>
+</ul>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="note">
+<p><span class="lbl">Word embeddings, in one paragraph</span> In the bag of words every word is a column of its own, so <em>delicious</em> and <em>tasty</em> are as unrelated as <em>delicious</em> and <em>late</em>. A <strong>word embedding</strong> instead represents each word by a short list of numbers, chosen so that words used in similar sentences get similar numbers. Modern systems are built on that idea; how the numbers are found is beyond this course.</p>
+</div>
+</div></div>
+</section>
+<section id="exercise-1-counting-a-level" class="slide level2">
+<h2>Exercise 1 — counting a level</h2>
+<div class="kicker">
+Hands-on 12.2 · D · fine-grained labels
+</div>
+<div class="lede wide">
+<p>The <code>level</code> column holds the fine-grained label of every review. Fill the blank so the box counts how many reviews are <strong>very positive</strong>.</p>
+</div>
+<script type="exercise-setup-ex_level-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2xldmVsIiwiZXhfdG9wX2NvbXBsYWludCIsImV4X2FzcGVjdCIsImV4X3ByZWRpY3QiXSwic2V0dXAiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4uZmVhdHVyZV9leHRyYWN0aW9uLnRleHQgaW1wb3J0IENvdW50VmVjdG9yaXplclxuZnJvbSBza2xlYXJuLm5haXZlX2JheWVzIGltcG9ydCBNdWx0aW5vbWlhbE5CXG5mcm9tIHNrbGVhcm4ucGlwZWxpbmUgaW1wb3J0IG1ha2VfcGlwZWxpbmVcbmZyb20gdmFkZXJTZW50aW1lbnQudmFkZXJTZW50aW1lbnQgaW1wb3J0IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyXG5cbnJldmlld3MgPSBwZC5EYXRhRnJhbWUoW1xuICAgIFtcIlRoZSBub29kbGVzIHdlcmUgZGVsaWNpb3VzIGFuZCB0aGUgYnJvdGggd2FzIHJpY2guXCIsIDVdLFxuICAgIFtcIkdyZWF0IHZhbHVlIGZvciB0aGUgcHJpY2UsIGEgYmlnIHBvcnRpb24gZm9yIDYwIGJhaHQuXCIsIDVdLFxuICAgIFtcIkZyaWVuZGx5IHN0YWZmIGFuZCB2ZXJ5IHF1aWNrIHNlcnZpY2UuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgZmFzdCBhbmQgdGhlIGZvb2QgYXJyaXZlZCBob3QsIHBlcmZlY3QuXCIsIDVdLFxuICAgIFtcIlRoZSBhcHAgaXMgZWFzeSB0byB1c2UgYW5kIG9yZGVyaW5nIHRvb2sgb25lIG1pbnV0ZS5cIiwgNF0sXG4gICAgW1wiVGFzdHkgZm9vZCwgZmFpciBwcmljZSwgd2lsbCBvcmRlciBhZ2Fpbi5cIiwgNV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgZnJpZW5kbHkgYW5kIGFycml2ZWQgZWFybHkuXCIsIDRdLFxuICAgIFtcIkV4Y2VsbGVudCBzb3VwLCB0aGUgYmVzdCBpbiB0b3duLlwiLCA1XSxcbiAgICBbXCJHb29kIHBvcnRpb25zIGFuZCBhIGZhaXIgcHJpY2UuXCIsIDRdLFxuICAgIFtcIlRoZSBzdGFmZiB3ZXJlIGhlbHBmdWwgd2hlbiBJIGNoYW5nZWQgbXkgb3JkZXIuXCIsIDRdLFxuICAgIFtcIkZhc3QgZGVsaXZlcnkgYW5kIHRoZSBwYWNrYWdpbmcga2VwdCBldmVyeXRoaW5nIHdhcm0uXCIsIDVdLFxuICAgIFtcIkxvdmUgdGhlIG5ldyBhcHAsIHRoZSBvcmRlciBidXR0b24gaXMgZWFzeSB0byBmaW5kLlwiLCA1XSxcbiAgICBbXCJGcmVzaCB2ZWdldGFibGVzIGFuZCBhIHdvbmRlcmZ1bCBzcGljeSBicm90aC5cIiwgNV0sXG4gICAgW1wiQSBmYWlyIHByaWNlIGZvciBzdWNoIGEgZ2VuZXJvdXMgYm93bC5cIiwgNF0sXG4gICAgW1wiVGhlIHNlcnZpY2Ugd2FzIHF1aWNrIGFuZCB0aGUgZm9vZCB3YXMgZ3JlYXQuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB0b29rIHR3byBob3VycyBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiLCAxXSxcbiAgICBbXCJUZXJyaWJsZSBzZXJ2aWNlLCB0aGUgc3RhZmYgaWdub3JlZCB1cy5cIiwgMV0sXG4gICAgW1wiT3ZlcnByaWNlZCBhbmQgZGlzYXBwb2ludGluZyBmb3Igc3VjaCBhIHNtYWxsIHBvcnRpb24uXCIsIDJdLFxuICAgIFtcIlRoZSBhcHAgY3Jhc2hlcyBldmVyeSB0aW1lIEkgb3BlbiBpdC5cIiwgMV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgcnVkZSBhbmQgdGhlIG9yZGVyIHdhcyB3cm9uZy5cIiwgMV0sXG4gICAgW1wiVGhlIGJyb3RoIHdhcyBibGFuZCBhbmQgdGhlIG5vb2RsZXMgd2VyZSBhIGRpc2FwcG9pbnRtZW50LlwiLCAyXSxcbiAgICBbXCJTbG93IHNlcnZpY2UgYW5kIGEgZGlydHkgdGFibGUuXCIsIDJdLFxuICAgIFtcIlRoZSBwcmljZSB3ZW50IHVwIGFnYWluLCBub3Qgd29ydGggaXQgYW55bW9yZS5cIiwgMl0sXG4gICAgW1wiTGF0ZSBkZWxpdmVyeSBhbmQgYSB1c2VsZXNzIHBob25lIGxpbmUsIG5vYm9keSBhbnN3ZXJlZC5cIiwgMV0sXG4gICAgW1wiVGhlIGFwcCBpcyBhIG1lc3MsIGl0IGxvZ2dlZCBtZSBvdXQgdHdpY2UgZHVyaW5nIHBheW1lbnQuXCIsIDJdLFxuICAgIFtcIkF3ZnVsIGZvb2QsIHRoZSBtZWF0IHdhcyBub3QgZnJlc2guXCIsIDFdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgbGF0ZSBhZ2FpbiBhbmQgdGhlIGRyaXZlciB3YXMgcnVkZS5cIiwgMV0sXG4gICAgW1wiUG9vciB2YWx1ZSwgdGhlIHBvcnRpb24gd2FzIHRpbnkgZm9yIHRoZSBwcmljZS5cIiwgMl0sXG4gICAgW1wiQmFkIHBhY2thZ2luZywgdGhlIGJhZyB3YXMgbGVha2luZyBhbmQgdGhlIG9yZGVyIGFycml2ZWQgbGF0ZS5cIiwgMV0sXG4gICAgW1wiVGhlIG5vb2RsZXMgd2VyZSBkZWxpY2lvdXMsIGJ1dCB0aGUgZGVsaXZlcnkgd2FzIGEgZGlzYXN0ZXIsIHR3byBob3VycyBsYXRlLlwiLCAyXSxcbl0sIGNvbHVtbnM9W1wicmV2aWV3XCIsIFwic3RhcnNcIl0pXG5yZXZpZXdzLmluZGV4ID0gcmFuZ2UoMSwgMzEpXG5hbmFseXplciA9IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyKClcbnRva2VuaXplID0gQ291bnRWZWN0b3JpemVyKCkuYnVpbGRfYW5hbHl6ZXIoKVxuXG5kZWYgc2VudGltZW50X29mKHRleHQpOlxuICAgIGNvbXBvdW5kID0gYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHRleHQpW1wiY29tcG91bmRcIl1cbiAgICBpZiBjb21wb3VuZCA+PSAwLjA1OlxuICAgICAgICByZXR1cm4gXCJwb3NpdGl2ZVwiXG4gICAgaWYgY29tcG91bmQgPD0gLTAuMDU6XG4gICAgICAgIHJldHVybiBcIm5lZ2F0aXZlXCJcbiAgICByZXR1cm4gXCJuZXV0cmFsXCJcblxucmV2aWV3c1tcImNvbXBvdW5kXCJdID0gW2FuYWx5emVyLnBvbGFyaXR5X3Njb3Jlcyh0KVtcImNvbXBvdW5kXCJdIGZvciB0IGluIHJldmlld3NbXCJyZXZpZXdcIl1dXG5yZXZpZXdzW1wic2VudGltZW50XCJdID0gcmV2aWV3c1tcInJldmlld1wiXS5hcHBseShzZW50aW1lbnRfb2YpXG5yZXZpZXdzW1wibGV2ZWxcIl0gPSBwZC5jdXQocmV2aWV3c1tcImNvbXBvdW5kXCJdLCBiaW5zPVstMSwgLTAuNSwgLTAuMDUsIDAuMDUsIDAuNSwgMV0sXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGxhYmVscz1bXCJ2ZXJ5IG5lZ2F0aXZlXCIsIFwibmVnYXRpdmVcIiwgXCJuZXV0cmFsXCIsIFwicG9zaXRpdmVcIiwgXCJ2ZXJ5IHBvc2l0aXZlXCJdKVxuYXNwZWN0X3dvcmRzID0ge1wiZGVsaXZlcnlcIjogW1wiZGVsaXZlcnlcIiwgXCJkcml2ZXJcIiwgXCJhcnJpdmVkXCIsIFwicGFja2FnaW5nXCIsIFwiYmFnXCIsIFwicGhvbmVcIiwgXCJsYXRlXCJdLFxuICAgICAgICAgICAgICAgIFwiYXBwXCI6ICAgICAgW1wiYXBwXCIsIFwiYnV0dG9uXCIsIFwib3JkZXJpbmdcIiwgXCJwYXltZW50XCIsIFwibG9nZ2VkXCJdLFxuICAgICAgICAgICAgICAgIFwic2VydmljZVwiOiAgW1wic3RhZmZcIiwgXCJzZXJ2aWNlXCIsIFwidGFibGVcIl0sXG4gICAgICAgICAgICAgICAgXCJwcmljZVwiOiAgICBbXCJwcmljZVwiLCBcInZhbHVlXCIsIFwiYmFodFwiLCBcIm92ZXJwcmljZWRcIiwgXCJ3b3J0aFwiXSxcbiAgICAgICAgICAgICAgICBcImZvb2RcIjogICAgIFtcIm5vb2RsZXNcIiwgXCJicm90aFwiLCBcInNvdXBcIiwgXCJmb29kXCIsIFwibWVhdFwiLCBcInZlZ2V0YWJsZXNcIiwgXCJwb3J0aW9uXCIsIFwicG9ydGlvbnNcIiwgXCJib3dsXCJdfVxuXG5kZWYgY2xhdXNlc19vZih0ZXh0KTpcbiAgICByZXR1cm4gW2Muc3RyaXAoKSBmb3IgYyBpbiByZS5zcGxpdChyXCIsfFxcYmJ1dFxcYlwiLCB0ZXh0KSBpZiBjLnN0cmlwKCldXG5cbmRlZiBhc3BlY3Rfb2YoY2xhdXNlKTpcbiAgICB0b2tlbnMgPSB0b2tlbml6ZShjbGF1c2UpXG4gICAgZm9yIGFzcGVjdCwgd29yZHMgaW4gYXNwZWN0X3dvcmRzLml0ZW1zKCk6XG4gICAgICAgIGlmIGFueSh3IGluIHRva2VucyBmb3IgdyBpbiB3b3Jkcyk6XG4gICAgICAgICAgICByZXR1cm4gYXNwZWN0XG4gICAgcmV0dXJuIFwiZ2VuZXJhbFwiXG5cbnJvd3MgPSBbKG4sIGNsYXVzZSwgYXNwZWN0X29mKGNsYXVzZSksIHNlbnRpbWVudF9vZihjbGF1c2UpKVxuICAgICAgICBmb3IgbiwgdGV4dCBpbiByZXZpZXdzW1wicmV2aWV3XCJdLml0ZW1zKCkgZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHRleHQpXVxubWVudGlvbnMgPSBwZC5EYXRhRnJhbWUocm93cywgY29sdW1ucz1bXCJyZXZpZXdcIiwgXCJjbGF1c2VcIiwgXCJhc3BlY3RcIiwgXCJzZW50aW1lbnRcIl0pXG5jb21wbGFpbnRzID0gbWVudGlvbnNbbWVudGlvbnNbXCJzZW50aW1lbnRcIl0gPT0gXCJuZWdhdGl2ZVwiXVtcImFzcGVjdFwiXS52YWx1ZV9jb3VudHMoKVxucmV2aWV3c1tcImxhYmVsXCJdID0gW1wicG9zaXRpdmVcIiBpZiBzID49IDQgZWxzZSBcIm5lZ2F0aXZlXCIgZm9yIHMgaW4gcmV2aWV3c1tcInN0YXJzXCJdXVxubW9kZWwgPSBtYWtlX3BpcGVsaW5lKENvdW50VmVjdG9yaXplcihzdG9wX3dvcmRzPVwiZW5nbGlzaFwiKSwgTXVsdGlub21pYWxOQigpKS5maXQocmV2aWV3c1tcInJldmlld1wiXSwgcmV2aWV3c1tcImxhYmVsXCJdKSJ9
+</script>
+<script type="exercise-setup-ex_top_complaint-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2xldmVsIiwiZXhfdG9wX2NvbXBsYWludCIsImV4X2FzcGVjdCIsImV4X3ByZWRpY3QiXSwic2V0dXAiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4uZmVhdHVyZV9leHRyYWN0aW9uLnRleHQgaW1wb3J0IENvdW50VmVjdG9yaXplclxuZnJvbSBza2xlYXJuLm5haXZlX2JheWVzIGltcG9ydCBNdWx0aW5vbWlhbE5CXG5mcm9tIHNrbGVhcm4ucGlwZWxpbmUgaW1wb3J0IG1ha2VfcGlwZWxpbmVcbmZyb20gdmFkZXJTZW50aW1lbnQudmFkZXJTZW50aW1lbnQgaW1wb3J0IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyXG5cbnJldmlld3MgPSBwZC5EYXRhRnJhbWUoW1xuICAgIFtcIlRoZSBub29kbGVzIHdlcmUgZGVsaWNpb3VzIGFuZCB0aGUgYnJvdGggd2FzIHJpY2guXCIsIDVdLFxuICAgIFtcIkdyZWF0IHZhbHVlIGZvciB0aGUgcHJpY2UsIGEgYmlnIHBvcnRpb24gZm9yIDYwIGJhaHQuXCIsIDVdLFxuICAgIFtcIkZyaWVuZGx5IHN0YWZmIGFuZCB2ZXJ5IHF1aWNrIHNlcnZpY2UuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgZmFzdCBhbmQgdGhlIGZvb2QgYXJyaXZlZCBob3QsIHBlcmZlY3QuXCIsIDVdLFxuICAgIFtcIlRoZSBhcHAgaXMgZWFzeSB0byB1c2UgYW5kIG9yZGVyaW5nIHRvb2sgb25lIG1pbnV0ZS5cIiwgNF0sXG4gICAgW1wiVGFzdHkgZm9vZCwgZmFpciBwcmljZSwgd2lsbCBvcmRlciBhZ2Fpbi5cIiwgNV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgZnJpZW5kbHkgYW5kIGFycml2ZWQgZWFybHkuXCIsIDRdLFxuICAgIFtcIkV4Y2VsbGVudCBzb3VwLCB0aGUgYmVzdCBpbiB0b3duLlwiLCA1XSxcbiAgICBbXCJHb29kIHBvcnRpb25zIGFuZCBhIGZhaXIgcHJpY2UuXCIsIDRdLFxuICAgIFtcIlRoZSBzdGFmZiB3ZXJlIGhlbHBmdWwgd2hlbiBJIGNoYW5nZWQgbXkgb3JkZXIuXCIsIDRdLFxuICAgIFtcIkZhc3QgZGVsaXZlcnkgYW5kIHRoZSBwYWNrYWdpbmcga2VwdCBldmVyeXRoaW5nIHdhcm0uXCIsIDVdLFxuICAgIFtcIkxvdmUgdGhlIG5ldyBhcHAsIHRoZSBvcmRlciBidXR0b24gaXMgZWFzeSB0byBmaW5kLlwiLCA1XSxcbiAgICBbXCJGcmVzaCB2ZWdldGFibGVzIGFuZCBhIHdvbmRlcmZ1bCBzcGljeSBicm90aC5cIiwgNV0sXG4gICAgW1wiQSBmYWlyIHByaWNlIGZvciBzdWNoIGEgZ2VuZXJvdXMgYm93bC5cIiwgNF0sXG4gICAgW1wiVGhlIHNlcnZpY2Ugd2FzIHF1aWNrIGFuZCB0aGUgZm9vZCB3YXMgZ3JlYXQuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB0b29rIHR3byBob3VycyBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiLCAxXSxcbiAgICBbXCJUZXJyaWJsZSBzZXJ2aWNlLCB0aGUgc3RhZmYgaWdub3JlZCB1cy5cIiwgMV0sXG4gICAgW1wiT3ZlcnByaWNlZCBhbmQgZGlzYXBwb2ludGluZyBmb3Igc3VjaCBhIHNtYWxsIHBvcnRpb24uXCIsIDJdLFxuICAgIFtcIlRoZSBhcHAgY3Jhc2hlcyBldmVyeSB0aW1lIEkgb3BlbiBpdC5cIiwgMV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgcnVkZSBhbmQgdGhlIG9yZGVyIHdhcyB3cm9uZy5cIiwgMV0sXG4gICAgW1wiVGhlIGJyb3RoIHdhcyBibGFuZCBhbmQgdGhlIG5vb2RsZXMgd2VyZSBhIGRpc2FwcG9pbnRtZW50LlwiLCAyXSxcbiAgICBbXCJTbG93IHNlcnZpY2UgYW5kIGEgZGlydHkgdGFibGUuXCIsIDJdLFxuICAgIFtcIlRoZSBwcmljZSB3ZW50IHVwIGFnYWluLCBub3Qgd29ydGggaXQgYW55bW9yZS5cIiwgMl0sXG4gICAgW1wiTGF0ZSBkZWxpdmVyeSBhbmQgYSB1c2VsZXNzIHBob25lIGxpbmUsIG5vYm9keSBhbnN3ZXJlZC5cIiwgMV0sXG4gICAgW1wiVGhlIGFwcCBpcyBhIG1lc3MsIGl0IGxvZ2dlZCBtZSBvdXQgdHdpY2UgZHVyaW5nIHBheW1lbnQuXCIsIDJdLFxuICAgIFtcIkF3ZnVsIGZvb2QsIHRoZSBtZWF0IHdhcyBub3QgZnJlc2guXCIsIDFdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgbGF0ZSBhZ2FpbiBhbmQgdGhlIGRyaXZlciB3YXMgcnVkZS5cIiwgMV0sXG4gICAgW1wiUG9vciB2YWx1ZSwgdGhlIHBvcnRpb24gd2FzIHRpbnkgZm9yIHRoZSBwcmljZS5cIiwgMl0sXG4gICAgW1wiQmFkIHBhY2thZ2luZywgdGhlIGJhZyB3YXMgbGVha2luZyBhbmQgdGhlIG9yZGVyIGFycml2ZWQgbGF0ZS5cIiwgMV0sXG4gICAgW1wiVGhlIG5vb2RsZXMgd2VyZSBkZWxpY2lvdXMsIGJ1dCB0aGUgZGVsaXZlcnkgd2FzIGEgZGlzYXN0ZXIsIHR3byBob3VycyBsYXRlLlwiLCAyXSxcbl0sIGNvbHVtbnM9W1wicmV2aWV3XCIsIFwic3RhcnNcIl0pXG5yZXZpZXdzLmluZGV4ID0gcmFuZ2UoMSwgMzEpXG5hbmFseXplciA9IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyKClcbnRva2VuaXplID0gQ291bnRWZWN0b3JpemVyKCkuYnVpbGRfYW5hbHl6ZXIoKVxuXG5kZWYgc2VudGltZW50X29mKHRleHQpOlxuICAgIGNvbXBvdW5kID0gYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHRleHQpW1wiY29tcG91bmRcIl1cbiAgICBpZiBjb21wb3VuZCA+PSAwLjA1OlxuICAgICAgICByZXR1cm4gXCJwb3NpdGl2ZVwiXG4gICAgaWYgY29tcG91bmQgPD0gLTAuMDU6XG4gICAgICAgIHJldHVybiBcIm5lZ2F0aXZlXCJcbiAgICByZXR1cm4gXCJuZXV0cmFsXCJcblxucmV2aWV3c1tcImNvbXBvdW5kXCJdID0gW2FuYWx5emVyLnBvbGFyaXR5X3Njb3Jlcyh0KVtcImNvbXBvdW5kXCJdIGZvciB0IGluIHJldmlld3NbXCJyZXZpZXdcIl1dXG5yZXZpZXdzW1wic2VudGltZW50XCJdID0gcmV2aWV3c1tcInJldmlld1wiXS5hcHBseShzZW50aW1lbnRfb2YpXG5yZXZpZXdzW1wibGV2ZWxcIl0gPSBwZC5jdXQocmV2aWV3c1tcImNvbXBvdW5kXCJdLCBiaW5zPVstMSwgLTAuNSwgLTAuMDUsIDAuMDUsIDAuNSwgMV0sXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGxhYmVscz1bXCJ2ZXJ5IG5lZ2F0aXZlXCIsIFwibmVnYXRpdmVcIiwgXCJuZXV0cmFsXCIsIFwicG9zaXRpdmVcIiwgXCJ2ZXJ5IHBvc2l0aXZlXCJdKVxuYXNwZWN0X3dvcmRzID0ge1wiZGVsaXZlcnlcIjogW1wiZGVsaXZlcnlcIiwgXCJkcml2ZXJcIiwgXCJhcnJpdmVkXCIsIFwicGFja2FnaW5nXCIsIFwiYmFnXCIsIFwicGhvbmVcIiwgXCJsYXRlXCJdLFxuICAgICAgICAgICAgICAgIFwiYXBwXCI6ICAgICAgW1wiYXBwXCIsIFwiYnV0dG9uXCIsIFwib3JkZXJpbmdcIiwgXCJwYXltZW50XCIsIFwibG9nZ2VkXCJdLFxuICAgICAgICAgICAgICAgIFwic2VydmljZVwiOiAgW1wic3RhZmZcIiwgXCJzZXJ2aWNlXCIsIFwidGFibGVcIl0sXG4gICAgICAgICAgICAgICAgXCJwcmljZVwiOiAgICBbXCJwcmljZVwiLCBcInZhbHVlXCIsIFwiYmFodFwiLCBcIm92ZXJwcmljZWRcIiwgXCJ3b3J0aFwiXSxcbiAgICAgICAgICAgICAgICBcImZvb2RcIjogICAgIFtcIm5vb2RsZXNcIiwgXCJicm90aFwiLCBcInNvdXBcIiwgXCJmb29kXCIsIFwibWVhdFwiLCBcInZlZ2V0YWJsZXNcIiwgXCJwb3J0aW9uXCIsIFwicG9ydGlvbnNcIiwgXCJib3dsXCJdfVxuXG5kZWYgY2xhdXNlc19vZih0ZXh0KTpcbiAgICByZXR1cm4gW2Muc3RyaXAoKSBmb3IgYyBpbiByZS5zcGxpdChyXCIsfFxcYmJ1dFxcYlwiLCB0ZXh0KSBpZiBjLnN0cmlwKCldXG5cbmRlZiBhc3BlY3Rfb2YoY2xhdXNlKTpcbiAgICB0b2tlbnMgPSB0b2tlbml6ZShjbGF1c2UpXG4gICAgZm9yIGFzcGVjdCwgd29yZHMgaW4gYXNwZWN0X3dvcmRzLml0ZW1zKCk6XG4gICAgICAgIGlmIGFueSh3IGluIHRva2VucyBmb3IgdyBpbiB3b3Jkcyk6XG4gICAgICAgICAgICByZXR1cm4gYXNwZWN0XG4gICAgcmV0dXJuIFwiZ2VuZXJhbFwiXG5cbnJvd3MgPSBbKG4sIGNsYXVzZSwgYXNwZWN0X29mKGNsYXVzZSksIHNlbnRpbWVudF9vZihjbGF1c2UpKVxuICAgICAgICBmb3IgbiwgdGV4dCBpbiByZXZpZXdzW1wicmV2aWV3XCJdLml0ZW1zKCkgZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHRleHQpXVxubWVudGlvbnMgPSBwZC5EYXRhRnJhbWUocm93cywgY29sdW1ucz1bXCJyZXZpZXdcIiwgXCJjbGF1c2VcIiwgXCJhc3BlY3RcIiwgXCJzZW50aW1lbnRcIl0pXG5jb21wbGFpbnRzID0gbWVudGlvbnNbbWVudGlvbnNbXCJzZW50aW1lbnRcIl0gPT0gXCJuZWdhdGl2ZVwiXVtcImFzcGVjdFwiXS52YWx1ZV9jb3VudHMoKVxucmV2aWV3c1tcImxhYmVsXCJdID0gW1wicG9zaXRpdmVcIiBpZiBzID49IDQgZWxzZSBcIm5lZ2F0aXZlXCIgZm9yIHMgaW4gcmV2aWV3c1tcInN0YXJzXCJdXVxubW9kZWwgPSBtYWtlX3BpcGVsaW5lKENvdW50VmVjdG9yaXplcihzdG9wX3dvcmRzPVwiZW5nbGlzaFwiKSwgTXVsdGlub21pYWxOQigpKS5maXQocmV2aWV3c1tcInJldmlld1wiXSwgcmV2aWV3c1tcImxhYmVsXCJdKSJ9
+</script>
+<script type="exercise-setup-ex_aspect-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2xldmVsIiwiZXhfdG9wX2NvbXBsYWludCIsImV4X2FzcGVjdCIsImV4X3ByZWRpY3QiXSwic2V0dXAiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4uZmVhdHVyZV9leHRyYWN0aW9uLnRleHQgaW1wb3J0IENvdW50VmVjdG9yaXplclxuZnJvbSBza2xlYXJuLm5haXZlX2JheWVzIGltcG9ydCBNdWx0aW5vbWlhbE5CXG5mcm9tIHNrbGVhcm4ucGlwZWxpbmUgaW1wb3J0IG1ha2VfcGlwZWxpbmVcbmZyb20gdmFkZXJTZW50aW1lbnQudmFkZXJTZW50aW1lbnQgaW1wb3J0IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyXG5cbnJldmlld3MgPSBwZC5EYXRhRnJhbWUoW1xuICAgIFtcIlRoZSBub29kbGVzIHdlcmUgZGVsaWNpb3VzIGFuZCB0aGUgYnJvdGggd2FzIHJpY2guXCIsIDVdLFxuICAgIFtcIkdyZWF0IHZhbHVlIGZvciB0aGUgcHJpY2UsIGEgYmlnIHBvcnRpb24gZm9yIDYwIGJhaHQuXCIsIDVdLFxuICAgIFtcIkZyaWVuZGx5IHN0YWZmIGFuZCB2ZXJ5IHF1aWNrIHNlcnZpY2UuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgZmFzdCBhbmQgdGhlIGZvb2QgYXJyaXZlZCBob3QsIHBlcmZlY3QuXCIsIDVdLFxuICAgIFtcIlRoZSBhcHAgaXMgZWFzeSB0byB1c2UgYW5kIG9yZGVyaW5nIHRvb2sgb25lIG1pbnV0ZS5cIiwgNF0sXG4gICAgW1wiVGFzdHkgZm9vZCwgZmFpciBwcmljZSwgd2lsbCBvcmRlciBhZ2Fpbi5cIiwgNV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgZnJpZW5kbHkgYW5kIGFycml2ZWQgZWFybHkuXCIsIDRdLFxuICAgIFtcIkV4Y2VsbGVudCBzb3VwLCB0aGUgYmVzdCBpbiB0b3duLlwiLCA1XSxcbiAgICBbXCJHb29kIHBvcnRpb25zIGFuZCBhIGZhaXIgcHJpY2UuXCIsIDRdLFxuICAgIFtcIlRoZSBzdGFmZiB3ZXJlIGhlbHBmdWwgd2hlbiBJIGNoYW5nZWQgbXkgb3JkZXIuXCIsIDRdLFxuICAgIFtcIkZhc3QgZGVsaXZlcnkgYW5kIHRoZSBwYWNrYWdpbmcga2VwdCBldmVyeXRoaW5nIHdhcm0uXCIsIDVdLFxuICAgIFtcIkxvdmUgdGhlIG5ldyBhcHAsIHRoZSBvcmRlciBidXR0b24gaXMgZWFzeSB0byBmaW5kLlwiLCA1XSxcbiAgICBbXCJGcmVzaCB2ZWdldGFibGVzIGFuZCBhIHdvbmRlcmZ1bCBzcGljeSBicm90aC5cIiwgNV0sXG4gICAgW1wiQSBmYWlyIHByaWNlIGZvciBzdWNoIGEgZ2VuZXJvdXMgYm93bC5cIiwgNF0sXG4gICAgW1wiVGhlIHNlcnZpY2Ugd2FzIHF1aWNrIGFuZCB0aGUgZm9vZCB3YXMgZ3JlYXQuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB0b29rIHR3byBob3VycyBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiLCAxXSxcbiAgICBbXCJUZXJyaWJsZSBzZXJ2aWNlLCB0aGUgc3RhZmYgaWdub3JlZCB1cy5cIiwgMV0sXG4gICAgW1wiT3ZlcnByaWNlZCBhbmQgZGlzYXBwb2ludGluZyBmb3Igc3VjaCBhIHNtYWxsIHBvcnRpb24uXCIsIDJdLFxuICAgIFtcIlRoZSBhcHAgY3Jhc2hlcyBldmVyeSB0aW1lIEkgb3BlbiBpdC5cIiwgMV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgcnVkZSBhbmQgdGhlIG9yZGVyIHdhcyB3cm9uZy5cIiwgMV0sXG4gICAgW1wiVGhlIGJyb3RoIHdhcyBibGFuZCBhbmQgdGhlIG5vb2RsZXMgd2VyZSBhIGRpc2FwcG9pbnRtZW50LlwiLCAyXSxcbiAgICBbXCJTbG93IHNlcnZpY2UgYW5kIGEgZGlydHkgdGFibGUuXCIsIDJdLFxuICAgIFtcIlRoZSBwcmljZSB3ZW50IHVwIGFnYWluLCBub3Qgd29ydGggaXQgYW55bW9yZS5cIiwgMl0sXG4gICAgW1wiTGF0ZSBkZWxpdmVyeSBhbmQgYSB1c2VsZXNzIHBob25lIGxpbmUsIG5vYm9keSBhbnN3ZXJlZC5cIiwgMV0sXG4gICAgW1wiVGhlIGFwcCBpcyBhIG1lc3MsIGl0IGxvZ2dlZCBtZSBvdXQgdHdpY2UgZHVyaW5nIHBheW1lbnQuXCIsIDJdLFxuICAgIFtcIkF3ZnVsIGZvb2QsIHRoZSBtZWF0IHdhcyBub3QgZnJlc2guXCIsIDFdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgbGF0ZSBhZ2FpbiBhbmQgdGhlIGRyaXZlciB3YXMgcnVkZS5cIiwgMV0sXG4gICAgW1wiUG9vciB2YWx1ZSwgdGhlIHBvcnRpb24gd2FzIHRpbnkgZm9yIHRoZSBwcmljZS5cIiwgMl0sXG4gICAgW1wiQmFkIHBhY2thZ2luZywgdGhlIGJhZyB3YXMgbGVha2luZyBhbmQgdGhlIG9yZGVyIGFycml2ZWQgbGF0ZS5cIiwgMV0sXG4gICAgW1wiVGhlIG5vb2RsZXMgd2VyZSBkZWxpY2lvdXMsIGJ1dCB0aGUgZGVsaXZlcnkgd2FzIGEgZGlzYXN0ZXIsIHR3byBob3VycyBsYXRlLlwiLCAyXSxcbl0sIGNvbHVtbnM9W1wicmV2aWV3XCIsIFwic3RhcnNcIl0pXG5yZXZpZXdzLmluZGV4ID0gcmFuZ2UoMSwgMzEpXG5hbmFseXplciA9IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyKClcbnRva2VuaXplID0gQ291bnRWZWN0b3JpemVyKCkuYnVpbGRfYW5hbHl6ZXIoKVxuXG5kZWYgc2VudGltZW50X29mKHRleHQpOlxuICAgIGNvbXBvdW5kID0gYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHRleHQpW1wiY29tcG91bmRcIl1cbiAgICBpZiBjb21wb3VuZCA+PSAwLjA1OlxuICAgICAgICByZXR1cm4gXCJwb3NpdGl2ZVwiXG4gICAgaWYgY29tcG91bmQgPD0gLTAuMDU6XG4gICAgICAgIHJldHVybiBcIm5lZ2F0aXZlXCJcbiAgICByZXR1cm4gXCJuZXV0cmFsXCJcblxucmV2aWV3c1tcImNvbXBvdW5kXCJdID0gW2FuYWx5emVyLnBvbGFyaXR5X3Njb3Jlcyh0KVtcImNvbXBvdW5kXCJdIGZvciB0IGluIHJldmlld3NbXCJyZXZpZXdcIl1dXG5yZXZpZXdzW1wic2VudGltZW50XCJdID0gcmV2aWV3c1tcInJldmlld1wiXS5hcHBseShzZW50aW1lbnRfb2YpXG5yZXZpZXdzW1wibGV2ZWxcIl0gPSBwZC5jdXQocmV2aWV3c1tcImNvbXBvdW5kXCJdLCBiaW5zPVstMSwgLTAuNSwgLTAuMDUsIDAuMDUsIDAuNSwgMV0sXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGxhYmVscz1bXCJ2ZXJ5IG5lZ2F0aXZlXCIsIFwibmVnYXRpdmVcIiwgXCJuZXV0cmFsXCIsIFwicG9zaXRpdmVcIiwgXCJ2ZXJ5IHBvc2l0aXZlXCJdKVxuYXNwZWN0X3dvcmRzID0ge1wiZGVsaXZlcnlcIjogW1wiZGVsaXZlcnlcIiwgXCJkcml2ZXJcIiwgXCJhcnJpdmVkXCIsIFwicGFja2FnaW5nXCIsIFwiYmFnXCIsIFwicGhvbmVcIiwgXCJsYXRlXCJdLFxuICAgICAgICAgICAgICAgIFwiYXBwXCI6ICAgICAgW1wiYXBwXCIsIFwiYnV0dG9uXCIsIFwib3JkZXJpbmdcIiwgXCJwYXltZW50XCIsIFwibG9nZ2VkXCJdLFxuICAgICAgICAgICAgICAgIFwic2VydmljZVwiOiAgW1wic3RhZmZcIiwgXCJzZXJ2aWNlXCIsIFwidGFibGVcIl0sXG4gICAgICAgICAgICAgICAgXCJwcmljZVwiOiAgICBbXCJwcmljZVwiLCBcInZhbHVlXCIsIFwiYmFodFwiLCBcIm92ZXJwcmljZWRcIiwgXCJ3b3J0aFwiXSxcbiAgICAgICAgICAgICAgICBcImZvb2RcIjogICAgIFtcIm5vb2RsZXNcIiwgXCJicm90aFwiLCBcInNvdXBcIiwgXCJmb29kXCIsIFwibWVhdFwiLCBcInZlZ2V0YWJsZXNcIiwgXCJwb3J0aW9uXCIsIFwicG9ydGlvbnNcIiwgXCJib3dsXCJdfVxuXG5kZWYgY2xhdXNlc19vZih0ZXh0KTpcbiAgICByZXR1cm4gW2Muc3RyaXAoKSBmb3IgYyBpbiByZS5zcGxpdChyXCIsfFxcYmJ1dFxcYlwiLCB0ZXh0KSBpZiBjLnN0cmlwKCldXG5cbmRlZiBhc3BlY3Rfb2YoY2xhdXNlKTpcbiAgICB0b2tlbnMgPSB0b2tlbml6ZShjbGF1c2UpXG4gICAgZm9yIGFzcGVjdCwgd29yZHMgaW4gYXNwZWN0X3dvcmRzLml0ZW1zKCk6XG4gICAgICAgIGlmIGFueSh3IGluIHRva2VucyBmb3IgdyBpbiB3b3Jkcyk6XG4gICAgICAgICAgICByZXR1cm4gYXNwZWN0XG4gICAgcmV0dXJuIFwiZ2VuZXJhbFwiXG5cbnJvd3MgPSBbKG4sIGNsYXVzZSwgYXNwZWN0X29mKGNsYXVzZSksIHNlbnRpbWVudF9vZihjbGF1c2UpKVxuICAgICAgICBmb3IgbiwgdGV4dCBpbiByZXZpZXdzW1wicmV2aWV3XCJdLml0ZW1zKCkgZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHRleHQpXVxubWVudGlvbnMgPSBwZC5EYXRhRnJhbWUocm93cywgY29sdW1ucz1bXCJyZXZpZXdcIiwgXCJjbGF1c2VcIiwgXCJhc3BlY3RcIiwgXCJzZW50aW1lbnRcIl0pXG5jb21wbGFpbnRzID0gbWVudGlvbnNbbWVudGlvbnNbXCJzZW50aW1lbnRcIl0gPT0gXCJuZWdhdGl2ZVwiXVtcImFzcGVjdFwiXS52YWx1ZV9jb3VudHMoKVxucmV2aWV3c1tcImxhYmVsXCJdID0gW1wicG9zaXRpdmVcIiBpZiBzID49IDQgZWxzZSBcIm5lZ2F0aXZlXCIgZm9yIHMgaW4gcmV2aWV3c1tcInN0YXJzXCJdXVxubW9kZWwgPSBtYWtlX3BpcGVsaW5lKENvdW50VmVjdG9yaXplcihzdG9wX3dvcmRzPVwiZW5nbGlzaFwiKSwgTXVsdGlub21pYWxOQigpKS5maXQocmV2aWV3c1tcInJldmlld1wiXSwgcmV2aWV3c1tcImxhYmVsXCJdKSJ9
+</script>
+<script type="exercise-setup-ex_predict-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4X2xldmVsIiwiZXhfdG9wX2NvbXBsYWludCIsImV4X2FzcGVjdCIsImV4X3ByZWRpY3QiXSwic2V0dXAiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNrbGVhcm4uZmVhdHVyZV9leHRyYWN0aW9uLnRleHQgaW1wb3J0IENvdW50VmVjdG9yaXplclxuZnJvbSBza2xlYXJuLm5haXZlX2JheWVzIGltcG9ydCBNdWx0aW5vbWlhbE5CXG5mcm9tIHNrbGVhcm4ucGlwZWxpbmUgaW1wb3J0IG1ha2VfcGlwZWxpbmVcbmZyb20gdmFkZXJTZW50aW1lbnQudmFkZXJTZW50aW1lbnQgaW1wb3J0IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyXG5cbnJldmlld3MgPSBwZC5EYXRhRnJhbWUoW1xuICAgIFtcIlRoZSBub29kbGVzIHdlcmUgZGVsaWNpb3VzIGFuZCB0aGUgYnJvdGggd2FzIHJpY2guXCIsIDVdLFxuICAgIFtcIkdyZWF0IHZhbHVlIGZvciB0aGUgcHJpY2UsIGEgYmlnIHBvcnRpb24gZm9yIDYwIGJhaHQuXCIsIDVdLFxuICAgIFtcIkZyaWVuZGx5IHN0YWZmIGFuZCB2ZXJ5IHF1aWNrIHNlcnZpY2UuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgZmFzdCBhbmQgdGhlIGZvb2QgYXJyaXZlZCBob3QsIHBlcmZlY3QuXCIsIDVdLFxuICAgIFtcIlRoZSBhcHAgaXMgZWFzeSB0byB1c2UgYW5kIG9yZGVyaW5nIHRvb2sgb25lIG1pbnV0ZS5cIiwgNF0sXG4gICAgW1wiVGFzdHkgZm9vZCwgZmFpciBwcmljZSwgd2lsbCBvcmRlciBhZ2Fpbi5cIiwgNV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgZnJpZW5kbHkgYW5kIGFycml2ZWQgZWFybHkuXCIsIDRdLFxuICAgIFtcIkV4Y2VsbGVudCBzb3VwLCB0aGUgYmVzdCBpbiB0b3duLlwiLCA1XSxcbiAgICBbXCJHb29kIHBvcnRpb25zIGFuZCBhIGZhaXIgcHJpY2UuXCIsIDRdLFxuICAgIFtcIlRoZSBzdGFmZiB3ZXJlIGhlbHBmdWwgd2hlbiBJIGNoYW5nZWQgbXkgb3JkZXIuXCIsIDRdLFxuICAgIFtcIkZhc3QgZGVsaXZlcnkgYW5kIHRoZSBwYWNrYWdpbmcga2VwdCBldmVyeXRoaW5nIHdhcm0uXCIsIDVdLFxuICAgIFtcIkxvdmUgdGhlIG5ldyBhcHAsIHRoZSBvcmRlciBidXR0b24gaXMgZWFzeSB0byBmaW5kLlwiLCA1XSxcbiAgICBbXCJGcmVzaCB2ZWdldGFibGVzIGFuZCBhIHdvbmRlcmZ1bCBzcGljeSBicm90aC5cIiwgNV0sXG4gICAgW1wiQSBmYWlyIHByaWNlIGZvciBzdWNoIGEgZ2VuZXJvdXMgYm93bC5cIiwgNF0sXG4gICAgW1wiVGhlIHNlcnZpY2Ugd2FzIHF1aWNrIGFuZCB0aGUgZm9vZCB3YXMgZ3JlYXQuXCIsIDVdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB0b29rIHR3byBob3VycyBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiLCAxXSxcbiAgICBbXCJUZXJyaWJsZSBzZXJ2aWNlLCB0aGUgc3RhZmYgaWdub3JlZCB1cy5cIiwgMV0sXG4gICAgW1wiT3ZlcnByaWNlZCBhbmQgZGlzYXBwb2ludGluZyBmb3Igc3VjaCBhIHNtYWxsIHBvcnRpb24uXCIsIDJdLFxuICAgIFtcIlRoZSBhcHAgY3Jhc2hlcyBldmVyeSB0aW1lIEkgb3BlbiBpdC5cIiwgMV0sXG4gICAgW1wiVGhlIGRyaXZlciB3YXMgcnVkZSBhbmQgdGhlIG9yZGVyIHdhcyB3cm9uZy5cIiwgMV0sXG4gICAgW1wiVGhlIGJyb3RoIHdhcyBibGFuZCBhbmQgdGhlIG5vb2RsZXMgd2VyZSBhIGRpc2FwcG9pbnRtZW50LlwiLCAyXSxcbiAgICBbXCJTbG93IHNlcnZpY2UgYW5kIGEgZGlydHkgdGFibGUuXCIsIDJdLFxuICAgIFtcIlRoZSBwcmljZSB3ZW50IHVwIGFnYWluLCBub3Qgd29ydGggaXQgYW55bW9yZS5cIiwgMl0sXG4gICAgW1wiTGF0ZSBkZWxpdmVyeSBhbmQgYSB1c2VsZXNzIHBob25lIGxpbmUsIG5vYm9keSBhbnN3ZXJlZC5cIiwgMV0sXG4gICAgW1wiVGhlIGFwcCBpcyBhIG1lc3MsIGl0IGxvZ2dlZCBtZSBvdXQgdHdpY2UgZHVyaW5nIHBheW1lbnQuXCIsIDJdLFxuICAgIFtcIkF3ZnVsIGZvb2QsIHRoZSBtZWF0IHdhcyBub3QgZnJlc2guXCIsIDFdLFxuICAgIFtcIlRoZSBkZWxpdmVyeSB3YXMgbGF0ZSBhZ2FpbiBhbmQgdGhlIGRyaXZlciB3YXMgcnVkZS5cIiwgMV0sXG4gICAgW1wiUG9vciB2YWx1ZSwgdGhlIHBvcnRpb24gd2FzIHRpbnkgZm9yIHRoZSBwcmljZS5cIiwgMl0sXG4gICAgW1wiQmFkIHBhY2thZ2luZywgdGhlIGJhZyB3YXMgbGVha2luZyBhbmQgdGhlIG9yZGVyIGFycml2ZWQgbGF0ZS5cIiwgMV0sXG4gICAgW1wiVGhlIG5vb2RsZXMgd2VyZSBkZWxpY2lvdXMsIGJ1dCB0aGUgZGVsaXZlcnkgd2FzIGEgZGlzYXN0ZXIsIHR3byBob3VycyBsYXRlLlwiLCAyXSxcbl0sIGNvbHVtbnM9W1wicmV2aWV3XCIsIFwic3RhcnNcIl0pXG5yZXZpZXdzLmluZGV4ID0gcmFuZ2UoMSwgMzEpXG5hbmFseXplciA9IFNlbnRpbWVudEludGVuc2l0eUFuYWx5emVyKClcbnRva2VuaXplID0gQ291bnRWZWN0b3JpemVyKCkuYnVpbGRfYW5hbHl6ZXIoKVxuXG5kZWYgc2VudGltZW50X29mKHRleHQpOlxuICAgIGNvbXBvdW5kID0gYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHRleHQpW1wiY29tcG91bmRcIl1cbiAgICBpZiBjb21wb3VuZCA+PSAwLjA1OlxuICAgICAgICByZXR1cm4gXCJwb3NpdGl2ZVwiXG4gICAgaWYgY29tcG91bmQgPD0gLTAuMDU6XG4gICAgICAgIHJldHVybiBcIm5lZ2F0aXZlXCJcbiAgICByZXR1cm4gXCJuZXV0cmFsXCJcblxucmV2aWV3c1tcImNvbXBvdW5kXCJdID0gW2FuYWx5emVyLnBvbGFyaXR5X3Njb3Jlcyh0KVtcImNvbXBvdW5kXCJdIGZvciB0IGluIHJldmlld3NbXCJyZXZpZXdcIl1dXG5yZXZpZXdzW1wic2VudGltZW50XCJdID0gcmV2aWV3c1tcInJldmlld1wiXS5hcHBseShzZW50aW1lbnRfb2YpXG5yZXZpZXdzW1wibGV2ZWxcIl0gPSBwZC5jdXQocmV2aWV3c1tcImNvbXBvdW5kXCJdLCBiaW5zPVstMSwgLTAuNSwgLTAuMDUsIDAuMDUsIDAuNSwgMV0sXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGxhYmVscz1bXCJ2ZXJ5IG5lZ2F0aXZlXCIsIFwibmVnYXRpdmVcIiwgXCJuZXV0cmFsXCIsIFwicG9zaXRpdmVcIiwgXCJ2ZXJ5IHBvc2l0aXZlXCJdKVxuYXNwZWN0X3dvcmRzID0ge1wiZGVsaXZlcnlcIjogW1wiZGVsaXZlcnlcIiwgXCJkcml2ZXJcIiwgXCJhcnJpdmVkXCIsIFwicGFja2FnaW5nXCIsIFwiYmFnXCIsIFwicGhvbmVcIiwgXCJsYXRlXCJdLFxuICAgICAgICAgICAgICAgIFwiYXBwXCI6ICAgICAgW1wiYXBwXCIsIFwiYnV0dG9uXCIsIFwib3JkZXJpbmdcIiwgXCJwYXltZW50XCIsIFwibG9nZ2VkXCJdLFxuICAgICAgICAgICAgICAgIFwic2VydmljZVwiOiAgW1wic3RhZmZcIiwgXCJzZXJ2aWNlXCIsIFwidGFibGVcIl0sXG4gICAgICAgICAgICAgICAgXCJwcmljZVwiOiAgICBbXCJwcmljZVwiLCBcInZhbHVlXCIsIFwiYmFodFwiLCBcIm92ZXJwcmljZWRcIiwgXCJ3b3J0aFwiXSxcbiAgICAgICAgICAgICAgICBcImZvb2RcIjogICAgIFtcIm5vb2RsZXNcIiwgXCJicm90aFwiLCBcInNvdXBcIiwgXCJmb29kXCIsIFwibWVhdFwiLCBcInZlZ2V0YWJsZXNcIiwgXCJwb3J0aW9uXCIsIFwicG9ydGlvbnNcIiwgXCJib3dsXCJdfVxuXG5kZWYgY2xhdXNlc19vZih0ZXh0KTpcbiAgICByZXR1cm4gW2Muc3RyaXAoKSBmb3IgYyBpbiByZS5zcGxpdChyXCIsfFxcYmJ1dFxcYlwiLCB0ZXh0KSBpZiBjLnN0cmlwKCldXG5cbmRlZiBhc3BlY3Rfb2YoY2xhdXNlKTpcbiAgICB0b2tlbnMgPSB0b2tlbml6ZShjbGF1c2UpXG4gICAgZm9yIGFzcGVjdCwgd29yZHMgaW4gYXNwZWN0X3dvcmRzLml0ZW1zKCk6XG4gICAgICAgIGlmIGFueSh3IGluIHRva2VucyBmb3IgdyBpbiB3b3Jkcyk6XG4gICAgICAgICAgICByZXR1cm4gYXNwZWN0XG4gICAgcmV0dXJuIFwiZ2VuZXJhbFwiXG5cbnJvd3MgPSBbKG4sIGNsYXVzZSwgYXNwZWN0X29mKGNsYXVzZSksIHNlbnRpbWVudF9vZihjbGF1c2UpKVxuICAgICAgICBmb3IgbiwgdGV4dCBpbiByZXZpZXdzW1wicmV2aWV3XCJdLml0ZW1zKCkgZm9yIGNsYXVzZSBpbiBjbGF1c2VzX29mKHRleHQpXVxubWVudGlvbnMgPSBwZC5EYXRhRnJhbWUocm93cywgY29sdW1ucz1bXCJyZXZpZXdcIiwgXCJjbGF1c2VcIiwgXCJhc3BlY3RcIiwgXCJzZW50aW1lbnRcIl0pXG5jb21wbGFpbnRzID0gbWVudGlvbnNbbWVudGlvbnNbXCJzZW50aW1lbnRcIl0gPT0gXCJuZWdhdGl2ZVwiXVtcImFzcGVjdFwiXS52YWx1ZV9jb3VudHMoKVxucmV2aWV3c1tcImxhYmVsXCJdID0gW1wicG9zaXRpdmVcIiBpZiBzID49IDQgZWxzZSBcIm5lZ2F0aXZlXCIgZm9yIHMgaW4gcmV2aWV3c1tcInN0YXJzXCJdXVxubW9kZWwgPSBtYWtlX3BpcGVsaW5lKENvdW50VmVjdG9yaXplcihzdG9wX3dvcmRzPVwiZW5nbGlzaFwiKSwgTXVsdGlub21pYWxOQigpKS5maXQocmV2aWV3c1tcInJldmlld1wiXSwgcmV2aWV3c1tcImxhYmVsXCJdKSJ9
+</script>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAxIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9sZXZlbCJ9LCJjb2RlIjoiKHJldmlld3NbXCJsZXZlbFwiXSA9PSBcIl9fX19fX1wiKS5zdW0oKSJ9
+</script>
+</div>
+<script type="exercise-check-ex_level-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2xldmVsIn0sImNvZGUiOiJ0cnk6XG4gICAgb2sgPSByZXN1bHQgaXMgbm90IE5vbmUgYW5kIGludChyZXN1bHQpID09IDlcbmV4Y2VwdCAoVHlwZUVycm9yLCBWYWx1ZUVycm9yKTpcbiAgICBvayA9IEZhbHNlXG5pZiBvazpcbiAgICBmZWVkYmFjayA9IHtcImNvcnJlY3RcIjogVHJ1ZSwgXCJtZXNzYWdlXCI6IFwiQ29ycmVjdC4gOSBvZiB0aGUgMzAgcmV2aWV3cyBzY29yZSAwLjUgb3IgbW9yZSDigJQgdmVyeSBwb3NpdGl2ZS4gU2l4IG1vcmUgYXJlIG1lcmVseSBwb3NpdGl2ZS5cIn1cbmVsaWYgcmVzdWx0IGlzIE5vbmU6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogXCJUaGUgYm94IHJldHVybmVkIG5vdGhpbmcuIEVuZCB3aXRoIHRoZSBleHByZXNzaW9uIGl0c2VsZiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgbGV2ZWwgaXMgd3JpdHRlbiBleGFjdGx5IGFzIHBkLmN1dCBsYWJlbGVkIGl0OiAndmVyeSBwb3NpdGl2ZScsIGxvd2VyY2FzZSwgd2l0aCBhIHNwYWNlLlwifVxuZmVlZGJhY2sifQ==
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_level">
+<p>The five labels are the ones given to <code>pd.cut</code>: <code>"very negative"</code>, <code>"negative"</code>, <code>"neutral"</code>, <code>"positive"</code>, <code>"very positive"</code> — lowercase, with a space in the two-word ones.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_level">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="" aria-label="1"></a>(reviews[<span class="st">"level"</span>] <span class="op">==</span> <span class="st">"very positive"</span>).<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>9</code>. Change the label to <code>"very negative"</code> to count the six reviews at the other end.</p>
+</div>
+</section>
+<section id="exercise-2-the-aspect-with-the-most-complaints" class="slide level2">
+<h2>Exercise 2 — the aspect with the most complaints</h2>
+<div class="kicker">
+Hands-on 12.2 · D · reading the insight
+</div>
+<div class="lede wide">
+<p><code>complaints</code> is the count of negative clauses per aspect from Part B. Fill the blank with the name of the aspect customers complain about <strong>most</strong>, so the box returns its count.</p>
+</div>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAyIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF90b3BfY29tcGxhaW50In0sImNvZGUiOiJjb21wbGFpbnRzW1wiX19fX19fXCJdIn0=
+</script>
+</div>
+<script type="exercise-check-ex_top_complaint-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X3RvcF9jb21wbGFpbnQifSwiY29kZSI6InRyeTpcbiAgICBvayA9IHJlc3VsdCBpcyBub3QgTm9uZSBhbmQgaW50KHJlc3VsdCkgPT0gNVxuZXhjZXB0IChUeXBlRXJyb3IsIFZhbHVlRXJyb3IpOlxuICAgIG9rID0gRmFsc2VcbmlmIG9rOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBUcnVlLCBcIm1lc3NhZ2VcIjogXCJDb3JyZWN0LiBEZWxpdmVyeSBoYXMgNSBuZWdhdGl2ZSBjbGF1c2VzLCBtb3JlIHRoYW4gYW55IG90aGVyIGFzcGVjdCDigJQgdGhlIHNob3AncyBmaXJzdCB0aGluZyB0byBmaXguXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiBpdHNlbGYsIG5vdCBhIHByaW50KCkuXCJ9XG5lbHNlOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IGZcIlRoZSBib3ggcmV0dXJuZWQge3Jlc3VsdCFyfSwgd2hpY2ggaXMgbm90IHRoZSBsYXJnZXN0IGNvdW50LiBUaGUgZml2ZSBhc3BlY3RzIGFyZSBkZWxpdmVyeSwgYXBwLCBzZXJ2aWNlLCBwcmljZSBhbmQgZm9vZDsgcnVuIGNvbXBsYWludHMgb24gaXRzIG93biB0byBzZWUgYWxsIGZpdmUgY291bnRzLlwifVxuZmVlZGJhY2sifQ==
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_top_complaint">
+<p>Run <code>complaints</code> alone in the box to see the five aspects and their counts, then put the name at the top in the blank.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_top_complaint">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="" aria-label="1"></a>complaints[<span class="st">"delivery"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>5</code>. Service, price and food have 3 each, the app 1.</p>
+</div>
+</section>
+<section id="exercise-3-naming-the-aspect" class="slide level2">
+<h2>Exercise 3 — naming the aspect</h2>
+<div class="kicker">
+Hands-on 12.2 · D · the aspect key words
+</div>
+<div class="lede wide">
+<p><code>aspect_of</code> names the aspect of a clause from its key words. Fill the blank with <strong>one word</strong> so that the clause is about the <strong>delivery</strong>.</p>
+</div>
+<div>
+<div id="pyodide-13" class="exercise-cell">
+
+</div>
+<script type="pyodide-13-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSAzIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9hc3BlY3QifSwiY29kZSI6ImFzcGVjdF9vZihcIlRoZSBfX19fX18gd2FzIHBvbGl0ZS5cIikifQ==
+</script>
+</div>
+<script type="exercise-check-ex_aspect-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2FzcGVjdCJ9LCJjb2RlIjoib2sgPSByZXN1bHQgaXMgbm90IE5vbmUgYW5kIHN0cihyZXN1bHQpID09IFwiZGVsaXZlcnlcIlxuaWYgb2s6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IFRydWUsIFwibWVzc2FnZVwiOiBcIkNvcnJlY3QuIFRoZSB3b3JkIGlzIG9uIHRoZSBkZWxpdmVyeSBsaXN0LCBzbyB0aGUgY2xhdXNlIGlzIGZpbGVkIHVuZGVyIGRlbGl2ZXJ5IOKAlCBhbmQgdGhlIGxleGljb24gd291bGQgY2FsbCBpdCBuZXV0cmFsLCBiZWNhdXNlICdwb2xpdGUnIGhhcyBubyBzY29yZS5cIn1cbmVsaWYgcmVzdWx0IGlzIE5vbmU6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogXCJUaGUgYm94IHJldHVybmVkIG5vdGhpbmcuIEVuZCB3aXRoIHRoZSBleHByZXNzaW9uIGl0c2VsZiwgbm90IGEgcHJpbnQoKS5cIn1cbmVsc2U6XG4gICAgZmVlZGJhY2sgPSB7XCJjb3JyZWN0XCI6IEZhbHNlLCBcIm1lc3NhZ2VcIjogZlwiVGhlIGJveCByZXR1cm5lZCB7cmVzdWx0IXJ9LiBUaGUgZGVsaXZlcnkgbGlzdCBob2xkcyBkZWxpdmVyeSwgZHJpdmVyLCBhcnJpdmVkLCBwYWNrYWdpbmcsIGJhZywgcGhvbmUgYW5kIGxhdGU7IHRoZSBibGFuayBuZWVkcyBvbmUgb2YgdGhlbSDigJQgYW5kIG9ubHkgJ2RyaXZlcicgb3IgJ2RlbGl2ZXJ5JyBtYWtlcyBzZW5zZSBiZWZvcmUgJ3dhcyBwb2xpdGUnLlwifVxuZmVlZGJhY2sifQ==
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_aspect">
+<p>Look at <code>aspect_words["delivery"]</code> in Part B: who, of the people a customer meets, is on that list?</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_aspect">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="" aria-label="1"></a>aspect_of(<span class="st">"The driver was polite."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>'delivery'</code>. Try <code>"staff"</code> in the blank instead and the same sentence is filed under service.</p>
+</div>
+</section>
+<section id="exercise-4-the-model-on-a-new-review" class="slide level2">
+<h2>Exercise 4 — the model on a new review</h2>
+<div class="kicker">
+Hands-on 12.2 · D · the verb every classifier shares
+</div>
+<div class="lede wide">
+<p><code>model</code> is the classifier trained on the thirty labeled reviews in Part C. Fill the blank with the method that labels new text, so the box returns the label of a review the model has never seen.</p>
+</div>
+<div>
+<div id="pyodide-15" class="exercise-cell">
+
+</div>
+<script type="pyodide-15-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJFeGVyY2lzZSA0IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9wcmVkaWN0In0sImNvZGUiOiJtb2RlbC5fX19fX18oW1wiVGhlIG9yZGVyIGFycml2ZWQgbGF0ZSBhbmQgdGhlIG5vb2RsZXMgd2VyZSBjb2xkLlwiXSlbMF0ifQ==
+</script>
+</div>
+<script type="exercise-check-ex_predict-contents">
+eyJhdHRyIjp7ImNoZWNrIjp0cnVlLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X3ByZWRpY3QifSwiY29kZSI6Im9rID0gcmVzdWx0IGlzIG5vdCBOb25lIGFuZCBzdHIocmVzdWx0KSA9PSBcIm5lZ2F0aXZlXCJcbmlmIG9rOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBUcnVlLCBcIm1lc3NhZ2VcIjogXCJDb3JyZWN0LiBUaGUgbW9kZWwgc2F5cyBuZWdhdGl2ZSDigJQgaXQgbGVhcm5lZCAnbGF0ZScgYW5kICdjb2xkJyBmcm9tIHRoZSBsYWJlbGVkIHJldmlld3MuIFRoZSBsZXhpY29uIHdvdWxkIHNheSBuZXV0cmFsOiBuZWl0aGVyIHdvcmQgaXMgb24gaXRzIGxpc3QuXCJ9XG5lbGlmIHJlc3VsdCBpcyBOb25lOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IFwiVGhlIGJveCByZXR1cm5lZCBub3RoaW5nLiBFbmQgd2l0aCB0aGUgZXhwcmVzc2lvbiBpdHNlbGYsIG5vdCBhIHByaW50KCkuXCJ9XG5lbHNlOlxuICAgIGZlZWRiYWNrID0ge1wiY29ycmVjdFwiOiBGYWxzZSwgXCJtZXNzYWdlXCI6IGZcIlRoZSBib3ggcmV0dXJuZWQge3Jlc3VsdCFyfS4gVGhlIG1ldGhvZCB0aGF0IGxhYmVscyBuZXcgZGF0YSBpcyB0aGUgc2FtZSBvbmUgdGhlIGRlY2lzaW9uIHRyZWUgdXNlZCBpbiBDaGFwdGVyIDEwOiBwcmVkaWN0LlwifVxuZmVlZGJhY2sifQ==
+</script>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_predict">
+<p>Chapter 10’s tree used <code>.fit()</code> to learn and one other method to label a new day. Every scikit-learn classifier shares that second method’s name.</p>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_predict">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="" aria-label="1"></a>model.predict([<span class="st">"The order arrived late and the noodles were cold."</span>])[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>'negative'</code>. Compare with <code>sentiment_of("The order arrived late and the noodles were cold.")</code>, which returns <code>'neutral'</code>: the model knows two complaint words the lexicon does not.</p>
+</div>
+</section>
+<section id="what-to-keep-from-the-session" class="slide level2">
+<h2>What to keep from the session</h2>
+<div class="kicker">
+Hands-on 12.2 · takeaways
+</div>
+<div class="cards" style="--cols:3">
+<div class="card" style="--accent:#0891B2">
+<p><span class="t">Four questions of one score</span> <code>pd.cut</code> turns the compound score into five levels; an emotion lexicon swaps scores for feelings; scoring each clause gives one label per aspect. Same lexicon, different question each time.</p>
+</div>
+<div class="card" style="--accent:#7C3AED">
+<p><span class="t">Aspects turn labels into a decision</span> Counted by aspect, the thirty reviews say: delivery 5 complaints, everything else 3 or fewer. Fix the delivery first. That sentence is what the whole workflow was for.</p>
+</div>
+<div class="card" style="--accent:#F43F5E">
+<p><span class="t">Or a classifier learns the words</span> With labels, sentiment is Chapter 10’s problem again: <code>fit</code> on rated reviews, <code>predict</code> on new ones. The model learned <em>late</em> and <em>cold</em>, which no lexicon had — and only because the reviews contained them.</p>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="note">
+<p><span class="lbl">Take-home</span> The Chapter 12 notebook for Colab carries the same steps with a graded homework on a second set of reviews. Work there keeps; this page forgets when it is reloaded.</p>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="example">
+<p><span class="lbl">Where this leaves us</span> Chapter 12 closes the course. A tree, a line, a cluster and now a sentiment label all came from the same shape of work: data in a table, a model fitted to it, a result read back as a decision. Text was the last kind of data that had to be turned into a table first.</p>
+</div>
+</div></div>
+</section>
+<section id="questions" class="slide level2 divider" data-background-gradient="linear-gradient(103deg,#0B1730 0%,#16294B 55%,#1D3A6C 100%)">
+<h2>Questions</h2>
+<div class="kicker">
+Chapter 12.2 · hands-on · thank you
+</div>
+<div class="lede">
+<p>The last session of 888102 Big Data Analytics. Next: the review session for the final examination.</p>
+</div>
+<p style="color:#8A9ABE;font-size:.42em;margin-top:2em">
+888102 Big Data Analytics · International College of Digital Innovation, Chiang Mai University<br> Photograph: “Reviews of a Negative Customer Experience” by Zuko.io Images (CC BY)
+</p>
+<p><span class="watermark">?</span></p>
+
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lraXQtbGVhcm4iLCJtYXRwbG90bGliIiwidmFkZXJTZW50aW1lbnQiXX19
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJweW9kaWRlLTE1IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE1LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTUtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xNSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTUsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzE1ID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xNS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzEzID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xMy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTEzLWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTMgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzEzLCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTMuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMTEiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8xMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMTEtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0xMS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzExID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xMSwge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMTEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzExLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTkiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl85ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS05LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtOS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzkgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzksIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzkgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzkuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzcgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTctY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS03LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNywge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzYgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTYtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS02LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNiA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNiwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTUtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS01LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNSwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzQgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS00LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNCA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNCwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTMtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS0zLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMywge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzIgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS0yLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMiA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMiwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS0xLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMSwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtcHJlbHVkZSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InB5b2RpZGVPanMgPSB7XG4gIGNvbnN0IHtcbiAgICBQeW9kaWRlRXZhbHVhdG9yLFxuICAgIFB5b2RpZGVFbnZpcm9ubWVudE1hbmFnZXIsXG4gICAgc2V0dXBQeXRob24sXG4gICAgc3RhcnRQeW9kaWRlV29ya2VyLFxuICAgIGI2NERlY29kZSxcbiAgICBjb2xsYXBzZVBhdGgsXG4gIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHN0YXR1c0NvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1zdGF0dXNcIik7XG4gIGNvbnN0IGluZGljYXRvckNvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGluZGljYXRvckNvbnRhaW5lci5jbGFzc0xpc3QucmVtb3ZlKFwiZC1ub25lXCIpO1xuXG4gIGxldCBzdGF0dXNUZXh0ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudChcImRpdlwiKVxuICBzdGF0dXNUZXh0LmNsYXNzTGlzdCA9IFwiZXhlcmNpc2UtbG9hZGluZy1kZXRhaWxzXCI7XG4gIHN0YXR1c1RleHQgPSBzdGF0dXNDb250YWluZXIuYXBwZW5kQ2hpbGQoc3RhdHVzVGV4dCk7XG4gIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgSW5pdGlhbGlzZWA7XG5cbiAgLy8gSG9pc3QgaW5kaWNhdG9yIG91dCBmcm9tIGZpbmFsIHNsaWRlIHdoZW4gcnVubmluZyB1bmRlciByZXZlYWxcbiAgY29uc3QgcmV2ZWFsU3RhdHVzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgLmV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpZiAocmV2ZWFsU3RhdHVzKSB7XG4gICAgcmV2ZWFsU3RhdHVzLnJlbW92ZSgpO1xuICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsID4gLnNsaWRlc1wiKS5hcHBlbmRDaGlsZChyZXZlYWxTdGF0dXMpO1xuICB9XG5cbiAgLy8gTWFrZSBhbnkgcmV2ZWFsIHNsaWRlcyB3aXRoIGxpdmUgY2VsbHMgc2Nyb2xsYWJsZVxuICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKFwiLnJldmVhbCAuZXhlcmNpc2UtY2VsbFwiKS5mb3JFYWNoKChlbCkgPT4ge1xuICAgIGVsLmNsb3Nlc3QoJ3NlY3Rpb24uc2xpZGUnKS5jbGFzc0xpc3QuYWRkKFwic2Nyb2xsYWJsZVwiKTtcbiAgfSlcblxuICAvLyBQeW9kaWRlIHN1cHBsZW1lbnRhbCBkYXRhIGFuZCBvcHRpb25zXG4gIGNvbnN0IGRhdGFDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtZGF0YVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGRhdGEgPSBKU09OLnBhcnNlKGI2NERlY29kZShkYXRhQ29udGVudCkpO1xuXG4gIC8vIEdyYWIgbGlzdCBvZiByZXNvdXJjZXMgdG8gYmUgZG93bmxvYWRlZFxuICBjb25zdCBmaWxlc0NvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwidmZzLWZpbGVcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBmaWxlcyA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGZpbGVzQ29udGVudCkpO1xuXG4gIGxldCBweW9kaWRlUHJvbWlzZSA9IChhc3luYyAoKSA9PiB7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBQeW9kaWRlYDtcbiAgICBjb25zdCBweW9kaWRlID0gYXdhaXQgc3RhcnRQeW9kaWRlV29ya2VyKGRhdGEub3B0aW9ucyk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHBhY2thZ2U6IG1pY3JvcGlwYDtcbiAgICBhd2FpdCBweW9kaWRlLmxvYWRQYWNrYWdlKFwibWljcm9waXBcIik7XG4gICAgY29uc3QgbWljcm9waXAgPSBhd2FpdCBweW9kaWRlLnB5aW1wb3J0KFwibWljcm9waXBcIik7XG4gICAgYXdhaXQgZGF0YS5wYWNrYWdlcy5wa2dzLm1hcCgocGtnKSA9PiAoKSA9PiB7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHBhY2thZ2U6ICR7cGtnfWA7XG4gICAgICByZXR1cm4gbWljcm9waXAuaW5zdGFsbChwa2cpO1xuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuICAgIGF3YWl0IG1pY3JvcGlwLmRlc3Ryb3koKTtcblxuICAgIC8vIERvd25sb2FkIGFuZCBpbnN0YWxsIHJlc291cmNlc1xuICAgIGF3YWl0IGZpbGVzLm1hcCgoZmlsZSkgPT4gYXN5bmMgKCkgPT4ge1xuICAgICAgY29uc3QgbmFtZSA9IGZpbGUuc3Vic3RyaW5nKGZpbGUubGFzdEluZGV4T2YoJy8nKSArIDEpO1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyByZXNvdXJjZTogJHtuYW1lfWA7XG4gICAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKGZpbGUpO1xuICAgICAgaWYgKCFyZXNwb25zZS5vaykge1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYENhbid0IGRvd25sb2FkIFxcYCR7ZmlsZX1cXGAuIEVycm9yICR7cmVzcG9uc2Uuc3RhdHVzfTogXCIke3Jlc3BvbnNlLnN0YXR1c1RleHR9XCIuYCk7XG4gICAgICB9XG4gICAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzcG9uc2UuYXJyYXlCdWZmZXIoKTtcblxuICAgICAgLy8gU3RvcmUgVVJMcyBpbiB0aGUgY3dkIHdpdGhvdXQgYW55IHN1YmRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGlmIChmaWxlLmluY2x1ZGVzKFwiOi8vXCIpKSB7XG4gICAgICAgIGZpbGUgPSBuYW1lO1xuICAgICAgfVxuXG4gICAgICAvLyBDb2xsYXBzZSBoaWdoZXIgZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgZmlsZSA9IGNvbGxhcHNlUGF0aChmaWxlKTtcblxuICAgICAgLy8gQ3JlYXRlIGRpcmVjdG9yeSB0cmVlLCBpZ25vcmluZyBcImRpcmVjdG9yeSBleGlzdHNcIiBWRlMgZXJyb3JzXG4gICAgICBjb25zdCBwYXJ0cyA9IGZpbGUuc3BsaXQoJy8nKS5zbGljZSgwLCAtMSk7XG4gICAgICBsZXQgcGF0aCA9ICcnO1xuICAgICAgd2hpbGUgKHBhcnRzLmxlbmd0aCA+IDApIHtcbiAgICAgICAgcGF0aCArPSBwYXJ0cy5zaGlmdCgpICsgJy8nO1xuICAgICAgICB0cnkge1xuICAgICAgICAgIGF3YWl0IHB5b2RpZGUuRlMubWtkaXIocGF0aCk7XG4gICAgICAgIH0gY2F0Y2ggKGUpIHtcbiAgICAgICAgICBpZiAoZS5uYW1lICE9PSBcIkVycm5vRXJyb3JcIikgdGhyb3cgZTtcbiAgICAgICAgICBpZiAoZS5lcnJubyAhPT0gMjApIHtcbiAgICAgICAgICAgIGNvbnN0IGVycm9yVGV4dFB0ciA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5fc3RyZXJyb3IoZS5lcnJubyk7XG4gICAgICAgICAgICBjb25zdCBlcnJvclRleHQgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuVVRGOFRvU3RyaW5nKGVycm9yVGV4dFB0cik7XG4gICAgICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3IgJHtlLmVycm5vfSBcIiR7ZXJyb3JUZXh0fVwiLmApO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAvLyBXcml0ZSB0aGlzIGZpbGUgdG8gdGhlIFZGU1xuICAgICAgdHJ5IHtcbiAgICAgICAgcmV0dXJuIGF3YWl0IHB5b2RpZGUuRlMud3JpdGVGaWxlKGZpbGUsIG5ldyBVaW50OEFycmF5KGRhdGEpKTtcbiAgICAgIH0gY2F0Y2ggKGUpIHtcbiAgICAgICAgaWYgKGUubmFtZSAhPT0gXCJFcnJub0Vycm9yXCIpIHRocm93IGU7XG4gICAgICAgIGNvbnN0IGVycm9yVGV4dFB0ciA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5fc3RyZXJyb3IoZS5lcnJubyk7XG4gICAgICAgIGNvbnN0IGVycm9yVGV4dCA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5VVEY4VG9TdHJpbmcoZXJyb3JUZXh0UHRyKTtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBGaWxlc3lzdGVtIEVycm9yICR7ZS5lcnJub30gXCIke2Vycm9yVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICB9KS5yZWR1Y2UoKGN1ciwgbmV4dCkgPT4gY3VyLnRoZW4obmV4dCksIFByb21pc2UucmVzb2x2ZSgpKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgUHlvZGlkZSBlbnZpcm9ubWVudCBzZXR1cGA7XG4gICAgYXdhaXQgc2V0dXBQeXRob24ocHlvZGlkZSk7XG5cbiAgICBzdGF0dXNUZXh0LnJlbW92ZSgpO1xuICAgIGlmIChzdGF0dXNDb250YWluZXIuY2hpbGRyZW4ubGVuZ3RoID09IDApIHtcbiAgICAgIHN0YXR1c0NvbnRhaW5lci5wYXJlbnROb2RlLnJlbW92ZSgpO1xuICAgIH1cbiAgICByZXR1cm4gcHlvZGlkZTtcbiAgfSkoKS5jYXRjaCgoZXJyKSA9PiB7XG4gICAgc3RhdHVzVGV4dC5zdHlsZS5jb2xvciA9IFwidmFyKC0tZXhlcmNpc2UtZWRpdG9yLWhsLWVyLCAjQUQwMDAwKVwiO1xuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBlcnIubWVzc2FnZTtcbiAgICAvL2luZGljYXRvckNvbnRhaW5lci5xdWVyeVNlbGVjdG9yKFwiLnNwaW5uZXItZ3Jvd1wiKS5jbGFzc0xpc3QuYWRkKFwiZC1ub25lXCIpO1xuICAgIHRocm93IGVycjtcbiAgfSk7XG5cbiAgLy8gS2VlcCB0cmFjayBvZiBpbml0aWFsIE9KUyBibG9jayByZW5kZXJcbiAgY29uc3QgcmVuZGVyZWRPanMgPSB7fTtcblxuICBjb25zdCBwcm9jZXNzID0gYXN5bmMgKGNvbnRleHQsIGlucHV0cykgPT4ge1xuICAgIGNvbnN0IHB5b2RpZGUgPSBhd2FpdCBweW9kaWRlUHJvbWlzZTtcbiAgICBjb25zdCBldmFsdWF0b3IgPSBuZXcgUHlvZGlkZUV2YWx1YXRvcihweW9kaWRlLCBjb250ZXh0KTtcbiAgICBhd2FpdCBldmFsdWF0b3IucHJvY2VzcyhpbnB1dHMpO1xuICAgIHJldHVybiBldmFsdWF0b3IuY29udGFpbmVyO1xuICB9XG5cbiAgcmV0dXJuIHtcbiAgICBweW9kaWRlUHJvbWlzZSxcbiAgICByZW5kZXJlZE9qcyxcbiAgICBwcm9jZXNzLFxuICB9O1xufVxuIn1dfQ==
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJpbWFnZXMvbW90b3JjeWNsZS1mb29kLWRlbGl2ZXJ5LTMuanBnIiwiaW1hZ2VzL3NtYXJ0LXNwZWFrZXItdm9pY2UtYXNzaXN0YW50LTIuanBnIiwiaW1hZ2VzL3RleHRpbmctc21hcnRwaG9uZS1jaGF0LTIuanBnIiwiaW1hZ2VzL0NSRURJVFMudHh0IiwiaW1hZ2VzL25vb2RsZS1zb3VwLWJvd2wtMi5qcGciLCJpbWFnZXMvb25saW5lLWN1c3RvbWVyLXJldmlldy1zdGFycy0yLmpwZyIsImltYWdlcy9yZXN0YXVyYW50LXdhaXRlci1zZXJ2aW5nLTIuanBnIiwiaW1hZ2VzL3RyYW5zbGF0ZS1kaWN0aW9uYXJ5LWxhbmd1YWdlcy0xLmpwZyIsImltYWdlcy9zcGFtLWVtYWlsLWluYm94LTEuanBnIl0=
+</script>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>888102 Big Data Analytics · Chapter 12.2 hands-on — Aspects, Emotions and a Learned Classifier in Python · ICDI, Chiang Mai University</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="ch12_2_Hands_On_Types_of_Sentiment_Analysis_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true,"titleSelector":"h2"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 5.5e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W119
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../../..";
+    window._ojs.paths.runtimeToRoot = "../../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

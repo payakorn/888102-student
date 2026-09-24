@@ -1,4 +1,4 @@
-# 888102 Big Data Analytics -- Chapter 10 and 11 Materials
+# 888102 Big Data Analytics -- Chapter 10, 11 and 12 Materials
 
 International College of Digital Innovation, Chiang Mai University.
 
@@ -25,12 +25,25 @@ The Chapter 11 hands-on session, where the code runs on the slides in the
 browser, is at
 https://payakorn.github.io/888102-student/hands-on/ch11_Hands_On_Unsupervised_Learning.html
 
+## Chapter 12 -- Text Mining
+
+| Part | Hands-on notebook |
+|---|---|
+| 12.1 Text Mining and Standard Sentiment Analysis | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch12_1_Standard_Sentiment_Analysis.ipynb) |
+| 12.2 Types of Sentiment Analysis and the Business Insight | [Open in Colab](https://colab.research.google.com/github/payakorn/888102-student/blob/main/ch12_2_Types_of_Sentiment_Analysis.ipynb) |
+
+The Chapter 12 hands-on sessions, where the code runs on the slides in the
+browser, are at
+https://payakorn.github.io/888102-student/hands-on/ch12_1_Hands_On_Standard_Sentiment_Analysis.html and
+https://payakorn.github.io/888102-student/hands-on/ch12_2_Hands_On_Types_of_Sentiment_Analysis.html
+
 ## How to use them
 
 Sign in to Google, open a part from the table above, then
 **File -> Save a copy in Drive** so your work is kept. Run the cells in order:
 a later cell uses variables made by earlier ones. The first code cell imports
-numpy, pandas and matplotlib (Chapter 11.2 needs only pandas).
+numpy, pandas and matplotlib (Chapter 11.2 needs only pandas; Chapter 12
+installs the VADER sentiment package the first time it runs in Colab).
 
 Every notebook already carries its outputs, so you can read a part before
 running anything, and check your own results against it afterwards.
