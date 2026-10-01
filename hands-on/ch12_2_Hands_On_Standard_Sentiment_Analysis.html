@@ -465,14 +465,14 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHJlXG5zZW50ZW5j
 Hands-on 12.2 · A · rule-based sentiment analysis
 </div>
 <div class="lede wide">
-<p>A lexicon alone would give <em>The food was not good</em> the same score as <em>The food was good</em>: both contain <em>good</em>. VADER adds <strong>rules</strong> — a negation flips the score, <em>but</em> gives more weight to what follows it, an intensifier such as <em>really</em> or an exclamation mark strengthens it. The lecture’s four sentences, scored by the tool:</p>
+<p>A lexicon alone would give <em>The food was not good</em> the same score as <em>The food was good</em>: both contain <em>good</em>. VADER adds <strong>rules</strong>, each watching for a signal word: a negation (<em>not</em>) multiplies the next word’s score by −0.74, an intensifier (<em>really</em>) pushes it 0.293 further from zero, and <em>but</em> halves every score before it and multiplies every score after it by 1.5. The lecture’s four sentences, one rule each, scored by the tool:</p>
 </div>
 <div>
 <div id="pyodide-6" class="exercise-cell">
 
 </div>
 <script type="pyodide-6-contents">
-eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2VudGVuY2VzID0gW1wiVGhlIGZvb2Qgd2FzIGdvb2QuXCIsXG4gICAgICAgICAgICAgXCJUaGUgZm9vZCB3YXMgbm90IGdvb2QuXCIsXG4gICAgICAgICAgICAgXCJUaGUgZm9vZCB3YXMgcmVhbGx5IGdvb2QhXCIsXG4gICAgICAgICAgICAgXCJUaGUgaG90ZWwgd2FzIGdvb2QsIGJ1dCB0aGUgZm9vZCB3YXMgcmVhbGx5IGJhZC5cIl1cblxucGQuRGF0YUZyYW1lKHtcInNlbnRlbmNlXCI6IHNlbnRlbmNlcyxcbiAgICAgICAgICAgICAgXCJjb21wb3VuZFwiOiBbYW5hbHl6ZXIucG9sYXJpdHlfc2NvcmVzKHMpW1wiY29tcG91bmRcIl0gZm9yIHMgaW4gc2VudGVuY2VzXSxcbiAgICAgICAgICAgICAgXCJzZW50aW1lbnRcIjogW3NlbnRpbWVudF9vZihzKSBmb3IgcyBpbiBzZW50ZW5jZXNdfSkifQ==
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2VudGVuY2VzID0gW1wiVGhlIGZvb2Qgd2FzIGdvb2QuXCIsXG4gICAgICAgICAgICAgXCJUaGUgZm9vZCB3YXMgbm90IGdvb2QuXCIsXG4gICAgICAgICAgICAgXCJUaGUgZm9vZCB3YXMgcmVhbGx5IGdvb2QuXCIsXG4gICAgICAgICAgICAgXCJUaGUgZm9vZCB3YXMgZ29vZCwgYnV0IHRoZSBzZXJ2aWNlIHdhcyBiYWQuXCJdXG5cbnBkLkRhdGFGcmFtZSh7XCJzZW50ZW5jZVwiOiBzZW50ZW5jZXMsXG4gICAgICAgICAgICAgIFwiY29tcG91bmRcIjogW2FuYWx5emVyLnBvbGFyaXR5X3Njb3JlcyhzKVtcImNvbXBvdW5kXCJdIGZvciBzIGluIHNlbnRlbmNlc10sXG4gICAgICAgICAgICAgIFwic2VudGltZW50XCI6IFtzZW50aW1lbnRfb2YocykgZm9yIHMgaW4gc2VudGVuY2VzXX0pIn0=
 </script>
 </div>
 <div class="columns">
@@ -481,8 +481,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2VudGVuY2VzID0gW1wiVGhl
 <p><span class="lbl">Interpretation</span></p>
 <ul>
 <li><strong><em>not good</em></strong> scores −0.34 where <em>good</em> scored 0.44: the negation rule flipped the sign.</li>
-<li><strong><em>really good!</em></strong> scores 0.54: the intensifier and the exclamation mark each push the score further from zero.</li>
-<li><strong><em>good, but … really bad</em></strong> scores −0.64: the <em>but</em> rule gives the second half of the sentence more weight, so the sentence as a whole is negative even though it contains a positive word.</li>
+<li><strong><em>really good</em></strong> scores 0.49: the intensifier pushed <em>good</em> from 1.9 to 2.19.</li>
+<li><strong><em>good, but … bad</em></strong> scores −0.59: <em>good</em> counts 0.95 and <em>bad</em> counts −3.75, so the sentence is negative even though it has one word of each kind.</li>
 </ul>
 </div>
 </div><div class="column" style="width:40%;">
