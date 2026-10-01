@@ -313,29 +313,50 @@ W['correlation'] = host => {
 };
 
 
-/* Choosing the tree's first question, in counts rather than bits: pick an
- * attribute and see how the fourteen days fall into its groups, how many each
- * group already gets right by majority, and whether any group is pure. */
+/* Choosing the tree's first question, by Gini impurity: pick an attribute
+ * and see the single Yes/No question it offers that reduces impurity the
+ * most, and the two groups that question makes. */
 W['split-counts'] = host => {
   const label = D.golf.label;
-  /* data-branch="Sunny" runs the same search inside one branch of the root:
-   * only that branch's days, only the features not yet used */
+  /* data-branch="Sunny" runs the same search inside one branch of the root;
+   * data-branch="mixed" runs it on every day the root's pure Overcast leaf
+   * does not already answer -- the group the real, binary-split tree asks
+   * its second question about (the root splits on one one-hot column, not
+   * on the whole "outlook" attribute, so what remains mixed is every
+   * non-Overcast day together, not a single original category). */
   const branch = host.dataset.branch || null;
-  const rows = branch ? D.golf.rows.filter(r => r.outlook === branch) : D.golf.rows;
-  const attributes = branch ? D.golf.attributes.filter(a => a !== 'outlook') : D.golf.attributes;
+  const rows = branch === 'mixed' ? D.golf.rows.filter(r => r.outlook !== 'Overcast')
+    : branch ? D.golf.rows.filter(r => r.outlook === branch) : D.golf.rows;
+  /* every one-hot column stays a candidate everywhere -- unlike the old
+   * counting rule, a binary split never permanently retires a whole
+   * attribute, only outlook_Overcast itself (already answered at the root). */
+  const attributes = D.golf.attributes;
+  const features = S.onehot(D.golf.rows, D.golf.attributes);
   const n = rows.length;
   const yesAll = rows.filter(r => r[label] === 'Yes').length;
+  const parentGini = S.gini(rows.map(r => r[label]));
+
+  /* The question the stored tree actually asks of this very group, found by
+   * matching the days in it. Complementary one-hot columns tie exactly --
+   * humidity_High and humidity_Normal cut the days the same way -- so which of
+   * the two gets named is otherwise arbitrary, and naming the other one would
+   * contradict the finished tree drawn two slides later. */
+  const storedHere = (function find(node) {
+    if ('leaf' in node) return null;
+    if (node.days.join(',') === rows.map(r => D.golf.rows.indexOf(r) + 1).join(',')) return node;
+    return find(node.no) || find(node.yes);
+  })(TREE.root);
+
+  /* the single best Yes/No question a whole attribute offers here */
   function summary(attribute) {
-    const groups = [];
-    S.splitOn(rows, attribute).forEach((g, value) => {
-      const yes = g.filter(r => r[label] === 'Yes').length;
-      groups.push({ value, n: g.length, yes, no: g.length - yes });
-    });
-    const settled = sum(groups.map(g => Math.max(g.yes, g.no)));
-    const pure = groups.filter(g => g.yes === 0 || g.no === 0).length;
-    return { groups, settled, pure };
+    const columns = storedHere && storedHere.attribute === attribute
+      ? features.filter(f => f.name === storedHere.feature)
+      : features.filter(f => f.name.startsWith(attribute + '_'));
+    const best = S.bestSplit(rows, columns, label);
+    if (!best) return null;
+    return { feature: best.feature, yes: best.right, no: best.left, weighted: parentGini - best.decrease, decrease: best.decrease };
   }
-  let picked = host.dataset.pick || (branch ? S.bestSplit(rows, attributes, label).attribute : 'outlook');
+  let picked = host.dataset.pick || (branch ? S.bestSplit(rows, features, label).feature.name.split('_')[0] : 'outlook');
   const { ctl, fig, out } = UI.layout(host);
 
   UI.choice(ctl, {
@@ -345,39 +366,53 @@ W['split-counts'] = host => {
     onInput: v => { picked = v; draw(); },
   });
 
-
   function draw() {
     const s = summary(picked);
+    const [, ...vparts] = s.feature.name.split('_');
+    const value = vparts.join('_');
+    const groups = [
+      { label: `${picked} = ${value} (${s.yes.length})`, n: s.yes.length, yes: s.yes.filter(r => r[label] === 'Yes').length },
+      { label: `not (${s.no.length})`, n: s.no.length, yes: s.no.filter(r => r[label] === 'Yes').length },
+    ];
+    /* Room for the tallest bar plus the "n Yes / n No" label above it. Fixed
+       limits do not survive a binary split: data-branch="mixed" holds ten days
+       that some questions cut 5/5, which overran a hardcoded 4.6 and printed
+       the bars through the title. */
+    const tallest = Math.max(...groups.map(g => g.n));
+    const yMax = tallest + Math.max(0.8, tallest * 0.16);
+    const tickStep = tallest > 6 ? 2 : 1;
     const p = new Plot({
-      w: 600, h: 300, xlim: [-0.6, s.groups.length - 0.4], ylim: [0, branch ? 4.6 : 8.6],
-      title: branch
-        ? `${branch} days (${yesAll} Yes / ${n - yesAll} No), split on ${picked}: ${s.settled} of ${n} settled`
-        : `Split on ${picked}: ${s.settled} of ${n} days settled by one question`,
+      w: 600, h: 300, xlim: [-0.6, 1.4], ylim: [0, yMax],
+      title: `Is the ${picked} ${value}? — impurity falls from ${fmt(parentGini, 3)} to ${fmt(s.weighted, 3)}`,
       ylabel: 'Days',
-      xticks: s.groups.map((_, i) => i), xfmt: t => `${s.groups[t].value} (${s.groups[t].n})`,
-      yticks: branch ? [0, 1, 2, 3, 4] : [0, 2, 4, 6, 8],
+      xticks: [0, 1], xfmt: t => groups[t].label,
+      yticks: Array.from({ length: Math.floor(tallest / tickStep) + 1 }, (_, i) => i * tickStep),
     });
-    s.groups.forEach((g, i) => {
-      // stacked: No on the bottom in rose, Yes on top in teal
-      p.bar(i, g.no, 0.55, { color: C.rose });
+    groups.forEach((g, i) => {
+      const no = g.n - g.yes;
+      p.bar(i, no, 0.55, { color: C.rose });
       if (g.yes) {
-        const y0 = p.y(g.no), y1 = p.y(g.no + g.yes);
+        const y0 = p.y(no), y1 = p.y(no + g.yes);
         p.addIn('rect', { x: p.x(i - 0.275), y: y1, width: p.x(i + 0.275) - p.x(i - 0.275), height: y0 - y1, rx: 2, fill: C.teal });
       }
-      const pure = g.yes === 0 || g.no === 0;
-      p.text(p.x(i), p.y(g.n) - 9, `${g.yes} Yes / ${g.no} No${pure ? ' — pure' : ''}`,
+      const pure = g.yes === 0 || no === 0;
+      p.text(p.x(i), p.y(g.n) - 9, `${g.yes} Yes / ${no} No${pure ? ' — pure' : ''}`,
         { anchor: 'middle', size: 12, weight: pure ? 800 : 400, color: pure ? C.navy : C.muted, inPlot: true });
     });
     p.legend([{ color: C.teal, label: 'played' }, { color: C.rose, label: 'did not play' }], { at: 'top-right' });
     fig.replaceChildren(p.node);
 
-    const all = attributes.map(a => ({ a, ...summary(a) }));
-    const best = all.reduce((x, y) => (y.settled > x.settled || (y.settled === x.settled && y.pure > x.pure) ? y : x));
+    const all = attributes.map(a => ({ a, ...summary(a) })).filter(x => x.decrease != null);
+    /* the stored tree's own choice where there is one, so this readout can
+       never disagree with the tree the next slides draw */
+    const best = storedHere ? { a: storedHere.attribute, ...summary(storedHere.attribute) }
+      : all.reduce((x, y) => (y.decrease > x.decrease ? y : x));
+    const [, ...bvparts] = best.feature.name.split('_');
     UI.readout(out, [
-      { key: 'groups', value: s.groups.length, color: C.muted },
-      { key: 'settled by majority', value: `${s.settled} / ${n}`, color: C.blue },
-      { key: 'pure groups', value: s.pure, note: s.pure ? 'a branch that needs no further question' : 'every group is still mixed', color: s.pure ? C.teal : C.amber },
-      { key: branch ? 'best next question' : 'best first question', value: best.a, note: `${best.settled} settled, ${best.pure} pure`, color: C.navy },
+      { key: 'impurity before', value: fmt(parentGini, 3), color: C.muted },
+      { key: 'impurity after', value: fmt(s.weighted, 3), color: C.blue },
+      { key: 'decrease', value: fmt(s.decrease, 3), note: s.decrease <= 1e-9 ? 'no better than not asking' : 'the larger, the better this question sorts the days', color: s.decrease > 1e-9 ? C.teal : C.amber },
+      { key: branch ? 'best next question' : 'best first question', value: `${best.a} = ${bvparts.join('_')}`, note: `decrease ${fmt(best.decrease, 3)}`, color: C.navy },
     ]);
   }
   draw();
@@ -390,55 +425,55 @@ W['split-counts'] = host => {
  * stop when every branch is pure. data-step="full" draws the finished tree
  * with no slider. Every count on the drawing is computed from the table. */
 W['tree-grow'] = host => {
-  const { rows, attributes, label } = D.golf;
+  const { rows, label } = D.golf;
   const fixed = host.dataset.step === 'full';
   const forced = host.dataset.step != null && !fixed ? +host.dataset.step : null;   // print: one page per step
   let step = fixed || (PRINT && forced == null) ? 99 : forced != null ? forced : 0;
   const { ctl, fig, out } = UI.layout(host);
 
-  /* grow the tree to a given depth, keeping every node's rows for the counts */
-  function grow(rs, attrs, depth, maxDepth) {
-    const yes = rs.filter(r => r[label] === 'Yes').length;
-    const node = { rows: rs, yes, no: rs.length - yes, depth };
-    const pure = yes === 0 || yes === rs.length;
-    if (pure || !attrs.length || depth >= maxDepth) {
-      node.leaf = pure ? (yes ? 'Yes' : 'No') : null;     // null: mixed, not yet split
-      if (!pure && !attrs.length) node.leaf = S.majority(rs.map(r => r[label]));
-      return node;
-    }
-    const best = S.bestSplit(rs, attrs, label).attribute;   // the same rule as the split-counts slide
-    node.attribute = best;
-    node.children = [];
-    S.splitOn(rs, best).forEach((group, value) => {
-      node.children.push({ value, node: grow(group, attrs.filter(a => a !== best), depth + 1, maxDepth) });
-    });
-    return node;
+  const question = name => {
+    if (!name) return '';   // step 0: the root itself has not split yet
+    const [attr, ...vparts] = name.split('_');
+    return `Is the ${attr} ${vparts.join('_')}?`;
+  };
+
+  /* Walk the stored tree -- the one scikit-learn actually grew, from _tree.qmd
+   * -- down to `maxDepth`, so the slider reveals it one question at a time.
+   * The deck does not regrow it in the browser: see S.bestSplit's note on why
+   * an exact tie cannot be reproduced here. */
+  function grow(node, depth, maxDepth) {
+    const nYes = node.counts.Yes || 0, nNo = node.counts.No || 0;
+    const shown = { nYes, nNo, depth };
+    if ('leaf' in node) { shown.leaf = node.leaf; return shown; }
+    if (depth >= maxDepth) { shown.leaf = null; return shown; }   // mixed: the slider has not reached it
+    shown.feature = node.feature;
+    shown.no = grow(node.no, depth + 1, maxDepth);
+    shown.yes = grow(node.yes, depth + 1, maxDepth);
+    return shown;
   }
 
-  const fullDepth = (function depthOf(n) {
-    return n.children ? 1 + Math.max(...n.children.map(c => depthOf(c.node))) : 0;
-  })(grow(rows, attributes, 0, 99));
+  const fullDepth = S.storedDepth(TREE.root);
 
   if (!fixed && forced == null) {
     UI.slider(ctl, {
       label: 'step', min: 0, max: fullDepth, step: 1, value: PRINT ? fullDepth : 0,
-      format: v => ['all days in one group', 'the first question', 'inside the mixed branches', 'every branch pure'][Math.min(v, 3)] || String(v),
+      format: v => (v === 0 ? 'all days in one group' : v >= fullDepth ? 'every branch pure' : `question ${v}`),
       onInput: v => { step = v; draw(); },
     });
   }
 
   function draw() {
-    const root = grow(rows, attributes, 0, step);
+    const root = grow(TREE.root, 0, step);
     /* layout: leaves left to right, parents centred over their children */
     let nextX = 0;
     const big = fixed;                       // the finished tree has the whole slide
-    const W = big ? 1000 : 660, H = big ? 430 : 360, top = big ? 24 : 30, levelGap = big ? 160 : 118;
-    const leafGap = W / (big ? 5.2 : 5.6);
-    const f = big ? 1.35 : 1;                // font and box scale
+    const W = big ? 1080 : 700, H = big ? 460 : 380, top = big ? 24 : 30, levelGap = big ? 108 : 92;
+    const leafGap = W / (big ? 7.4 : 7.6);
+    const f = big ? 1.15 : 1;                // font and box scale
     (function place(n) {
-      if (!n.children) { n.x = (nextX++ + 0.5) * leafGap + 10; return; }
-      n.children.forEach(c => place(c.node));
-      n.x = mean(n.children.map(c => c.node.x));
+      if ('leaf' in n) { n.x = (nextX++ + 0.5) * leafGap + 10; return; }
+      place(n.no); place(n.yes);
+      n.x = mean([n.no.x, n.yes.x]);
     })(root);
     const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, class: 'wfig', preserveAspectRatio: 'xMidYMid meet' });
     const g = svgEl('g'); svg.appendChild(g);
@@ -457,33 +492,38 @@ W['tree-grow'] = host => {
         box(mx, my - 9 * f, (String(edge).length * 7 + 14) * f, 18 * f, C.white, 4);
         text(mx, my + 4 * f, edge, { size: 11.5 * f, weight: 700, color: C.muted });
       }
-      const bh = 46 * f;
-      if (n.children) {
-        box(n.x, y, 128 * f, bh, C.navy, 8 * f);
-        text(n.x, y + 19 * f, `${n.attribute}?`, { size: 13.5 * f, weight: 800, color: C.white });
-        text(n.x, y + 36 * f, `${n.yes} Yes / ${n.no} No`, { size: 11 * f, color: '#BFD0EC' });
-        n.children.forEach(c => render(c.node, n.x, y + bh, c.value));
+      const bh = 40 * f;
+      if ('feature' in n) {
+        /* 6.5px per character is measured for the 11.5px bold label, plus 16px
+           of padding: at 5.6 and no padding "Is the humidity Normal?" spilled
+           over both rounded ends of its box. */
+        const w = Math.max(118, question(n.feature).length * 6.5 + 16) * f;
+        box(n.x, y, w, bh, C.navy, 8 * f);
+        text(n.x, y + 16 * f, question(n.feature), { size: 11.5 * f, weight: 800, color: C.white });
+        text(n.x, y + 31 * f, `${n.nYes} Yes / ${n.nNo} No`, { size: 10 * f, color: '#BFD0EC' });
+        render(n.no, n.x, y + bh, 'No');
+        render(n.yes, n.x, y + bh, 'Yes');
       } else if (n.leaf) {
-        box(n.x, y, 110 * f, bh, n.leaf === 'Yes' ? C.teal : C.rose, 8 * f);
-        text(n.x, y + 19 * f, n.leaf === 'Yes' ? 'play' : 'do not play', { size: 13 * f, weight: 800, color: C.white });
-        text(n.x, y + 36 * f, `${n.yes} Yes / ${n.no} No · pure`, { size: 10.5 * f, color: C.white });
+        box(n.x, y, 100 * f, bh, n.leaf === 'Yes' ? C.teal : C.rose, 8 * f);
+        text(n.x, y + 16 * f, n.leaf === 'Yes' ? 'play' : 'do not play', { size: 12 * f, weight: 800, color: C.white });
+        text(n.x, y + 31 * f, `${n.nYes} Yes / ${n.nNo} No · pure`, { size: 9.5 * f, color: C.white });
       } else {
-        box(n.x, y, 118 * f, bh, C.amber, 8 * f);
-        text(n.x, y + 19 * f, 'mixed — ask next', { size: 12.5 * f, weight: 800, color: C.white });
-        text(n.x, y + 36 * f, `${n.yes} Yes / ${n.no} No`, { size: 11 * f, color: C.white });
+        box(n.x, y, 108 * f, bh, C.amber, 8 * f);
+        text(n.x, y + 16 * f, 'mixed — ask next', { size: 11.5 * f, weight: 800, color: C.white });
+        text(n.x, y + 31 * f, `${n.nYes} Yes / ${n.nNo} No`, { size: 10 * f, color: C.white });
       }
     })(root, null, null, null);
     fig.replaceChildren(svg);
 
     const leaves = [], mixed = [];
-    (function walk(n) { if (n.children) n.children.forEach(c => walk(c.node)); else (n.leaf ? leaves : mixed).push(n); })(root);
+    (function walk(n) { if ('feature' in n) { walk(n.no); walk(n.yes); } else (n.leaf ? leaves : mixed).push(n); })(root);
     const notes = [
-      `One group of ${rows.length} days, ${root.yes} Yes and ${root.no} No. It is mixed, so the algorithm looks for a question that sorts it.`,
-      `Each of the four features is tried as the first question; <b>${root.attribute || 'outlook'}</b> sorts the days best, so it becomes the root and the days go down its branches. A pure branch is finished; a mixed one is not.`,
-      `The same search runs again inside each mixed branch, on that branch's own days only, with the features not yet used. Each is settled by one more question.`,
+      `One group of ${rows.length} days, ${root.nYes} Yes and ${root.nNo} No. It is mixed, so the algorithm looks for the Yes/No question that reduces Gini impurity the most.`,
+      `Every one-hot column is tried; <b>${question(root.feature)}</b> reduces the impurity the most, so it becomes the root and the days go down its Yes/No branches. A pure branch is finished; a mixed one is not.`,
+      `The same search runs again inside each mixed branch, on that branch's own days only. A column already used higher up can be tried again lower down, in a different branch. Each mixed branch keeps splitting until it is pure.`,
     ];
     const done = mixed.length === 0;
-    UI.note(out, (done && step >= fullDepth ? `<b>Every branch ends in a pure group, so the growing stops.</b> ${leaves.length} leaves, ${fullDepth} questions deep. The drawing is the model: to predict a new day, start at the root and follow its answers.`
+    UI.note(out, (done && step >= fullDepth ? `<b>Every branch ends in a pure group, so the growing stops.</b> ${leaves.length} leaves, ${fullDepth} questions deep. The drawing is the model: to predict a new day, start at the root and follow its Yes/No answers.`
       : notes[Math.min(step, notes.length - 1)]) + (mixed.length ? ` &nbsp;<b>${mixed.length}</b> mixed group${mixed.length > 1 ? 's' : ''} still to split.` : ''));
   }
   draw();
@@ -1075,13 +1115,11 @@ W['tree-predictions'] = host => {
     });
   }
 
-  const full = S.buildTree(rows, attributes, label, 2);
+  /* Held-out answers are scikit-learn's own, stored in _tree.qmd: each day was
+   * hidden, the tree regrown on the other thirteen, and that tree asked. */
   function predictions() {
-    return rows.map((row, i) => {
-      const tree = mode === 'train' ? full
-        : S.buildTree(rows.filter((_, k) => k !== i), attributes, label, 2);
-      return S.predict(tree, row);
-    });
+    return mode === 'train' ? rows.map(row => S.predictStored(TREE.root, row))
+      : TREE.held_out.predicted;
   }
 
   function draw() {
@@ -1098,10 +1136,10 @@ W['tree-predictions'] = host => {
     wrap.className = 'wrow pred';
     const table = document.createElement('table');
     table.className = 'pred-table';
-    table.innerHTML = '<thead><tr><th>Day</th><th>Outlook</th><th>Humidity</th><th>Windy</th>'
+    table.innerHTML = '<thead><tr><th>Day</th><th>Outlook</th><th>Temp</th><th>Humidity</th><th>Windy</th>'
       + '<th>Actual</th><th>Predicted</th><th>Box</th></tr></thead>'
       + '<tbody>' + rows.map((r, i) => `<tr class="${kind[i]}${focus && focus !== 'all' ? (kind[i] === focus ? ' hit' : ' dim') : ''}"><td>${i + 1}</td><td>${r.outlook}</td>`
-        + `<td>${r.humidity}</td><td>${r.windy}</td><td><b>${r[label]}</b></td>`
+        + `<td>${r.temp}</td><td>${r.humidity}</td><td>${r.windy}</td><td><b>${r[label]}</b></td>`
         + `<td><b>${pred[i] ?? '—'}</b></td><td class="k">${names[kind[i]]}</td></tr>`).join('') + '</tbody>';
     wrap.appendChild(table);
 
@@ -1148,12 +1186,11 @@ W['tree-predictions'] = host => {
  * it out, grow the tree on the other thirteen, ask about it. A slider runs the
  * tests one at a time; the score after each test settles as they accumulate. */
 W['cv-folds'] = host => {
-  const { rows, attributes, label } = D.golf;
+  const { rows, label } = D.golf;
   let k = host.dataset.tests ? +host.dataset.tests : PRINT ? rows.length : 1;
   const { ctl, fig, out } = UI.layout(host);
-  const results = rows.map((row, i) =>
-    S.predict(S.buildTree(rows.filter((_, x) => x !== i), attributes, label, 2), row) === row[label]);
-  const trainAcc = S.accuracy(S.buildTree(rows, attributes, label, 2), rows, label);
+  const results = rows.map((row, i) => TREE.held_out.predicted[i] === row[label]);
+  const trainAcc = TREE.training_accuracy;
 
   UI.slider(ctl, { label: 'tests run', min: 1, max: rows.length, step: 1, value: k, format: v => `${v} of ${rows.length}`, onInput: v => { k = v; draw(); } });
 
@@ -1200,18 +1237,12 @@ W['cv-folds'] = host => {
 
 /* The confusion matrix, and every metric built from it. */
 /* The golf tree's held-out confusion matrix: each day is held out in turn, a
- * depth-2 tree is grown on the other 13, and its prediction for the held-out
- * day is compared with the truth. Recomputed here rather than stored. */
+ * full-depth tree is grown on the other 13, and its prediction for the
+ * held-out day is compared with the truth -- scikit-learn's own run, stored in
+ * _tree.qmd by make_tree_data.py. */
 function treeHeldOutMatrix() {
-  const { rows, attributes, label } = D.golf;
-  const cell = { tp: 0, fp: 0, fn: 0, tn: 0 };
-  rows.forEach((row, i) => {
-    const rest = rows.filter((_, k) => k !== i);
-    const said = S.predict(S.buildTree(rest, attributes, label, 2), row) === 'Yes';
-    const truth = row[label] === 'Yes';
-    cell[said ? (truth ? 'tp' : 'fp') : (truth ? 'fn' : 'tn')] += 1;
-  });
-  return cell;
+  const { tp, fp, fn, tn } = TREE.held_out;
+  return { tp, fp, fn, tn };
 }
 
 W['confusion'] = host => {
@@ -1290,59 +1321,6 @@ W['fbeta'] = host => {
   draw();
 };
 
-/* Leave-one-out cross-validation of the tree's depth, run in the browser over
- * the golf table -- fourteen trees per depth, on every redraw. */
-W['cv-depth'] = host => {
-  const { rows, attributes, label } = D.golf;
-  const depths = [1, 2, 3, 4];
-  let picked = 2;
-  const { ctl, fig, out } = UI.layout(host);
-
-  const scores = depths.map(d => ({
-    depth: d,
-    training: S.accuracy(S.buildTree(rows, attributes, label, d), rows, label),
-    heldOut: S.leaveOneOut(rows, attributes, label, d),
-    leaves: S.countLeaves(S.buildTree(rows, attributes, label, d)),
-  }));
-
-  UI.slider(ctl, {
-    label: 'maximum depth', min: 1, max: 4, step: 1, value: picked,
-    format: String, onInput: v => { picked = v; draw(); },
-  });
-
-  function draw() {
-    const p = new Plot({
-      w: 600, h: 323, xlim: [-0.6, depths.length - 0.4], ylim: [0, 1.18],
-      title: 'Training accuracy claims 100%; held-out days say less',
-      ylabel: 'Share predicted correctly',
-      xticks: depths.map((_, i) => i), xfmt: t => `depth ${depths[t]}`,
-      yticks: [0, 0.25, 0.5, 0.75, 1], yfmt: t => pct(t, 0),
-    });
-    scores.forEach((s, i) => {
-      const on = s.depth === picked;
-      p.bar(i - 0.16, s.training, 0.28, { color: C.faint, opacity: on ? 1 : 0.45 });
-      p.bar(i + 0.16, s.heldOut, 0.28, { color: C.teal, opacity: on ? 1 : 0.45 });
-      p.text(p.x(i - 0.16), p.y(s.training) - 8, pct(s.training, 0), { anchor: 'middle', size: 12, color: C.muted, inPlot: true });
-      p.text(p.x(i + 0.16), p.y(s.heldOut) - 8, pct(s.heldOut, 0), { anchor: 'middle', size: 12, weight: 700, color: C.navy, inPlot: true });
-    });
-    p.legend([{ color: C.faint, label: 'training accuracy' }, { color: C.teal, label: 'leave-one-out accuracy' }],
-      { at: 'top-left' });
-    fig.replaceChildren(p.node);
-    const s = scores[picked - 1];
-    const bestDepth = scores.reduce((a, b) => (b.heldOut > a.heldOut ? b : a));
-    UI.readout(out, [
-      { key: `depth ${s.depth} · leaves`, value: s.leaves, color: C.muted },
-      { key: 'training', value: pct(s.training, 1), note: 'not evidence', color: C.faint },
-      { key: 'held out', value: pct(s.heldOut, 1), color: C.teal },
-      { key: 'the gap', value: pct(s.training - s.heldOut, 1), note: 'overfitting, measured', color: C.rose },
-      { key: 'cross-validation picks', value: `depth ${bestDepth.depth}`, color: C.blue },
-    ]);
-  }
-  draw();
-};
-
-/* Underfitting and overfitting on one slider, with a held-out score that only
- * a middling degree wins. */
 W['overfitting'] = host => {
   const pts = D.overfit.points;
   const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);

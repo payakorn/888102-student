@@ -11,7 +11,7 @@
 <link href="ch10_1_Hands_On_Decision_Trees_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.10.18">
 
-  <meta name="author" content="Piyachat Udomwong, Ph.D.&nbsp;· Payakorn Saksuriya, Ph.D.">
+  <meta name="author" content="Payakorn Saksuriya, Ph.D.">
   <title>888102 · Chapter 10.1 — Hands-on: Growing a Decision Tree in Python</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -337,7 +337,7 @@ Chapter 10.1 · hands-on session · 888102 Big Data Analytics
 <p>The tree of Part 10.1, grown by a library in one command — on the fourteen golf days first, then on a real dataset of 150 flowers. Every code box on these slides runs in the browser.</p>
 </div>
 <div class="byline">
-Piyachat Udomwong, Ph.D.<br>Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
 </div>
 <p><span class="cover-credit">Photo: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)</span></p>
 <aside class="notes">
@@ -390,7 +390,7 @@ Hands-on 10.1 · before the first line of code
 Hands-on 10.1 · roadmap
 </div>
 <div class="lede wide">
-<p>Part 10.1 grew a decision tree from fourteen golf days by counting, drew it, and read it as five rules. This session hands the same job to a library: <strong>scikit-learn</strong> grows the tree in one command, draws it in another, and the rest of the time goes to reading what it grew.</p>
+<p>Part 10.1 grew a decision tree from fourteen golf days the same way scikit-learn does — asking, at every step, which question drops the impurity of the resulting groups the most — but worked out in the slides themselves. This session hands that exact job to the real library: <strong>scikit-learn</strong> grows the tree in one command, draws it in another, and the rest of the time goes to reading what it grew.</p>
 </div>
 <div class="flow">
 <div class="step" style="--accent:#0E9F8E">
@@ -530,9 +530,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicHJpbnQoZXhwb3J0X3RleHQo
 <div class="example">
 <p><span class="lbl">Interpretation</span></p>
 <ul>
-<li><strong>The first question is the same</strong> as in the tree of Part 10.1, drawn here: outlook, and overcast is a pure leaf at once.</li>
-<li><strong>The rest is deeper</strong>: four questions and seven leaves against two and five. A 0/1 column asks about one value at a time, so the three-way outlook takes two questions, and the library scores a question with a formula for how mixed the groups are rather than by counting settled days.</li>
-<li><strong>Both trees agree with all fourteen days.</strong> Different roads, same destination.</li>
+<li><strong>The same tree as Part 10.1’s</strong>, computed the same way: outlook the root, overcast a pure leaf, four questions deep, seven leaves — a 0/1 column asks about one value at a time, so outlook is asked about twice, in two different branches.</li>
 </ul>
 </div>
 </div></div>
@@ -910,7 +908,7 @@ Hands-on 10.1 · D · takeaways
 <div class="columns">
 <div class="column" style="width:49%;">
 <div class="note">
-<p><span class="lbl">Take-home</span> The Chapter 10.1 notebook for Colab carries the counting version of the tree — the algorithm written out step by step — as well as the library, with the graded homework on the iris flowers. Work there keeps; this page forgets when it is reloaded.</p>
+<p><span class="lbl">Take-home</span> The Chapter 10.1 notebook for Colab carries the reasoning behind each split, worked out on the real counts, as well as the library that actually grows the tree, with the graded homework on the iris flowers. Work there keeps; this page forgets when it is reloaded.</p>
 </div>
 </div><div class="column" style="width:49%;">
 <div class="example">

@@ -11,7 +11,7 @@
 <link href="ch10_2_Hands_On_Evaluating_a_Classifier_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.10.18">
 
-  <meta name="author" content="Piyachat Udomwong, Ph.D.&nbsp;· Payakorn Saksuriya, Ph.D.">
+  <meta name="author" content="Payakorn Saksuriya, Ph.D.">
   <title>888102 · Chapter 10.2 — Hands-on: Evaluating a Classifier in Python</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -337,7 +337,7 @@ Chapter 10.2 · hands-on session · 888102 Big Data Analytics
 <p><code>sklearn.metrics</code> applied to the tree grown in the hands-on session of Part 10.1 — the confusion matrix, precision, recall and F₁, and a score measured on days and tumors the tree has not seen. Every code box on these slides runs in the browser.</p>
 </div>
 <div class="byline">
-Piyachat Udomwong, Ph.D.<br>Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
+Payakorn Saksuriya, Ph.D.<span class="inst">International College of Digital Innovation · Chiang Mai University</span>
 </div>
 <p><span class="cover-credit">Photo: “House For Sale, Real Estate SOLD sign” by myguys.nova (CC BY)</span></p>
 <aside class="notes">
@@ -509,11 +509,11 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiY21fbG9vID0gcGQuRGF0YUZy
 <div class="columns">
 <div class="column" style="width:58%;">
 <div class="watch">
-<p><span class="lbl">Interpretation</span> 64%, not 100%. Tested honestly, the library’s tree is right on 9 of the 14 days — worse than the 79% of the counting tree in the lecture deck. The two trees ask different questions (Part 10.1’s hands-on session showed the library needs four questions where the counting tree used two), and different questions can generalize differently even when both fit their training days perfectly.</p>
+<p><span class="lbl">Interpretation</span> 64%, not 100%. Tested honestly, the library’s tree is right on 9 of the 14 days. Since 2026-09-21 the lecture deck draws this very tree — scikit-learn’s own, grown by binary impurity-based splits rather than the earlier counting rule — so it shows the same four questions, the same seven leaves and the same 64% (9 of 14) held-out score. The two used to disagree (79% for the lecture’s older counting tree against this 64%) because they were, at the time, genuinely different trees; that gap is closed, not merely unremarked on.</p>
 </div>
 </div><div class="column" style="width:40%;">
 <div class="note">
-<p><span class="lbl">The lesson survives the disagreement</span> Whichever tree is grown, its training score says nothing about its held-out score. That is the one fact both numbers agree on.</p>
+<p><span class="lbl">The lesson holds either way</span> Whichever tree is grown, its training score says nothing about its held-out score. That held even while the lecture and hands-on trees disagreed, and it still holds now that they agree.</p>
 </div>
 </div></div>
 </section>
